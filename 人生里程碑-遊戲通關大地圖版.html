@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>人生里程碑 — 遊戲通關大地圖版 v2</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#1a0533;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem;font-family:'Courier New',monospace;}
+  .window{background:#2d1b69;border:4px solid #ff6ac1;box-shadow:0 0 0 8px #1a0533,0 0 0 12px #ff6ac1,0 0 40px rgba(255,106,193,0.3);max-width:540px;width:100%;}
+  .title-bar{background:#ff6ac1;padding:8px 16px;display:flex;align-items:center;gap:8px;}
+  .title-bar span{font-size:11px;font-weight:700;color:#1a0533;letter-spacing:1px;}
+  .dots{display:flex;gap:5px;margin-left:auto;}
+  .dot{width:10px;height:10px;border-radius:50%;}
+  .body{padding:2rem 2rem 1.5rem;}
+  .pixel-title{font-size:14px;color:#ffe066;line-height:1.6;margin-bottom:6px;text-shadow:2px 2px #b8860b;}
+  .pixel-sub{font-size:9px;color:#a78bfa;letter-spacing:2px;margin-bottom:1.8rem;}
+  .bar-wrap{margin-bottom:10px;}
+  .bar-label{font-size:9px;color:#e0d0ff;letter-spacing:1px;margin-bottom:4px;display:flex;justify-content:space-between;}
+  .bar-track{height:14px;background:#0f0a1e;border:2px solid #4a3580;}
+  .bar-fill{height:100%;}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#0f0a1e;border:2px solid #4a3580;margin:1.5rem 0;}
+  .stat{background:#1a1040;padding:.85rem 1rem;}
+  .sl{font-size:8px;color:#a78bfa;letter-spacing:2px;margin-bottom:4px;}
+  .sv{font-size:22px;font-weight:700;color:#ffe066;letter-spacing:-1px;}
+  .ss{font-size:9px;color:#4a3580;}
+  .cats{display:flex;flex-direction:column;gap:2px;background:#0f0a1e;border:2px solid #4a3580;margin-bottom:1.8rem;}
+  .cat-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#1a1040;}
+  .cat-k{font-size:10px;font-weight:700;width:36px;}
+  .cat-d{font-size:9px;flex:1;color:#6e5a9a;}
+  button{width:100%;padding:14px;font-size:10px;font-weight:700;letter-spacing:3px;background:#ff6ac1;color:#1a0533;border:none;cursor:pointer;box-shadow:0 4px 0 #c0408a;transition:transform .1s,box-shadow .1s;}
+  button:hover:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 #c0408a;}
+  button:disabled{opacity:.35;cursor:default;transform:none;}
+  #status{text-align:center;font-size:9px;color:#a78bfa;margin-top:10px;min-height:1.4em;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="window">
+  <div class="title-bar">
+    <span>LIFE_MILESTONE_v2.exe</span>
+    <div class="dots">
+      <div class="dot" style="background:#ff5f56"></div>
+      <div class="dot" style="background:#ffbd2e"></div>
+      <div class="dot" style="background:#27c93f"></div>
+    </div>
+  </div>
+  <div class="body">
+    <p class="pixel-title">人生里程碑<br>遊戲通關大地圖版 v2</p>
+    <p class="pixel-sub">// RPG · PIXEL ART · AGE 20 to 32 · 13 LEVELS</p>
+    <div class="bar-wrap">
+      <div class="bar-label"><span>HP</span><span>85 / 100</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:85%;background:#ff4444"></div></div>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-label"><span>XP</span><span>LEVEL UP READY!</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:78%;background:#ffe066"></div></div>
+    </div>
+    <div class="bar-wrap">
+      <div class="bar-label"><span>MP</span><span>60 / 80</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:75%;background:#44aaff"></div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="sl">SLIDES</div><div class="sv">15</div><div class="ss">// total</div></div>
+      <div class="stat"><div class="sl">LEVELS</div><div class="sv">13</div><div class="ss">// age 20 to 32</div></div>
+      <div class="stat"><div class="sl">QUESTS</div><div class="sv">156</div><div class="ss">// months</div></div>
+      <div class="stat"><div class="sl">SKILLS</div><div class="sv">4</div><div class="ss">// categories</div></div>
+    </div>
+    <div class="cats">
+      <div class="cat-row"><span class="cat-k" style="color:#ff6ac1">生活</span><span class="cat-d">[ LIFE ]  日常 · 人際 · 重要時刻</span></div>
+      <div class="cat-row"><span class="cat-k" style="color:#ffe066">工作</span><span class="cat-d">[ WORK ]  職涯 · 成就 · 晉升破關</span></div>
+      <div class="cat-row"><span class="cat-k" style="color:#44aaff">學習</span><span class="cat-d">[ SKILL ] 技能 · 進修 · 習得新術</span></div>
+      <div class="cat-row"><span class="cat-k" style="color:#44ff88">健康</span><span class="cat-d">[ HP ]    身心 · 運動 · 回復血量</span></div>
+    </div>
+    <button id="btn" onclick="generate()">INSERT COIN &amp; START GAME</button>
+    <p id="status">// PRESS START TO GENERATE (EST. 5-10S)</p>
+  </div>
+</div>
+
+<script>
+function tick() { return new Promise(r => setTimeout(r, 20)); }
+
+async function generate() {
+  var btn = document.getElementById('btn');
+  var st  = document.getElementById('status');
+  btn.disabled = true;
+  st.textContent = '// LOADING...';
+
+  try {
+    var W = 13.33, H = 7.5;
+
+    var BG     = '0F0A1E';
+    var BG2    = '1A1040';
+    var BG3    = '231555';
+    var BG4    = '2D1B69';
+    var BORDER = '4A3580';
+    var BORDER2= '6A50A8';
+    var TEXT   = 'E8E0FF';
+    var TEXT2  = 'C0A8F0';
+    var MUTED  = '6E5A9A';
+    var DIM    = '2A1F50';
+    var PINK   = 'FF6AC1';
+    var GOLD   = 'FFE066';
+
+    var WORLDS = [
+      {n:'新手村',    w:'NEWBIE VILLAGE',   acc:'44DD44', h:'22AA22', d:'0A2A0A', hp:80,  xp:5,   stars:1},
+      {n:'水之神殿',  w:'WATER TEMPLE',     acc:'44AAFF', h:'2266CC', d:'001838', hp:82,  xp:16,  stars:1},
+      {n:'火焰山',    w:'FIRE MOUNTAIN',    acc:'FF6644', h:'CC3300', d:'280800', hp:75,  xp:28,  stars:2},
+      {n:'雷電草原',  w:'THUNDER PLAINS',   acc:'FFEE44', h:'CCAA00', d:'201800', hp:84,  xp:38,  stars:2},
+      {n:'神秘森林',  w:'MYSTIC FOREST',    acc:'44FF88', h:'00AA44', d:'00200A', hp:88,  xp:50,  stars:3},
+      {n:'極地凍原',  w:'FROZEN TUNDRA',    acc:'AADDFF', h:'5599CC', d:'081828', hp:78,  xp:62,  stars:3},
+      {n:'熔岩地獄',  w:'LAVA INFERNO',     acc:'FF4400', h:'AA2200', d:'200400', hp:70,  xp:72,  stars:4},
+      {n:'暗黑地牢',  w:'DARK DUNGEON',     acc:'AA66FF', h:'7722CC', d:'180028', hp:65,  xp:80,  stars:4},
+      {n:'星空廢墟',  w:'ASTRAL RUINS',     acc:'88AAFF', h:'4466CC', d:'080E28', hp:72,  xp:86,  stars:4},
+      {n:'水晶迷宮',  w:'CRYSTAL MAZE',     acc:'44FFEE', h:'00AACC', d:'001A1A', hp:85,  xp:91,  stars:5},
+      {n:'魔王城',    w:'DEMON FORTRESS',   acc:'FF3344', h:'AA0011', d:'1E0006', hp:60,  xp:95,  stars:5},
+      {n:'英雄誕生',  w:'HERO AWAKENING',   acc:'FFCC00', h:'CC8800', d:'201000', hp:95,  xp:99,  stars:5},
+      {n:'傳說之巔',  w:'LEGEND SUMMIT',    acc:'FFD700', h:'D4A000', d:'201A00', hp:100, xp:100, stars:5},
+    ];
+
+    var CATS = [
+      {k:'生活', acc:'FF6AC1', d:'3A0028', label:'LIFE'},
+      {k:'工作', acc:'FFE066', d:'302800', label:'WORK'},
+      {k:'學習', acc:'44AAFF', d:'001838', label:'SKILL'},
+      {k:'健康', acc:'44FF88', d:'00200A', label:'HP'},
+    ];
+
+    var MZH  = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+    var MNUM = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+    var MICO = ['*','#','@','!','%','^','&','~','+','=','<','>'];
+
+    var pres = new PptxGenJS();
+    pres.layout = 'LAYOUT_WIDE';
+
+    function bg(s, c) {
+      s.addShape('rect', {x:0, y:0, w:W, h:H, fill:{color: c || BG}, line:{type:'none'}});
+    }
+    function px(s, x, y, w, h, fill, bc, bw) {
+      var opts = {x:x, y:y, w:w, h:h, fill:{color:fill}, line: bc ? {color:bc, width: bw || 1.5} : {type:'none'}};
+      s.addShape('rect', opts);
+    }
+    function hl(s, x, y, w, c, th) { px(s, x, y, w, th || 0.012, c || BORDER); }
+    function vl(s, x, y, h, c)     { px(s, x, y, 0.012, h, c || BORDER); }
+
+    function pixelGrid(s) {
+      for (var i = 0; i < H; i += 0.14) px(s, 0, i, W, 0.004, 'FFFFFF03');
+      for (var j = 0; j < W; j += 0.14) px(s, j, 0, 0.004, H, 'FFFFFF02');
+    }
+
+    function pixelBar(s, x, y, w, h, pct, fillC) {
+      px(s, x, y, w, h, DIM, BORDER, 1.5);
+      if (pct <= 0) return;
+      var inner = w - 0.12;
+      var bw = 0.15, gap = 0.04;
+      var total = Math.floor(inner / (bw + gap));
+      var filled = Math.round(total * pct);
+      for (var i = 0; i < filled; i++) {
+        var bx = x + 0.06 + i * (bw + gap);
+        px(s, bx, y + 0.05, bw, h - 0.1, fillC);
+      }
+    }
+
+    function pixelBorder(s, x, y, w, h, c, inner) {
+      px(s, x, y, w, h, c);
+      px(s, x + 0.08, y + 0.08, w - 0.16, h - 0.16, inner || BG2);
+    }
+
+    function starRow(s, x, y, earned) {
+      for (var i = 0; i < 5; i++) {
+        s.addText(i < earned ? '*' : '-', {x: x + i * 0.3, y: y, w: 0.26, h: 0.26,
+          fontSize: 13, color: i < earned ? GOLD : BORDER2, fontFace: 'Arial'});
+      }
+    }
+
+    function starfield(s, seed) {
+      var pts = [
+        [0.5,0.3],[1.9,0.7],[3.1,0.2],[4.6,0.5],[6.2,0.3],[7.8,0.5],
+        [9.3,0.2],[10.8,0.6],[12.2,0.3],[0.4,1.6],[2.5,2.2],[4.0,1.4],
+        [5.8,2.8],[7.2,1.8],[8.9,2.4],[10.4,1.2],[12.6,2.0],[1.0,3.8],
+        [3.4,4.2],[5.2,3.6],[6.8,4.8],[8.4,3.4],[9.9,4.6],[11.5,3.8],
+        [0.7,5.5],[2.1,6.1],[3.8,5.8],[5.5,6.4],[7.0,5.6],[8.6,6.2],
+        [10.2,5.4],[11.8,6.0],[13.0,5.8]
+      ];
+      var cols = ['FFFFFF','FFFF88','88FFFF','FF88FF','FFFFFF'];
+      pts.forEach(function(p, i) {
+        var sz = ((i + seed) % 4 === 0) ? 0.07 : 0.05;
+        s.addShape('ellipse', {x:p[0], y:p[1], w:sz, h:sz,
+          fill:{color: cols[(i + seed) % cols.length]}, line:{type:'none'}});
+      });
+    }
+
+    // ── COVER ──
+    st.textContent = '// LOADING TITLE SCREEN...'; await tick();
+    {
+      var s = pres.addSlide();
+      bg(s); pixelGrid(s); starfield(s, 0);
+
+      px(s, 0.08, 0.08, W - 0.16, H - 0.16, 'transparent', PINK, 3.5);
+      px(s, 0.22, 0.22, W - 0.44, H - 0.44, 'transparent', 'FF44AA', 1);
+
+      // right: world select panel
+      var MPX = 7.8, MPY = 0.38, MPW = 5.3, MPH = 6.5;
+      px(s, MPX, MPY, MPW, MPH, BG3, BORDER, 2);
+      px(s, MPX, MPY, MPW, 0.3, BORDER2);
+      s.addText('WORLD SELECT', {x:MPX, y:MPY+0.04, w:MPW, h:0.22,
+        fontSize:9, bold:true, color:GOLD, align:'center', fontFace:'Courier New', charSpacing:2});
+      hl(s, MPX, MPY + 0.3, MPW, BORDER);
+
+      var nW = 1.56, nH = 0.66, nStep = 1.7, nOX = 0.28;
+      var r1y = MPY + 0.38, r2y = MPY + MPH - nH - 0.2;
+
+      // row 1 (LV1–7)
+      for (var i = 0; i < 7; i++) {
+        var wl = WORLDS[i];
+        var nx = nOX + i * (nW + 0.06), ny = r1y;
+        pixelBorder(s, nx, ny, nW, nH, wl.acc + '88', wl.d);
+        px(s, nx, ny, nW, 0.04, wl.acc);
+        s.addText('LV.' + (i + 1), {x:nx+0.06, y:ny+0.05, w:0.6, h:0.22,
+          fontSize:8, bold:true, color:wl.acc, fontFace:'Courier New'});
+        s.addText((20 + i) + '歲', {x:nx+0.06, y:ny+0.28, w:nW-0.12, h:0.24,
+          fontSize:10, bold:true, color:TEXT2, align:'center', fontFace:'Microsoft JhengHei'});
+      }
+
+      // connector row1 → row2
+      var connX = nOX + 6 * (nW + 0.06) + nW / 2 - 0.04;
+      px(s, connX, r1y + nH, 0.08, r2y - (r1y + nH), GOLD);
+
+      // row 2 (LV8–13, right to left)
+      for (var i = 0; i < 6; i++) {
+        var wl = WORLDS[7 + i];
+        var nx = nOX + (5 - i) * (nW + 0.06), ny = r2y;
+        pixelBorder(s, nx, ny, nW, nH, wl.acc + '88', wl.d);
+        px(s, nx, ny, nW, 0.04, wl.acc);
+        s.addText('LV.' + (8 + i), {x:nx+0.06, y:ny+0.05, w:0.6, h:0.22,
+          fontSize:8, bold:true, color:wl.acc, fontFace:'Courier New'});
+        s.addText((28 + i) + '歲', {x:nx+0.06, y:ny+0.28, w:nW-0.12, h:0.24,
+          fontSize:10, bold:true, color:TEXT2, align:'center', fontFace:'Microsoft JhengHei'});
+      }
+
+      // left: title
+      px(s, 0.35, 0.38, 7.2, 2.3, BG4, PINK, 2);
+      px(s, 0.35, 0.38, 7.2, 0.04, PINK);
+      s.addText('LIFE MILESTONE', {x:0.5, y:0.46, w:7.0, h:0.38,
+        fontSize:12, bold:true, color:PINK, align:'center', fontFace:'Courier New', charSpacing:3});
+      s.addText('人生冒險通關大地圖', {x:0.5, y:0.9, w:7.0, h:0.82,
+        fontSize:28, bold:true, color:GOLD, fontFace:'Microsoft JhengHei', align:'center'});
+      s.addText('GAME MAP LEVEL-UP EDITION', {x:0.5, y:1.76, w:7.0, h:0.28,
+        fontSize:9, bold:true, color:PINK, fontFace:'Courier New', charSpacing:2, align:'center'});
+
+      // player status card
+      px(s, 0.35, 2.82, 7.2, 3.55, BG2, BORDER, 1.5);
+      px(s, 0.35, 2.82, 7.2, 0.28, BG3);
+      hl(s, 0.35, 3.1, 7.2, BORDER);
+      s.addText('-- PLAYER STATUS --', {x:0.4, y:2.86, w:7.1, h:0.2,
+        fontSize:8, bold:true, color:GOLD, align:'center', fontFace:'Courier New', charSpacing:1});
+
+      s.addText('NAME:', {x:0.5, y:3.16, w:0.9, h:0.28, fontSize:10, color:TEXT2, fontFace:'Courier New'});
+      px(s, 1.44, 3.16, 5.95, 0.28, BG3, BORDER2, 1);
+      s.addText('[ YOUR NAME ]', {x:1.5, y:3.16, w:5.83, h:0.28,
+        fontSize:10, bold:true, color:GOLD, fontFace:'Courier New'});
+
+      s.addText('AGE:', {x:0.5, y:3.54, w:0.9, h:0.26, fontSize:10, color:TEXT2, fontFace:'Courier New'});
+      s.addText('20 -- 32', {x:1.44, y:3.54, w:5.95, h:0.26,
+        fontSize:10, color:'44FF88', fontFace:'Courier New', bold:true});
+
+      s.addText('HP', {x:0.5, y:3.92, w:0.7, h:0.26, fontSize:9, bold:true, color:'FF4444', fontFace:'Courier New'});
+      pixelBar(s, 1.24, 3.9, 6.0, 0.3, 0.85, '44DD44');
+      s.addText('XP', {x:0.5, y:4.32, w:0.7, h:0.26, fontSize:9, bold:true, color:GOLD, fontFace:'Courier New'});
+      pixelBar(s, 1.24, 4.3, 6.0, 0.3, 0.62, GOLD);
+      s.addText('MP', {x:0.5, y:4.72, w:0.7, h:0.26, fontSize:9, bold:true, color:'44AAFF', fontFace:'Courier New'});
+      pixelBar(s, 1.24, 4.7, 6.0, 0.3, 0.70, '44AAFF');
+
+      hl(s, 0.5, 5.12, 6.85, BORDER2);
+      s.addText('SKILLS:', {x:0.5, y:5.2, w:0.9, h:0.26, fontSize:9, color:TEXT2, fontFace:'Courier New'});
+      CATS.forEach(function(c, i) {
+        px(s, 1.46 + i * 1.48, 5.2, 1.32, 0.28, c.d, c.acc, 1.5);
+        s.addText(c.k, {x:1.46 + i * 1.48, y:5.2, w:1.32, h:0.28,
+          fontSize:10, bold:true, color:c.acc, align:'center', valign:'middle', fontFace:'Microsoft JhengHei'});
+      });
+
+      // PRESS START
+      px(s, 1.8, 6.42, 4.95, 0.58, BG3, PINK, 2.5);
+      px(s, 1.8, 6.42, 4.95, 0.04, PINK);
+      s.addText('PRESS START', {x:1.8, y:6.42, w:4.95, h:0.58,
+        fontSize:14, bold:true, color:PINK, align:'center', valign:'middle',
+        fontFace:'Courier New', charSpacing:3});
+    }
+
+    // ── AGE SLIDES ──
+    var MX = 0.22, HDR = 1.38, GAP = 0.09, COLS = 4, ROWS = 3;
+    var cW = (W - 2 * MX - (COLS - 1) * GAP) / COLS;
+    var cH = (H - HDR - 0.18 - (ROWS - 1) * GAP) / ROWS;
+
+    for (var age = 20; age <= 32; age++) {
+      var li = age - 20, WL = WORLDS[li];
+      st.textContent = '// LEVEL ' + (li + 1) + '/13 — AGE ' + age; await tick();
+      var s = pres.addSlide();
+      bg(s); pixelGrid(s); starfield(s, li * 7);
+
+      // tab bar
+      px(s, 0, 0, W, 0.3, BG3);
+      hl(s, 0, 0.3, W, BORDER2);
+      px(s, 0.2, 0, 3, 0.3, BG4);
+      px(s, 0.2, 0, 3, 0.035, WL.acc);
+      s.addText('AGE_' + age + '.SLIDE', {x:0.25, y:0.05, w:2.9, h:0.2,
+        fontSize:9, color:TEXT2, fontFace:'Courier New'});
+      s.addText('LEVEL ' + (li+1) + '/13  ' + WL.w, {x:3.4, y:0.05, w:6, h:0.2,
+        fontSize:9, color:MUTED, fontFace:'Courier New'});
+      s.addText('LIFE_MILESTONE_v2', {x:W - 3.5, y:0.05, w:3.3, h:0.2,
+        fontSize:9, color:MUTED, align:'right', fontFace:'Courier New'});
+
+      // header
+      px(s, 0, 0.3, W, HDR - 0.32, BG4);
+      hl(s, 0, HDR - 0.02, W, WL.acc, 0.055);
+      px(s, 0, 0.3, 0.055, HDR - 0.32, WL.acc);
+
+      // level badge
+      pixelBorder(s, 0.18, 0.38, 1.48, 0.82, WL.acc + 'AA', WL.d);
+      px(s, 0.18, 0.38, 1.48, 0.055, WL.acc);
+      s.addText('LV', {x:0.18, y:0.4, w:1.48, h:0.25,
+        fontSize:9, bold:true, color:WL.acc, align:'center', fontFace:'Courier New'});
+      s.addText(String(li + 1), {x:0.18, y:0.62, w:1.48, h:0.48,
+        fontSize:26, bold:true, color:WL.acc, align:'center', fontFace:'Courier New'});
+
+      s.addText(WL.n + '  ' + age + '歲', {x:1.82, y:0.36, w:5, h:0.38,
+        fontSize:16, bold:true, color:TEXT, fontFace:'Microsoft JhengHei'});
+      s.addText(WL.w + '  ' + age + ' years old', {x:1.82, y:0.78, w:5.5, h:0.26,
+        fontSize:10, color:WL.acc, fontFace:'Courier New', bold:true});
+
+      vl(s, 7.1, 0.4, 0.78, BORDER2);
+
+      // HP / XP bars
+      s.addText('HP', {x:7.22, y:0.38, w:0.42, h:0.26, fontSize:9, bold:true, color:'FF4444', fontFace:'Courier New'});
+      pixelBar(s, 7.66, 0.38, 3.34, 0.26, WL.hp / 100, 'FF4444');
+      s.addText(String(WL.hp), {x:11.02, y:0.38, w:0.45, h:0.24, fontSize:8, color:TEXT2, fontFace:'Courier New'});
+
+      s.addText('XP', {x:7.22, y:0.72, w:0.42, h:0.26, fontSize:9, bold:true, color:GOLD, fontFace:'Courier New'});
+      pixelBar(s, 7.66, 0.72, 3.34, 0.26, WL.xp / 100, GOLD);
+      s.addText(WL.xp + '%', {x:11.02, y:0.72, w:0.5, h:0.24, fontSize:8, color:GOLD, fontFace:'Courier New'});
+
+      starRow(s, 7.24, 1.06, WL.stars);
+
+      // progress bar
+      px(s, W - 3.6, 0.46, 3.35, 0.1, DIM, BORDER2, 1);
+      px(s, W - 3.6, 0.46, 3.35 * (li / 12), 0.1, WL.acc);
+      s.addText('PROGRESS ' + Math.round((li / 12) * 100) + '%', {
+        x:W - 3.6, y:0.64, w:3.35, h:0.2, fontSize:8, color:WL.acc, align:'right', fontFace:'Courier New'});
+
+      // 12 month cards
+      MZH.forEach(function(mZh, idx) {
+        var col = idx % COLS, row = Math.floor(idx / COLS);
+        var x = MX + col * (cW + GAP), y = HDR + row * (cH + GAP);
+
+        px(s, x + 0.07, y + 0.07, cW, cH, WL.d);
+        px(s, x, y, cW, cH, BG2, WL.acc, 1.8);
+        px(s, x, y, cW, 0.055, WL.acc);
+        px(s, x, y + 0.055, cW, 0.26, BG3);
+        hl(s, x, y + 0.315, cW, BORDER);
+
+        px(s, x + 0.1, y + 0.075, 0.36, 0.2, WL.d, WL.acc, 1.2);
+        s.addText(MNUM[idx], {x:x+0.1, y:y+0.075, w:0.36, h:0.2,
+          fontSize:8, bold:true, color:WL.acc, align:'center', valign:'middle', fontFace:'Courier New'});
+        s.addText(mZh, {x:x+0.52, y:y+0.08, w:1.1, h:0.2,
+          fontSize:10, bold:true, color:TEXT, fontFace:'Microsoft JhengHei'});
+        s.addText(MICO[idx], {x:x+cW-0.42, y:y+0.08, w:0.34, h:0.2,
+          fontSize:11, bold:true, color:WL.acc, align:'center', fontFace:'Courier New'});
+
+        s.addText('QUEST LOG:', {x:x+0.1, y:y+0.34, w:cW-0.2, h:0.18,
+          fontSize:7.5, bold:true, color:MUTED, fontFace:'Courier New'});
+        s.addText('> 輸入本月任務', {x:x+0.1, y:y+0.52, w:cW-0.2, h:0.2,
+          fontSize:9, color:BORDER2, fontFace:'Microsoft JhengHei'});
+        s.addText('', {x:x+0.1, y:y+0.70, w:cW-0.2, h:cH-0.86,
+          fontSize:9.5, color:TEXT, valign:'top', wrap:true, fontFace:'Microsoft JhengHei'});
+
+        [0.70, 0.94, 1.18, 1.42].forEach(function(off) {
+          if (off < cH - 0.22) hl(s, x + 0.1, y + off, cW - 0.2, BORDER);
+        });
+
+        px(s, x, y + cH - 0.24, cW, 0.24, WL.d);
+        hl(s, x, y + cH - 0.24, cW, WL.acc, 0.022);
+        s.addText('REWARD:', {x:x+0.1, y:y+cH-0.22, w:cW-0.2, h:0.2,
+          fontSize:7, bold:true, color:WL.acc, fontFace:'Courier New'});
+      });
+
+      // bottom bar
+      px(s, 0, H - 0.26, W, 0.26, BG3);
+      hl(s, 0, H - 0.26, W, WL.acc, 0.03);
+      s.addText(WL.n + '  LV.' + (li+1) + '  AGE ' + age, {
+        x:0.2, y:H-0.22, w:9, h:0.18, fontSize:8, bold:true, color:WL.acc, fontFace:'Courier New'});
+      s.addText('SLIDE ' + (li+1) + ' / 13', {
+        x:W-2.5, y:H-0.22, w:2.3, h:0.18, fontSize:8, color:MUTED, align:'right', fontFace:'Courier New'});
+    }
+
+    // ── WORLD MAP SUMMARY ──
+    st.textContent = '// RENDERING FINAL MAP...'; await tick();
+    {
+      var s = pres.addSlide();
+      bg(s); pixelGrid(s); starfield(s, 99);
+
+      px(s, 0, 0, W, 0.3, BG3);
+      hl(s, 0, 0.3, W, BORDER2);
+      px(s, 0.2, 0, 3, 0.3, BG4);
+      px(s, 0.2, 0, 3, 0.035, GOLD);
+      s.addText('WORLD_MAP.FINAL', {x:0.25, y:0.05, w:2.9, h:0.2, fontSize:9, color:GOLD, fontFace:'Courier New'});
+      s.addText('ALL LEVELS UNLOCKED', {x:3.4, y:0.05, w:9.7, h:0.2, fontSize:9, color:MUTED, align:'right', fontFace:'Courier New'});
+
+      px(s, 0, 0.3, W, 0.88, BG4);
+      hl(s, 0, 1.18, W, GOLD, 0.04);
+      px(s, 0, 0.3, 0.055, 0.88, GOLD);
+      s.addText('WORLD MAP  -  人生冒險地圖總覽', {x:0.2, y:0.38, w:9, h:0.48,
+        fontSize:17, bold:true, color:GOLD, fontFace:'Microsoft JhengHei'});
+      s.addText('AGE 20 to 32  13 LEVELS  ALL WORLDS DOCUMENTED', {
+        x:0.2, y:0.86, w:12, h:0.24, fontSize:9, color:MUTED, fontFace:'Courier New', charSpacing:1});
+
+      // map area
+      var MAPX = 0.18, MAPY = 1.26, MAPH = 2.64;
+      px(s, MAPX, MAPY, W - 0.36, MAPH, BG2, BORDER, 1.5);
+
+      var nW2 = 1.58, nH2 = 0.72, nStep2 = 1.7, nOX2 = 0.28;
+      var r1y2 = MAPY + 0.22, r2y2 = MAPY + MAPH - nH2 - 0.2;
+
+      // path row1
+      for (var i = 0; i < 6; i++) {
+        var cx = nOX2 + i * (nW2 + 0.06) + nW2;
+        var cy = r1y2 + nH2 / 2;
+        px(s, cx, cy - 0.04, (nW2 + 0.06) - nW2, 0.08, GOLD);
+      }
+      // vertical connector
+      var r1endX2 = nOX2 + 6 * (nW2 + 0.06) + nW2 / 2 - 0.04;
+      px(s, r1endX2, r1y2 + nH2, 0.08, r2y2 - (r1y2 + nH2), GOLD);
+      // path row2
+      for (var i = 0; i < 5; i++) {
+        var cx = nOX2 + (4 - i) * (nW2 + 0.06) + nW2;
+        var cy = r2y2 + nH2 / 2;
+        px(s, cx, cy - 0.04, (nW2 + 0.06) - nW2, 0.08, GOLD);
+      }
+
+      // level nodes
+      for (var i = 0; i < 13; i++) {
+        var wl = WORLDS[i];
+        var inRow1 = (i < 7);
+        var nx = inRow1 ? (nOX2 + i * (nW2 + 0.06)) : (nOX2 + (12 - i) * (nW2 + 0.06));
+        var ny = inRow1 ? r1y2 : r2y2;
+
+        s.addShape('ellipse', {x:nx-0.1, y:ny-0.1, w:nW2+0.2, h:nH2+0.2,
+          fill:{color:wl.acc+'18'}, line:{type:'none'}});
+        pixelBorder(s, nx, ny, nW2, nH2, wl.acc, wl.d);
+        px(s, nx, ny, nW2, 0.045, wl.acc);
+        s.addText('LV.' + (i+1), {x:nx+0.06, y:ny+0.06, w:0.6, h:0.24,
+          fontSize:9, bold:true, color:wl.acc, fontFace:'Courier New'});
+        s.addText((20+i) + '歲', {x:nx+0.06, y:ny+0.32, w:nW2-0.12, h:0.26,
+          fontSize:11, bold:true, color:TEXT, align:'center', fontFace:'Microsoft JhengHei'});
+        s.addText(wl.n, {x:nx+0.06, y:ny+0.54, w:nW2-0.12, h:0.18,
+          fontSize:8, color:TEXT2, align:'center', fontFace:'Microsoft JhengHei'});
+      }
+
+      // skill tree grid
+      var GY = MAPY + MAPH + 0.12;
+      var LW = 0.9, GX = 0.22 + LW, GW = W - 0.3 - LW;
+      var GH = H - GY - 0.28, NY = 13, yW = GW / NY;
+      var HDH = 0.38, rH = (GH - HDH) / 4;
+
+      s.addText('-- SKILL TREE --', {x:0.24, y:GY+0.02, w:7, h:0.26,
+        fontSize:9, bold:true, color:GOLD, fontFace:'Courier New', charSpacing:2});
+
+      for (var i = 0; i < NY; i++) {
+        var wl = WORLDS[i], x = GX + i * yW;
+        px(s, x+0.01, GY+0.3, yW-0.02, HDH, wl.d, wl.acc, 1.2);
+        px(s, x+0.01, GY+0.3, yW-0.02, 0.04, wl.acc);
+        s.addText(String(20+i), {x:x+0.01, y:GY+0.46, w:yW-0.02, h:0.2,
+          fontSize:8.5, bold:true, color:wl.acc, align:'center', fontFace:'Courier New'});
+      }
+
+      CATS.forEach(function(cat, ci) {
+        var ry = GY + 0.3 + HDH + ci * rH;
+        pixelBorder(s, 0.22, ry+0.02, LW-0.06, rH-0.04, cat.acc, cat.d);
+        px(s, 0.22, ry+0.02, 0.06, rH-0.04, cat.acc);
+        s.addText(cat.k, {x:0.32, y:ry+0.02, w:LW-0.14, h:rH-0.04,
+          fontSize:9.5, bold:true, color:cat.acc, align:'center', valign:'middle', fontFace:'Microsoft JhengHei'});
+
+        for (var i = 0; i < NY; i++) {
+          var x = GX + i * yW, even = (i % 2 === 0);
+          px(s, x+0.01, ry+0.02, yW-0.02, rH-0.04, even ? cat.d : BG2, BORDER, 0.3);
+          px(s, x+0.01, ry+0.02, yW-0.02, 0.03, even ? cat.acc : BORDER);
+        }
+      });
+
+      // bottom bar
+      px(s, 0, H-0.26, W, 0.26, BG3);
+      hl(s, 0, H-0.26, W, GOLD, 0.025);
+      CATS.forEach(function(c, i) {
+        px(s, 0.22+i*2.9, H-0.2, 0.14, 0.14, c.d, c.acc, 1.5);
+        s.addText('[' + c.label + '] ' + c.k, {x:0.42+i*2.9, y:H-0.22, w:2.5, h:0.18,
+          fontSize:8, bold:true, color:c.acc, fontFace:'Courier New'});
+      });
+      s.addText('LIFE MILESTONE  GAME MAP v2', {x:W-4.0, y:H-0.22, w:3.8, h:0.18,
+        fontSize:8, color:MUTED, align:'right', fontFace:'Courier New'});
+    }
+
+    // output
+    st.textContent = '// SAVING GAME FILE...'; await tick();
+    var blob = await pres.write({outputType: 'blob'});
+    var url  = URL.createObjectURL(blob);
+    var a    = document.createElement('a');
+    a.href     = url;
+    a.download = '人生里程碑_遊戲通關版v2.pptx';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { URL.revokeObjectURL(url); document.body.removeChild(a); }, 3000);
+    st.textContent = 'GAME SAVED!  ->  人生里程碑_遊戲通關版v2.pptx';
+    btn.disabled = false;
+
+  } catch(e) {
+    console.error(e);
+    st.textContent = 'ERROR: ' + e.message;
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>

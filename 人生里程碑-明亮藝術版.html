@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>人生里程碑 PPTX 產生器 — 明亮藝術版</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,sans-serif;background:#F7F3EE;color:#1B1A2E;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2.5rem 1.5rem;}
+  .card{background:#fff;border-radius:20px;padding:2.5rem 2rem;max-width:520px;width:100%;box-shadow:0 2px 24px rgba(0,0,0,0.07);}
+  .eyebrow{font-size:10px;letter-spacing:3px;color:#B09A6E;margin-bottom:10px;}
+  h1{font-size:26px;font-weight:600;color:#1B1A2E;line-height:1.3;margin-bottom:6px;}
+  .sub{font-size:13px;color:#8A8499;margin-bottom:1.8rem;}
+  .palette{display:flex;gap:8px;margin-bottom:1.8rem;}
+  .dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.8rem;}
+  .stat{background:#F7F3EE;border-radius:12px;padding:0.9rem 1rem;}
+  .sl{font-size:10px;color:#B09A6E;letter-spacing:1px;margin-bottom:3px;}
+  .sv{font-size:22px;font-weight:600;color:#1B1A2E;}
+  .ss{font-size:10px;color:#8A8499;}
+  .style-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.8rem;}
+  .pill{font-size:11px;padding:5px 14px;border-radius:20px;border:1.5px solid;}
+  button{width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:600;background:#1B1A2E;color:#F7F3EE;border:none;cursor:pointer;transition:opacity 0.2s;}
+  button:hover:not(:disabled){opacity:0.88;}
+  button:disabled{opacity:0.45;cursor:default;}
+  #status{text-align:center;font-size:12px;color:#8A8499;margin-top:10px;min-height:1.4em;}
+</style>
+</head>
+<body>
+<div class="card">
+  <p class="eyebrow">LIFE MILESTONE TEMPLATE</p>
+  <h1>人生里程碑 PPT<br>明亮藝術版</h1>
+  <p class="sub">20 歲 — 32 歲 · 雜誌風藝術排版 · LinkedIn 適用</p>
+
+  <div class="palette">
+    <div class="dot" style="background:#E8D5B0;color:#8A6A2A" title="生活">生</div>
+    <div class="dot" style="background:#F2C4C0;color:#8A2E2A" title="工作">工</div>
+    <div class="dot" style="background:#BFD9CC;color:#2A5C45" title="學習">學</div>
+    <div class="dot" style="background:#C8D4F0;color:#2A3E7A" title="健康">健</div>
+    <div class="dot" style="background:#E0CAE8;color:#5A2A70" title="裝飾">+</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="sl">SLIDES</div><div class="sv">15</div><div class="ss">頁投影片</div></div>
+    <div class="stat"><div class="sl">YEARS</div><div class="sv">13</div><div class="ss">20 ~ 32 歲</div></div>
+    <div class="stat"><div class="sl">MONTHS</div><div class="sv">156</div><div class="ss">可編輯月份格</div></div>
+    <div class="stat"><div class="sl">CATEGORIES</div><div class="sv">4</div><div class="ss">生活工作學習健康</div></div>
+  </div>
+
+  <div class="style-row">
+    <div class="pill" style="border-color:#D4A843;color:#8A6A2A;background:#FDF6E8">暖白底 · 奶油色調</div>
+    <div class="pill" style="border-color:#7A6ECC;color:#3A2E8A;background:#EEEAF8">手感幾何裝飾</div>
+    <div class="pill" style="border-color:#4A8C6E;color:#2A5C45;background:#EBF4EF">大字排版</div>
+  </div>
+
+  <button id="btn" onclick="generate()">⬇ 生成並下載 人生里程碑.pptx</button>
+  <p id="status">點擊按鈕開始生成（約需 5–10 秒）</p>
+</div>
+
+<script>
+function tick(){return new Promise(r=>setTimeout(r,20));}
+
+async function generate(){
+  const btn=document.getElementById('btn');
+  const st=document.getElementById('status');
+  btn.disabled=true;
+
+  // ── Palette ──
+  const W=13.33, H=7.5;
+  const BG='FBF8F3';          // warm cream
+  const CARD='FFFFFF';
+  const CARDB='EDE8E0';
+  const NAVY='1B1A2E';
+  const GOLD='C8973A';
+  const GOLDL='E8D5A3';
+  const MUTED='A09898';
+  const LINE='DDD8D0';
+
+  // Category: label, fill (light), accent, text dark
+  const CATS=[
+    {key:'生活', fill:'F5ECD8', accent:'C8973A', textD:'6B4E1A', textL:'A87830', dot:'D4A843'},
+    {key:'工作', fill:'FAE8E7', accent:'C85A52', textD:'7A2A26', textL:'C85A52', dot:'E07870'},
+    {key:'學習', fill:'DFF0E8', accent:'3A8C64', textD:'1A5C3A', textL:'3A8C64', dot:'5AAF85'},
+    {key:'健康', fill:'DCE8F5', accent:'3A5CA8', textD:'1A3068', textL:'3A5CA8', dot:'6080CC'},
+  ];
+  const MONTHS=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  const MNUM=['01','02','03','04','05','06','07','08','09','10','11','12'];
+
+  const pres=new PptxGenJS();
+  pres.layout='LAYOUT_WIDE';
+
+  const bgFill=s=>s.addShape('rect',{x:0,y:0,w:W,h:H,fill:{color:BG},line:{type:'none'}});
+
+  // decorative corner block
+  const cornerDeco=(s,color='EDE8E0')=>{
+    s.addShape('rect',{x:W-2.8,y:0,w:2.8,h:2.8,fill:{color:color},line:{type:'none'}});
+    s.addShape('rect',{x:W-2.4,y:0.4,w:2.0,h:2.0,fill:{color:'F5F0E8'},line:{type:'none'}});
+  };
+
+  // ── COVER ──
+  st.textContent='建立封面...'; await tick();
+  {
+    const s=pres.addSlide();
+    bgFill(s);
+
+    // left accent bar gradient effect (3 stacked)
+    s.addShape('rect',{x:0,y:0,w:0.55,h:H,fill:{color:'E8D5A3'},line:{type:'none'}});
+    s.addShape('rect',{x:0,y:0,w:0.32,h:H,fill:{color:GOLD},line:{type:'none'}});
+
+    // top-right deco block
+    cornerDeco(s,'E8E0D0');
+
+    // big background text (watermark style)
+    s.addText('MILESTONE',{x:0.7,y:4.8,w:10,h:2.0,fontSize:96,bold:true,color:'EDE8E0',fontFace:'Arial',transparency:0});
+
+    // cat color strips — bottom
+    CATS.forEach((c,i)=>{
+      s.addShape('rect',{x:0.75+i*2.65,y:H-0.65,w:2.45,h:0.5,fill:{color:c.fill},line:{color:c.accent,width:0.8}});
+      s.addShape('rect',{x:0.75+i*2.65,y:H-0.65,w:0.18,h:0.5,fill:{color:c.accent},line:{type:'none'}});
+      s.addText(c.key,{x:1.05+i*2.65,y:H-0.65,w:2.1,h:0.5,fontSize:12,bold:true,color:c.textD,valign:'middle',fontFace:'Microsoft JhengHei'});
+    });
+
+    s.addText('L I F E   M I L E S T O N E',{x:0.8,y:1.25,w:9,h:0.4,fontSize:11,color:GOLD,fontFace:'Arial',charSpacing:3});
+    s.addText('我的人生里程碑',{x:0.8,y:1.72,w:9.5,h:1.8,fontSize:60,bold:true,color:NAVY,fontFace:'Microsoft JhengHei'});
+
+    // horizontal rule
+    s.addShape('rect',{x:0.8,y:3.6,w:5.5,h:0.025,fill:{color:GOLD},line:{type:'none'}});
+    s.addShape('rect',{x:0.8,y:3.6,w:1.0,h:0.025,fill:{color:NAVY},line:{type:'none'}});
+
+    s.addText('20 歲  ——  32 歲',{x:0.8,y:3.78,w:7,h:0.7,fontSize:22,color:NAVY,fontFace:'Microsoft JhengHei'});
+    s.addText('記錄每一個重要的人生時刻',{x:0.8,y:4.5,w:8,h:0.42,fontSize:13,color:MUTED,fontFace:'Microsoft JhengHei'});
+    s.addText('My Life Milestone  ·  20 – 32 years old',{x:0.8,y:H-0.88,w:8,h:0.25,fontSize:9,color:'C0B8A8',fontFace:'Arial'});
+  }
+
+  // ── AGE SLIDES 20–32 ──
+  const MX=0.25, HDR=1.25, GAP=0.09, COLS=4, ROWS=3;
+  const cW=(W-2*MX-(COLS-1)*GAP)/COLS;
+  const cH=(H-HDR-0.12-(ROWS-1)*GAP)/ROWS;
+
+  for(let age=20;age<=32;age++){
+    st.textContent=`建立 ${age} 歲頁面 (${age-19}/13)...`; await tick();
+    const cat=CATS[(age-20)%4];
+    const s=pres.addSlide();
+    bgFill(s);
+
+    // header band
+    s.addShape('rect',{x:0,y:0,w:W,h:HDR-0.05,fill:{color:cat.fill},line:{type:'none'}});
+    // left bold accent
+    s.addShape('rect',{x:0,y:0,w:0.42,h:HDR-0.05,fill:{color:cat.accent},line:{type:'none'}});
+    // top-right small deco
+    s.addShape('rect',{x:W-1.5,y:0,w:1.5,h:HDR-0.05,fill:{color:'rgba(255,255,255,0.4)'},line:{type:'none'}});
+
+    // age number
+    s.addText(`${age}`,{x:0.6,y:0.04,w:2.1,h:0.96,fontSize:62,bold:true,color:cat.textD,fontFace:'Arial'});
+    s.addText('歲',{x:2.45,y:0.54,w:0.55,h:0.42,fontSize:16,bold:true,color:cat.textL,fontFace:'Microsoft JhengHei'});
+    s.addText(`人生第 ${age-19} 個章節  ·  ${age} years old`,{x:3.1,y:0.52,w:7,h:0.36,fontSize:11,color:cat.textL,fontFace:'Microsoft JhengHei'});
+    s.addText('MY LIFE MILESTONE',{x:W-3.2,y:0.1,w:3.0,h:0.3,fontSize:8,color:cat.accent,align:'right',charSpacing:1,fontFace:'Arial'});
+
+    // separator
+    s.addShape('rect',{x:0,y:HDR-0.05,w:W,h:0.028,fill:{color:cat.accent},line:{type:'none'}});
+
+    // 12 month cells
+    MONTHS.forEach((month,idx)=>{
+      const col=idx%COLS, row=Math.floor(idx/COLS);
+      const x=MX+col*(cW+GAP), y=HDR+row*(cH+GAP);
+
+      // card shadow effect (offset shape)
+      s.addShape('rect',{x:x+0.04,y:y+0.05,w:cW,h:cH,fill:{color:CARDB},line:{type:'none'}});
+      // card
+      s.addShape('rect',{x,y,w:cW,h:cH,fill:{color:CARD},line:{color:LINE,width:0.4}});
+      // top accent strip
+      s.addShape('rect',{x,y,w:cW,h:0.22,fill:{color:cat.fill},line:{type:'none'}});
+      // month number badge
+      s.addShape('rect',{x:x+0.1,y:y+0.04,w:0.32,h:0.14,fill:{color:cat.accent},line:{type:'none'}});
+      s.addText(MNUM[idx],{x:x+0.1,y:y+0.04,w:0.32,h:0.14,fontSize:8,bold:true,color:'FFFFFF',align:'center',valign:'middle',fontFace:'Arial'});
+      s.addText(month,{x:x+0.48,y:y+0.04,w:cW-0.62,h:0.16,fontSize:10,bold:true,color:cat.textD,align:'right',fontFace:'Microsoft JhengHei'});
+
+      // editable area
+      s.addText('· 輸入本月記事',{x:x+0.14,y:y+0.29,w:cW-0.28,h:cH-0.38,fontSize:9.5,color:'C8C0B8',valign:'top',wrap:true,fontFace:'Microsoft JhengHei'});
+      // guide lines
+      [0.6,0.95,1.3].forEach(off=>{
+        if(off<cH-0.2) s.addShape('rect',{x:x+0.12,y:y+off,w:cW-0.24,h:0.008,fill:{color:'EDE8E0'},line:{type:'none'}});
+      });
+    });
+
+    s.addText(`${age} / 32`,{x:W-1.2,y:H-0.22,w:1.0,h:0.18,fontSize:8,color:MUTED,align:'right',fontFace:'Arial'});
+  }
+
+  // ── MILESTONE SUMMARY ──
+  st.textContent='建立里程碑總覽...'; await tick();
+  {
+    const s=pres.addSlide();
+    bgFill(s);
+
+    // header
+    s.addShape('rect',{x:0,y:0,w:W,h:1.05,fill:{color:NAVY},line:{type:'none'}});
+    s.addShape('rect',{x:0,y:0,w:0.42,h:1.05,fill:{color:GOLD},line:{type:'none'}});
+    s.addText('人生里程碑總覽',{x:0.6,y:0.08,w:7,h:0.56,fontSize:22,bold:true,color:'FFFFFF',fontFace:'Microsoft JhengHei'});
+    s.addText('20 歲 — 32 歲  ·  生活 · 工作 · 學習 · 健康',{x:0.6,y:0.64,w:10,h:0.28,fontSize:10,color:GOLDL,fontFace:'Microsoft JhengHei'});
+
+    const LW=0.82, GX=0.2+LW, GY=1.12;
+    const GW=W-0.28-LW, GH=H-GY-0.22;
+    const NY=13, yW=GW/NY;
+    const HDH=0.36, rH=(GH-HDH)/4;
+
+    // year header row
+    for(let i=0;i<NY;i++){
+      const age=20+i, x=GX+i*yW;
+      const even=i%2===0;
+      s.addShape('rect',{x:x+0.02,y:GY,w:yW-0.04,h:HDH,fill:{color:even?NAVY:'2E2C4A'},line:{type:'none'}});
+      s.addText(`${age}`,{x:x+0.02,y:GY,w:yW-0.04,h:HDH,fontSize:9,bold:true,color:GOLDL,align:'center',valign:'middle',fontFace:'Arial'});
+    }
+
+    // category rows
+    CATS.forEach((cat,ci)=>{
+      const ry=GY+HDH+ci*rH;
+      // label
+      s.addShape('rect',{x:0.2,y:ry+0.03,w:LW-0.04,h:rH-0.06,fill:{color:cat.fill},line:{color:cat.accent,width:1}});
+      s.addShape('rect',{x:0.2,y:ry+0.03,w:0.12,h:rH-0.06,fill:{color:cat.accent},line:{type:'none'}});
+      s.addText(cat.key,{x:0.36,y:ry+0.03,w:LW-0.2,h:rH-0.06,fontSize:11,bold:true,color:cat.textD,align:'center',valign:'middle',fontFace:'Microsoft JhengHei'});
+
+      // year cells
+      for(let i=0;i<NY;i++){
+        const x=GX+i*yW;
+        const even=i%2===0;
+        s.addShape('rect',{x:x+0.02,y:ry+0.03,w:yW-0.04,h:rH-0.06,fill:{color:even?cat.fill:'FFFFFF'},line:{color:cat.accent,width:0.3}});
+        s.addText('點擊\n輸入',{x:x+0.02,y:ry+0.08,w:yW-0.04,h:rH-0.16,fontSize:6.5,color:cat.accent,align:'center',valign:'top',fontFace:'Microsoft JhengHei'});
+      }
+    });
+
+    // legend
+    CATS.forEach((c,i)=>{
+      const lx=0.22+i*2.65;
+      s.addShape('rect',{x:lx,y:H-0.2,w:0.18,h:0.1,fill:{color:c.accent},line:{type:'none'}});
+      s.addText(c.key,{x:lx+0.24,y:H-0.22,w:2.2,h:0.18,fontSize:9,color:c.textD,fontFace:'Microsoft JhengHei'});
+    });
+  }
+
+  st.textContent='輸出檔案中...'; await tick();
+  const blob=await pres.write({outputType:'blob'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='人生里程碑.pptx';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},3000);
+  st.textContent='✓ 下載完成！請在 PowerPoint 中開啟編輯。';
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

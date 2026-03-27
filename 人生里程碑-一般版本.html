@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>人生里程碑 PPTX 產生器</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+  body{font-family:-apple-system,sans-serif;background:#0D0C1D;color:#F0EEF8;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;margin:0;padding:2rem;}
+  h1{font-size:28px;font-weight:500;color:#C9A84C;margin:0 0 6px;}
+  p{color:#4E4C6A;font-size:14px;margin:0 0 2rem;}
+  button{font-size:15px;padding:12px 36px;border-radius:10px;background:transparent;color:#C9A84C;border:1.5px solid #C9A84C;cursor:pointer;transition:background 0.2s;}
+  button:hover:not(:disabled){background:#1A1933;}
+  button:disabled{opacity:0.5;cursor:default;}
+  #status{margin-top:1rem;font-size:13px;color:#4E4C6A;min-height:1.4em;}
+  .tags{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:2rem;}
+  .tag{font-size:12px;padding:4px 14px;border-radius:20px;border-width:0.5px;border-style:solid;}
+</style>
+</head>
+<body>
+<h1>人生里程碑 PPT 產生器</h1>
+<p>20 歲 — 32 歲 · 深色藝術風格 · LinkedIn 適用</p>
+<div class="tags">
+  <div class="tag" style="background:#1C1840;border-color:#7C6BE0;color:#B8AEFF">生活</div>
+  <div class="tag" style="background:#281816;border-color:#D97060;color:#FFBDB5">工作</div>
+  <div class="tag" style="background:#0B231E;border-color:#5ECFB4;color:#AAFFF0">學習</div>
+  <div class="tag" style="background:#131F09;border-color:#8DCF5A;color:#C8FFAA">健康</div>
+</div>
+<button id="btn" onclick="generate()">⬇ 生成並下載 人生里程碑.pptx</button>
+<p id="status"></p>
+<script>
+async function generate(){
+  const btn=document.getElementById('btn');
+  const st=document.getElementById('status');
+  btn.disabled=true;
+
+  const BG='0D0C1D',CARD='161429',CARDB='252242',FAINT='1E1C38';
+  const GOLD='C9A84C',GOLDL='E8D5A3',WHITE='F0EEF8',MUTED='4E4C6A';
+  const CATS=[
+    {key:'生活',bg:'1C1840',dark:'100E28',border:'7C6BE0',text:'B8AEFF'},
+    {key:'工作',bg:'281816',dark:'180E0C',border:'D97060',text:'FFBDB5'},
+    {key:'學習',bg:'0B231E',dark:'061410',border:'5ECFB4',text:'AAFFF0'},
+    {key:'健康',bg:'131F09',dark:'0B1506',border:'8DCF5A',text:'C8FFAA'},
+  ];
+  const MONTHS=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  const MNUM=['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const W=13.33,H=7.5;
+
+  const pres=new PptxGenJS();
+  pres.layout='LAYOUT_WIDE';
+
+  const bgFill=s=>s.addShape('rect',{x:0,y:0,w:W,h:H,fill:{color:BG},line:{type:'none'}});
+  const accent=s=>s.addShape('rect',{x:0,y:0,w:0.07,h:H,fill:{color:GOLD},line:{type:'none'}});
+  const hbar=(s,x,y,w,c=GOLD)=>s.addShape('rect',{x,y,w,h:0.022,fill:{color:c},line:{type:'none'}});
+
+  // ── COVER ──
+  st.textContent='建立封面...';
+  await tick();
+  {
+    const s=pres.addSlide();
+    bgFill(s);accent(s);
+    s.addShape('rect',{x:9.6,y:0,w:3.73,h:3.5,fill:{color:FAINT},line:{type:'none'}});
+    s.addShape('rect',{x:10.3,y:0.55,w:2.7,h:2.2,fill:{color:CARD},line:{color:CARDB,width:0.5}});
+    CATS.forEach((c,i)=>{
+      s.addShape('rect',{x:9.65+i*0.9,y:5.65,w:0.8,h:1.65,fill:{color:c.dark},line:{color:c.border,width:0.6}});
+      s.addText(c.key,{x:9.65+i*0.9,y:6.7,w:0.8,h:0.38,fontSize:10,color:c.text,align:'center',fontFace:'Microsoft JhengHei'});
+    });
+    s.addText('L I F E   M I L E S T O N E',{x:0.25,y:1.4,w:9,h:0.42,fontSize:11,color:GOLD,fontFace:'Arial',charSpacing:2});
+    s.addText('我的人生里程碑',{x:0.25,y:1.9,w:9,h:1.55,fontSize:58,bold:true,color:WHITE,fontFace:'Microsoft JhengHei'});
+    s.addText('20 歲  —  32 歲',{x:0.25,y:3.52,w:7,h:0.7,fontSize:26,color:GOLDL,fontFace:'Microsoft JhengHei'});
+    hbar(s,0.25,4.38,4.8);
+    s.addText('記錄每一個重要的人生時刻',{x:0.25,y:4.52,w:8,h:0.44,fontSize:14,color:MUTED,fontFace:'Microsoft JhengHei'});
+    s.addText('生活 · 工作 · 學習 · 健康',{x:0.25,y:5.0,w:7,h:0.38,fontSize:12,color:MUTED,fontFace:'Microsoft JhengHei'});
+    CATS.forEach((c,i)=>{
+      const px=0.25+i*2.1;
+      s.addShape('rect',{x:px,y:5.7,w:1.92,h:0.36,fill:{color:c.bg},line:{color:c.border,width:0.5}});
+      s.addShape('rect',{x:px+0.14,y:5.82,w:0.1,h:0.1,fill:{color:c.border},line:{type:'none'}});
+      s.addText(c.key,{x:px+0.3,y:5.7,w:1.5,h:0.36,fontSize:11,color:c.text,valign:'middle',fontFace:'Microsoft JhengHei'});
+    });
+    s.addText('My Life Milestone  ·  20 ~ 32 years old',{x:0.25,y:6.95,w:9,h:0.3,fontSize:9,color:'3A3858',fontFace:'Arial'});
+  }
+
+  // ── AGE SLIDES 20–32 ──
+  const MX=0.28,HDR=1.3,GAP=0.1,COLS=4,ROWS=3;
+  const cW=(W-2*MX-(COLS-1)*GAP)/COLS;
+  const cH=(H-HDR-0.15-(ROWS-1)*GAP)/ROWS;
+
+  for(let age=20;age<=32;age++){
+    st.textContent=`建立 ${age} 歲頁面...`;
+    await tick();
+    const s=pres.addSlide();
+    bgFill(s);accent(s);
+    s.addShape('rect',{x:0,y:0,w:W,h:HDR-0.06,fill:{color:FAINT},line:{type:'none'}});
+    s.addText(`${age}`,{x:0.2,y:0.04,w:1.8,h:0.98,fontSize:64,bold:true,color:GOLD,fontFace:'Arial'});
+    s.addText('歲',{x:1.68,y:0.68,w:0.6,h:0.42,fontSize:15,color:GOLDL,fontFace:'Microsoft JhengHei'});
+    s.addText(`人生第 ${age-19} 個章節`,{x:2.55,y:0.5,w:4.5,h:0.36,fontSize:12,color:MUTED,fontFace:'Microsoft JhengHei'});
+    s.addText(`${age} years old`,{x:W-3.1,y:0.08,w:2.9,h:0.36,fontSize:10,color:'2E2C4A',align:'right',fontFace:'Arial'});
+    hbar(s,0.28,HDR-0.06,W-0.56);
+    MONTHS.forEach((month,idx)=>{
+      const col=idx%COLS,row=Math.floor(idx/COLS);
+      const x=MX+col*(cW+GAP),y=HDR+row*(cH+GAP);
+      s.addShape('rect',{x,y,w:cW,h:cH,fill:{color:CARD},line:{color:CARDB,width:0.5}});
+      s.addShape('rect',{x,y,w:cW,h:0.27,fill:{color:FAINT},line:{type:'none'}});
+      s.addText(MNUM[idx],{x:x+0.1,y:y+0.03,w:0.42,h:0.21,fontSize:9,bold:true,color:GOLD,fontFace:'Arial'});
+      s.addText(month,{x:x+0.48,y:y+0.03,w:cW-0.6,h:0.21,fontSize:11,color:GOLDL,align:'right',fontFace:'Microsoft JhengHei'});
+      s.addText('· 輸入本月記事',{x:x+0.12,y:y+0.32,w:cW-0.24,h:cH-0.4,fontSize:10,color:MUTED,valign:'top',wrap:true,fontFace:'Microsoft JhengHei'});
+      [0.63,0.99,1.35].forEach(off=>{
+        if(off<cH-0.22) s.addShape('rect',{x:x+0.1,y:y+off,w:cW-0.2,h:0.009,fill:{color:CARDB},line:{type:'none'}});
+      });
+    });
+    s.addText(`${age} / 32`,{x:W-1.3,y:H-0.24,w:1.1,h:0.19,fontSize:9,color:'2A2848',align:'right',fontFace:'Arial'});
+  }
+
+  // ── MILESTONE SUMMARY ──
+  st.textContent='建立里程碑總覽...';
+  await tick();
+  {
+    const s=pres.addSlide();
+    bgFill(s);accent(s);
+    s.addShape('rect',{x:0,y:0,w:W,h:1.08,fill:{color:FAINT},line:{type:'none'}});
+    s.addText('人生里程碑總覽',{x:0.22,y:0.08,w:7,h:0.65,fontSize:24,bold:true,color:WHITE,fontFace:'Microsoft JhengHei'});
+    s.addText('20 歲 — 32 歲  ·  生活 · 工作 · 學習 · 健康',{x:0.22,y:0.7,w:10,h:0.3,fontSize:11,color:GOLD,fontFace:'Microsoft JhengHei'});
+    hbar(s,0.18,1.06,W-0.36);
+    const LW=0.78,GX=0.18+LW,GY=1.12;
+    const GW=W-0.3-LW,GH=H-GY-0.15;
+    const NY=13,yW=GW/NY;
+    const HDH=0.4,rH=(GH-HDH)/4;
+    for(let i=0;i<NY;i++){
+      const age=20+i,x=GX+i*yW;
+      s.addShape('rect',{x:x+0.02,y:GY,w:yW-0.04,h:HDH,fill:{color:FAINT},line:{color:CARDB,width:0.35}});
+      s.addText(`${age}`,{x:x+0.02,y:GY,w:yW-0.04,h:HDH,fontSize:10,bold:true,color:GOLDL,align:'center',valign:'middle',fontFace:'Arial'});
+    }
+    CATS.forEach((cat,ci)=>{
+      const ry=GY+HDH+ci*rH;
+      s.addShape('rect',{x:0.18,y:ry+0.025,w:LW-0.04,h:rH-0.05,fill:{color:cat.bg},line:{color:cat.border,width:0.75}});
+      s.addText(cat.key,{x:0.18,y:ry+0.025,w:LW-0.04,h:rH-0.05,fontSize:12,bold:true,color:cat.text,align:'center',valign:'middle',fontFace:'Microsoft JhengHei'});
+      for(let i=0;i<NY;i++){
+        const x=GX+i*yW;
+        s.addShape('rect',{x:x+0.02,y:ry+0.025,w:yW-0.04,h:rH-0.05,fill:{color:cat.dark},line:{color:cat.border,width:0.35}});
+        s.addText('點擊輸入',{x:x+0.03,y:ry+0.08,w:yW-0.07,h:rH-0.18,fontSize:7,color:cat.border,align:'center',valign:'top',fontFace:'Microsoft JhengHei'});
+      }
+    });
+    CATS.forEach((c,i)=>{
+      const lx=0.22+i*2.5;
+      s.addShape('rect',{x:lx,y:H-0.28,w:0.1,h:0.1,fill:{color:c.border},line:{type:'none'}});
+      s.addText(c.key,{x:lx+0.15,y:H-0.3,w:2.2,h:0.22,fontSize:9,color:c.text,fontFace:'Microsoft JhengHei'});
+    });
+  }
+
+  st.textContent='輸出檔案中...';
+  await tick();
+  const blob=await pres.write({outputType:'blob'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='人生里程碑.pptx';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},3000);
+  st.textContent='✓ 下載完成！請在 PowerPoint 中開啟。';
+  btn.disabled=false;
+}
+
+function tick(){return new Promise(r=>setTimeout(r,30));}
+</script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>人生里程碑 — 專業質感版</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F2F0EB;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2.5rem 1rem;}
+  .card{background:#FAFAF8;border-radius:4px;padding:2.8rem 2.4rem;max-width:480px;width:100%;border:1px solid #DDD8D0;}
+  .eyebrow{font-size:10px;letter-spacing:4px;color:#9A8F80;margin-bottom:1.2rem;font-weight:500;}
+  h1{font-size:24px;font-weight:600;color:#1A1814;line-height:1.3;margin-bottom:6px;letter-spacing:-0.3px;}
+  .sub{font-size:13px;color:#9A8F80;margin-bottom:2rem;letter-spacing:0.2px;}
+  hr{border:none;border-top:1px solid #DDD8D0;margin:1.8rem 0;}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#DDD8D0;border:1px solid #DDD8D0;margin-bottom:2rem;}
+  .stat{background:#FAFAF8;padding:1rem 1.1rem;}
+  .sl{font-size:9px;letter-spacing:2px;color:#9A8F80;margin-bottom:5px;font-weight:600;}
+  .sv{font-size:24px;font-weight:300;color:#1A1814;letter-spacing:-1px;margin-bottom:2px;}
+  .ss{font-size:11px;color:#9A8F80;}
+  .cats{display:flex;flex-direction:column;gap:8px;margin-bottom:2rem;}
+  .cat-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #DDD8D0;background:#FAFAF8;}
+  .cat-dot{width:10px;height:10px;flex-shrink:0;}
+  .cat-label{font-size:12px;font-weight:600;color:#1A1814;letter-spacing:0.5px;width:40px;}
+  .cat-desc{font-size:11px;color:#9A8F80;flex:1;}
+  button{width:100%;padding:14px;font-size:13px;font-weight:600;letter-spacing:2px;background:#1A1814;color:#F2F0EB;border:none;cursor:pointer;transition:opacity 0.2s;}
+  button:hover:not(:disabled){opacity:0.85;}
+  button:disabled{opacity:0.4;cursor:default;}
+  #status{text-align:center;font-size:11px;color:#9A8F80;margin-top:10px;min-height:1.4em;letter-spacing:0.5px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <p class="eyebrow">LIFE MILESTONE  ·  PROFESSIONAL EDITION</p>
+  <h1>人生里程碑 PPT<br>專業質感版</h1>
+  <p class="sub">20 歲 — 32 歲 · 典雅配色 · 適合 LinkedIn 發布</p>
+  <hr>
+  <div class="stats">
+    <div class="stat"><div class="sl">SLIDES</div><div class="sv">15</div><div class="ss">頁投影片</div></div>
+    <div class="stat"><div class="sl">YEARS</div><div class="sv">13</div><div class="ss">20 至 32 歲</div></div>
+    <div class="stat"><div class="sl">MONTHS</div><div class="sv">156</div><div class="ss">可編輯月份格</div></div>
+    <div class="stat"><div class="sl">CATEGORIES</div><div class="sv">4</div><div class="ss">生活工作學習健康</div></div>
+  </div>
+  <div class="cats">
+    <div class="cat-row"><div class="cat-dot" style="background:#8A7560"></div><span class="cat-label">生活</span><span class="cat-desc">日常紀錄 · 人際關係 · 重要里程</span></div>
+    <div class="cat-row"><div class="cat-dot" style="background:#4A6670"></div><span class="cat-label">工作</span><span class="cat-desc">職涯發展 · 成就項目 · 晉升轉職</span></div>
+    <div class="cat-row"><div class="cat-dot" style="background:#5A7050"></div><span class="cat-label">學習</span><span class="cat-desc">進修成長 · 技能習得 · 閱讀思考</span></div>
+    <div class="cat-row"><div class="cat-dot" style="background:#7A6080"></div><span class="cat-label">健康</span><span class="cat-desc">身心狀態 · 運動習慣 · 醫療記錄</span></div>
+  </div>
+  <hr>
+  <button id="btn" onclick="generate()">GENERATE &amp; DOWNLOAD</button>
+  <p id="status">點擊按鈕開始生成（約 5–10 秒）</p>
+</div>
+
+<script>
+function tick(){return new Promise(r=>setTimeout(r,20));}
+
+async function generate(){
+  const btn=document.getElementById('btn');
+  const st=document.getElementById('status');
+  btn.disabled=true;
+
+  const W=13.33, H=7.5;
+
+  // ── Palette ──
+  // All tones: warm ivory base, charcoal text, muted accent per section
+  const IVORY   = 'F7F5F0';
+  const IVORY2  = 'F0EDE6';
+  const IVORY3  = 'E8E4DC';
+  const RULE    = 'D0CBC0';
+  const CHARCOAL= '1A1814';
+  const SMOKE   = '8A8278';
+  const GHOST   = 'C8C2B8';
+
+  // 4 muted accent families (warm earth tones)
+  const CATS=[
+    {key:'生活', acc:'8A7560', light:'EDE8E0', mid:'C8B89A', textD:'5A4A36'},
+    {key:'工作', acc:'4A6670', light:'DDE8EC', mid:'8AB0B8', textD:'2A4450'},
+    {key:'學習', acc:'5A7050', light:'E0EBD8', mid:'96B888', textD:'38502A'},
+    {key:'健康', acc:'7A6080', light:'EAE0EE', mid:'B898C8', textD:'504060'},
+  ];
+
+  // Per-age: rotate through 4 accent colours, keep rest neutral
+  const AGE_ACC=['4A6670','5A7050','7A6080','8A7560','4A6670','5A7050','7A6080','8A7560','4A6670','5A7050','7A6080','8A7560','4A6670'];
+  const AGE_LIGHT=['DDE8EC','E0EBD8','EAE0EE','EDE8E0','DDE8EC','E0EBD8','EAE0EE','EDE8E0','DDE8EC','E0EBD8','EAE0EE','EDE8E0','DDE8EC'];
+  const AGE_DARK=['2A4450','38502A','504060','5A4A36','2A4450','38502A','504060','5A4A36','2A4450','38502A','504060','5A4A36','2A4450'];
+
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const MZH=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  const MNUM=['01','02','03','04','05','06','07','08','09','10','11','12'];
+
+  const pres=new PptxGenJS();
+  pres.layout='LAYOUT_WIDE';
+
+  const bgFill=(s,c=IVORY)=>s.addShape('rect',{x:0,y:0,w:W,h:H,fill:{color:c},line:{type:'none'}});
+  const rule=(s,x,y,w,c=RULE)=>s.addShape('rect',{x,y,w,h:0.012,fill:{color:c},line:{type:'none'}});
+
+  // ── COVER ──
+  st.textContent='Building cover slide...'; await tick();
+  {
+    const s=pres.addSlide();
+    bgFill(s,IVORY);
+
+    // right panel — dark charcoal block
+    s.addShape('rect',{x:8.0,y:0,w:W-8.0,h:H,fill:{color:CHARCOAL},line:{type:'none'}});
+    // subtle texture strip inside dark panel
+    s.addShape('rect',{x:8.0,y:0,w:0.04,h:H,fill:{color:'2E2C28'},line:{type:'none'}});
+
+    // right panel: category list
+    CATS.forEach((c,i)=>{
+      const y=1.8+i*1.18;
+      s.addShape('rect',{x:8.22,y,w:0.06,h:0.8,fill:{color:c.acc},line:{type:'none'}});
+      s.addText(c.key,{x:8.42,y:y+0.04,w:2.2,h:0.32,fontSize:13,bold:true,color:IVORY,fontFace:'Microsoft JhengHei'});
+      s.addShape('rect',{x:8.42,y:y+0.42,w:4.4,h:0.008,fill:{color:'303030'},line:{type:'none'}});
+      const descs={生活:'Life · Relationships · Moments',工作:'Career · Achievements · Growth',學習:'Learning · Skills · Insight',健康:'Health · Wellness · Mindfulness'};
+      s.addText(descs[c.key],{x:8.42,y:y+0.5,w:4.6,h:0.24,fontSize:9,color:SMOKE,fontFace:'Arial',charSpacing:0.5});
+    });
+
+    // right panel bottom text
+    s.addText('20 — 32',{x:8.22,y:6.6,w:4.8,h:0.55,fontSize:28,bold:true,color:'2E2C28',fontFace:'Arial'});
+
+    // left panel content
+    // top eyebrow
+    s.addText('LIFE MILESTONE',{x:0.65,y:1.05,w:7,h:0.3,fontSize:9,color:SMOKE,fontFace:'Arial',charSpacing:4,bold:true});
+    rule(s,0.65,1.42,6.8);
+
+    // main title
+    s.addText('我的',{x:0.65,y:1.55,w:7,h:0.95,fontSize:52,bold:false,color:SMOKE,fontFace:'Microsoft JhengHei'});
+    s.addText('人生里程碑',{x:0.65,y:2.35,w:7.1,h:1.45,fontSize:52,bold:true,color:CHARCOAL,fontFace:'Microsoft JhengHei'});
+
+    rule(s,0.65,3.88,5.5,GHOST);
+
+    s.addText('記錄每一個重要的人生時刻',{x:0.65,y:4.05,w:7,h:0.42,fontSize:13,color:SMOKE,fontFace:'Microsoft JhengHei'});
+    s.addText('Document every significant moment of your life',{x:0.65,y:4.52,w:7,h:0.3,fontSize:10,color:GHOST,fontFace:'Arial'});
+
+    rule(s,0.65,5.1,5.5);
+    s.addText('Professional Edition  ·  2024',{x:0.65,y:5.25,w:6,h:0.26,fontSize:9,color:GHOST,fontFace:'Arial',charSpacing:1});
+  }
+
+  // ── AGE SLIDES 20–32 ──
+  const MX=0.24, HDR=1.18, GAP=0.1, COLS=4, ROWS=3;
+  const cW=(W-2*MX-(COLS-1)*GAP)/COLS;
+  const cH=(H-HDR-0.14-(ROWS-1)*GAP)/ROWS;
+
+  for(let age=20;age<=32;age++){
+    st.textContent=`Building age ${age} (${age-19}/13)...`; await tick();
+    const acc=AGE_ACC[age-20];
+    const light=AGE_LIGHT[age-20];
+    const dark=AGE_DARK[age-20];
+    const s=pres.addSlide();
+    bgFill(s,IVORY);
+
+    // left sidebar — thin accent
+    s.addShape('rect',{x:0,y:0,w:0.28,h:H,fill:{color:light},line:{type:'none'}});
+    s.addShape('rect',{x:0,y:0,w:0.06,h:H,fill:{color:acc},line:{type:'none'}});
+
+    // header area
+    s.addShape('rect',{x:0.28,y:0,w:W-0.28,h:HDR-0.02,fill:{color:IVORY2},line:{type:'none'}});
+    rule(s,0.28,HDR-0.02,W-0.28,acc);
+
+    // age number + label
+    s.addText(`${age}`,{x:0.45,y:0.04,w:1.9,h:0.94,fontSize:60,bold:true,color:CHARCOAL,fontFace:'Georgia'});
+    s.addText('歲',{x:2.18,y:0.55,w:0.55,h:0.42,fontSize:16,color:acc,fontFace:'Microsoft JhengHei',bold:true});
+
+    // vertical rule between number and meta
+    s.addShape('rect',{x:2.88,y:0.18,w:0.012,h:0.7,fill:{color:RULE},line:{type:'none'}});
+
+    s.addText(`人生第 ${age-19} 個章節`,{x:3.08,y:0.18,w:5.5,h:0.36,fontSize:12,color:CHARCOAL,fontFace:'Microsoft JhengHei',bold:true});
+    s.addText(`${age} years old  ·  Chapter ${age-19} of 13`,{x:3.08,y:0.56,w:6,h:0.28,fontSize:10,color:SMOKE,fontFace:'Arial'});
+
+    // top-right page indicator
+    s.addText(`${String(age-19).padStart(2,'0')} / 13`,{x:W-2.2,y:0.34,w:2.0,h:0.36,fontSize:11,color:GHOST,align:'right',fontFace:'Georgia'});
+
+    // 12 month cards
+    MONTHS.forEach((month,idx)=>{
+      const col=idx%COLS, row=Math.floor(idx/COLS);
+      const x=MX+0.28+col*(cW+GAP), y=HDR+row*(cH+GAP);
+
+      // card
+      s.addShape('rect',{x,y,w:cW,h:cH,fill:{color:'FFFFFF'},line:{color:IVORY3,width:0.5}});
+      // top border accent
+      s.addShape('rect',{x,y,w:cW,h:0.04,fill:{color:acc},line:{type:'none'}});
+      // header row
+      s.addShape('rect',{x,y:y+0.04,w:cW,h:0.24,fill:{color:IVORY2},line:{type:'none'}});
+
+      // month number
+      s.addText(MNUM[idx],{x:x+0.1,y:y+0.05,w:0.38,h:0.21,fontSize:9,bold:true,color:acc,fontFace:'Georgia'});
+      // vertical rule
+      s.addShape('rect',{x:x+0.5,y:y+0.08,w:0.008,h:0.14,fill:{color:RULE},line:{type:'none'}});
+      // month name ZH
+      s.addText(MZH[idx],{x:x+0.52,y:y+0.05,w:1.1,h:0.2,fontSize:9,color:CHARCOAL,fontFace:'Microsoft JhengHei',bold:true});
+      // month name EN
+      s.addText(month,{x:x+cW-1.35,y:y+0.07,w:1.28,h:0.16,fontSize:7.5,color:GHOST,align:'right',fontFace:'Arial'});
+
+      // editable text area placeholder
+      s.addText('輸入本月記事',{x:x+0.12,y:y+0.35,w:cW-0.24,h:0.22,fontSize:9,color:GHOST,fontFace:'Microsoft JhengHei'});
+      s.addText('',{x:x+0.12,y:y+0.55,w:cW-0.24,h:cH-0.65,fontSize:9.5,color:CHARCOAL,valign:'top',wrap:true,fontFace:'Microsoft JhengHei'});
+
+      // ruled lines
+      [0.54,0.82,1.1,1.38].forEach(off=>{
+        if(y+off+0.1<y+cH) s.addShape('rect',{x:x+0.1,y:y+off,w:cW-0.2,h:0.008,fill:{color:IVORY3},line:{type:'none'}});
+      });
+    });
+
+    // footer rule + page ref
+    rule(s,0.28,H-0.25,W-0.36,IVORY3);
+    s.addText(`AGE ${age}  ·  LIFE MILESTONE`,{x:0.45,y:H-0.22,w:6,h:0.18,fontSize:7.5,color:GHOST,fontFace:'Arial',charSpacing:1});
+    s.addText(`${age-19} / 13`,{x:W-1.4,y:H-0.22,w:1.2,h:0.18,fontSize:7.5,color:GHOST,align:'right',fontFace:'Georgia'});
+  }
+
+  // ── MILESTONE SUMMARY ──
+  st.textContent='Building milestone summary...'; await tick();
+  {
+    const s=pres.addSlide();
+    bgFill(s,IVORY);
+
+    // top header band
+    s.addShape('rect',{x:0,y:0,w:W,h:1.0,fill:{color:CHARCOAL},line:{type:'none'}});
+    s.addShape('rect',{x:0,y:0,w:W,h:0.06,fill:{color:'8A7560'},line:{type:'none'}});
+
+    s.addText('LIFE MILESTONE',{x:0.35,y:0.08,w:5,h:0.25,fontSize:8,color:SMOKE,fontFace:'Arial',charSpacing:3,bold:true});
+    s.addText('人生里程碑總覽',{x:0.35,y:0.3,w:8,h:0.5,fontSize:20,bold:true,color:IVORY,fontFace:'Microsoft JhengHei'});
+    s.addText('20 — 32  ·  Life · Career · Learning · Health',{x:0.35,y:0.75,w:10,h:0.2,fontSize:8.5,color:SMOKE,fontFace:'Arial',charSpacing:0.5});
+
+    const LW=0.9, GX=0.25+LW, GY=1.08;
+    const GW=W-0.3-LW, GH=H-GY-0.26;
+    const NY=13, yW=GW/NY;
+    const HDH=0.44, rH=(GH-HDH)/4;
+
+    // year header cells
+    for(let i=0;i<NY;i++){
+      const age=20+i, x=GX+i*yW;
+      const acc=AGE_ACC[i];
+      const even=i%2===0;
+      s.addShape('rect',{x:x+0.01,y:GY,w:yW-0.02,h:HDH,fill:{color:even?IVORY2:IVORY3},line:{color:RULE,width:0.4}});
+      s.addShape('rect',{x:x+0.01,y:GY,w:yW-0.02,h:0.05,fill:{color:acc},line:{type:'none'}});
+      s.addText(`${age}`,{x:x+0.01,y:GY+0.08,w:yW-0.02,h:HDH-0.1,fontSize:9.5,bold:true,color:CHARCOAL,align:'center',valign:'middle',fontFace:'Georgia'});
+    }
+
+    // category rows
+    CATS.forEach((cat,ci)=>{
+      const ry=GY+HDH+ci*rH;
+      // label cell
+      s.addShape('rect',{x:0.25,y:ry+0.02,w:LW-0.04,h:rH-0.04,fill:{color:cat.light},line:{color:cat.mid,width:0.5}});
+      s.addShape('rect',{x:0.25,y:ry+0.02,w:0.06,h:rH-0.04,fill:{color:cat.acc},line:{type:'none'}});
+      s.addText(cat.key,{x:0.35,y:ry+0.02,w:LW-0.14,h:rH-0.04,fontSize:11,bold:true,color:cat.textD,align:'center',valign:'middle',fontFace:'Microsoft JhengHei'});
+
+      // year cells
+      for(let i=0;i<NY;i++){
+        const x=GX+i*yW;
+        const even=i%2===0;
+        s.addShape('rect',{x:x+0.01,y:ry+0.02,w:yW-0.02,h:rH-0.04,fill:{color:even?cat.light:'FFFFFF'},line:{color:cat.mid,width:0.3}});
+        s.addText('點擊輸入',{x:x+0.01,y:ry+0.12,w:yW-0.02,h:rH-0.28,fontSize:6,color:cat.mid,align:'center',valign:'top',fontFace:'Microsoft JhengHei'});
+      }
+    });
+
+    // footer
+    rule(s,0.25,H-0.28,W-0.4,IVORY3);
+    CATS.forEach((c,i)=>{
+      const lx=0.3+i*2.9;
+      s.addShape('rect',{x:lx,y:H-0.22,w:0.22,h:0.08,fill:{color:c.acc},line:{type:'none'}});
+      s.addText(`${c.key}`,{x:lx+0.3,y:H-0.24,w:2.4,h:0.16,fontSize:8.5,color:SMOKE,fontFace:'Microsoft JhengHei',bold:true});
+    });
+    s.addText('Life Milestone  ·  Professional Edition',{x:W-4,y:H-0.24,w:3.8,h:0.16,fontSize:8,color:GHOST,align:'right',fontFace:'Arial'});
+  }
+
+  st.textContent='Exporting file...'; await tick();
+  const blob=await pres.write({outputType:'blob'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='人生里程碑_專業版.pptx';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},3000);
+  st.textContent='Download complete. Open in PowerPoint to start editing.';
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

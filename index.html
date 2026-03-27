@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ducky Huang</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F8F6F1;--surface:#FFFFFF;--surface2:#F2EFE8;
+  --border:#E0D9CE;--border2:#C8BFB0;
+  --ink:#1C1917;--ink2:#57534E;--ink3:#A8A29E;
+  --gold:#B8913A;--gold2:#D4A853;
+  --gold-pale:#F5EDD8;--gold-mid:#E8D5A8;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Inter',-apple-system,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:210px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh;
+  padding:2.4rem 1.5rem;
+}
+.logo{font-family:var(--serif);font-size:40px;font-weight:300;color:var(--ink);letter-spacing:1px;line-height:1;margin-bottom:.25rem;}
+.logo span{color:var(--gold);}
+.logo-sub{font-size:11px;color:var(--ink3);letter-spacing:3px;text-transform:uppercase;margin-bottom:2.4rem;}
+nav{display:flex;flex-direction:column;gap:2px;}
+.nav-link{
+  font-size:15px;font-weight:400;color:var(--ink2);
+  padding:.6rem .85rem;border-radius:6px;text-decoration:none;
+  letter-spacing:.2px;transition:all .18s;border-left:2px solid transparent;
+}
+.nav-link:hover{background:var(--gold-pale);color:var(--ink);}
+.nav-link.active{background:var(--gold-pale);color:var(--gold);border-left-color:var(--gold);font-weight:500;}
+.sidebar-footer{
+  margin-top:auto;padding-top:1.4rem;
+  border-top:1px solid var(--border);
+  display:flex;flex-direction:column;gap:11px;
+}
+.social-link{
+  display:flex;align-items:center;gap:9px;
+  font-size:13px;color:var(--ink3);text-decoration:none;transition:color .15s;
+}
+.social-link:hover{color:var(--gold);}
+.social-icon{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;min-width:0;}
+
+/* ── HERO ── */
+.hero{padding:3.5rem 4rem 2.8rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:3rem;}
+.hero-photo{
+  width:110px;height:110px;flex-shrink:0;border-radius:50%;
+  border:3px solid var(--gold-mid);overflow:hidden;
+  background:var(--surface2);display:flex;align-items:center;justify-content:center;position:relative;
+}
+.hero-photo img{width:100%;height:100%;object-fit:cover;}
+.hero-photo-placeholder{font-family:var(--serif);font-size:38px;font-weight:300;color:var(--gold);}
+.hero-ring{position:absolute;inset:-6px;border-radius:50%;border:1px solid var(--gold-mid);pointer-events:none;}
+.hero-text{flex:1;}
+.hero-title{font-size:12px;font-weight:400;color:var(--ink3);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:.35rem;}
+.hero-name{font-family:var(--serif);font-size:40px;font-weight:400;color:var(--ink);line-height:1.15;margin-bottom:.4rem;}
+.hero-name em{color:var(--gold);font-style:normal;}
+.hero-bio{font-size:15px;font-weight:300;color:var(--ink2);line-height:1.85;max-width:560px;margin-bottom:1.1rem;}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.4rem;}
+.tag{font-size:12px;font-weight:400;color:var(--gold);background:var(--gold-pale);padding:5px 14px;border:1px solid var(--gold-mid);border-radius:20px;letter-spacing:.3px;}
+
+/* 證照展示 */
+.cert-bar{
+  display:flex;flex-direction:row;flex-wrap: wrap;gap:12px;
+  padding:.85rem 1.4rem;background:var(--surface2);
+  border:1px solid var(--border);border-radius:10px;
+  width:100%;max-width:100%;align-items:center;
+}
+.cert-item{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:var(--ink2);
+  background:var(--surface);border:1px solid var(--border);
+  padding:7px 16px;border-radius:6px;white-space:nowrap;
+}
+.cert-icon{font-size:15px;}
+.cert-issued{font-size:11px;color:var(--ink3);margin-left:2px;}
+
+/* ── SECTION ── */
+.section{padding:3rem 4rem;}
+.section-header{display:flex;align-items:baseline;gap:16px;margin-bottom:2.2rem;}
+.section-title{font-family:var(--serif);font-size:28px;font-weight:400;color:var(--ink);}
+.section-line{flex:1;height:1px;background:var(--border);}
+.section-count{font-size:12px;color:var(--ink3);letter-spacing:2px;}
+
+/* ── GRID ── */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.8rem;}
+
+/* ── CARD ── */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:border-color .2s,transform .2s;
+}
+.card:hover{border-color:var(--gold-mid);transform:translateY(-3px);}
+
+/* Thumbnail — full bleed, 16:9 */
+.card-thumb{
+  width:100%;aspect-ratio:16/9;
+  background:var(--surface2);
+  overflow:hidden;position:relative;
+  border-bottom:1px solid var(--border);
+}
+.card-thumb img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+/* iframe thumb — scale content to fill completely */
+.card-thumb iframe{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  border:none;pointer-events:none;
+}
+/* placeholder thumb */
+.thumb-placeholder{
+  width:100%;height:100%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+}
+.thumb-icon{
+  width:52px;height:52px;border-radius:12px;
+  background:var(--gold-pale);border:1px solid var(--gold-mid);
+  display:flex;align-items:center;justify-content:center;font-size:24px;
+}
+.thumb-label{font-size:12px;color:var(--ink3);letter-spacing:1px;}
+
+/* Card body */
+.card-body{padding:1.3rem 1.5rem 1.5rem;flex:1;display:flex;flex-direction:column;}
+.card-badge{
+  display:inline-block;font-size:11px;font-weight:500;
+  color:var(--gold);background:var(--gold-pale);
+  padding:3px 12px;border-radius:20px;border:1px solid var(--gold-mid);
+  margin-bottom:.7rem;letter-spacing:.5px;
+}
+.card-title{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--ink);margin-bottom:.5rem;line-height:1.3;}
+.card-desc{font-size:14px;color:var(--ink2);line-height:1.75;font-weight:300;flex:1;margin-bottom:1.3rem;}
+.card-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:1rem;border-top:1px solid var(--border);
+}
+.card-meta{font-size:13px;color:var(--ink3);}
+.card-link{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:14px;font-weight:500;color:var(--gold);
+  text-decoration:none;letter-spacing:.3px;
+  padding:8px 20px;border:1px solid var(--gold-mid);
+  border-radius:7px;background:var(--gold-pale);transition:all .15s;
+}
+.card-link:hover{background:var(--gold-mid);color:#6A4820;}
+.card-link svg{width:13px;height:13px;}
+
+/* ── ABOUT ── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.8rem;}
+.about-block.row-span2 {
+  grid-row: span 2;
+  align-self: stretch;
+}
+.about-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem 1.6rem;}
+.about-block-title{
+  font-size:15px;font-weight:500;color:var(--ink3);
+  letter-spacing:2.5px;text-transform:uppercase;margin-bottom:1.1rem;
+  display:flex;align-items:center;gap:8px;
+}
+.about-block-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.skill-row{display:flex;flex-wrap:wrap;gap:8px;}
+.skill-tag{font-size:13px;color:var(--ink2);padding:5px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;}
+.exp-item{padding:.75rem 0;border-bottom:1px solid var(--border);}
+.exp-item:last-child{border-bottom:none;padding-bottom:0;}
+.exp-role{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:3px;}
+.exp-place{font-size:12.5px;color:var(--ink3);}
+
+/* ── FOOTER ── */
+.page-footer{
+  padding:1.8rem 4rem;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--surface);
+}
+.page-footer p{font-size:12.5px;color:var(--ink3);}
+.page-footer a{color:var(--gold);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="logo">D<span>.</span></div>
+  <div class="logo-sub">Ducky Huang</div>
+  <nav>
+    <a class="nav-link active" href="#home">首頁</a>
+    <a class="nav-link" href="#projects">我的作品</a>
+    <a class="nav-link" href="#about">關於我</a>
+  </nav>
+  <div class="sidebar-footer">
+    <a class="social-link" href="mailto:your@email.com">
+      <div class="social-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+      </div>
+      Email
+    </a>
+    <a class="social-link" href="https://www.linkedin.com/in/ducky-huang" target="_blank">
+      <div class="social-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2zm2-6a2 2 0 110 4 2 2 0 010-4z"/></svg>
+      </div>
+      LinkedIn
+    </a>
+    <a class="social-link" href="https://github.com/bb25379" target="_blank">
+      <div class="social-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+      </div>
+      GitHub
+    </a>
+    <a class="social-link" href="https://ithelp.ithome.com.tw/users/20172743/ironman/8243" target="_blank">
+      <div class="social-icon">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      iThome 鐵人賽
+    </a>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-photo">
+      <!-- 替換照片：<img src="photo.jpg" alt="Ducky"> -->
+      <img src="photo.jpg" alt="Ducky">
+      <div class="hero-photo-placeholder">D</div>
+      <div class="hero-ring"></div>
+    </div>
+    <div class="hero-text">
+      <div class="hero-title">Cloud Architecture&amp; Project Management · Taiwan</div>
+      <h1 class="hero-name">Huang <em>Ducky</em></h1>
+      <p class="hero-bio">
+        熱愛技術與分享的雲端工程師/專案經理，專注於 Cloud、DevOps、專案管理等，對世界充滿好奇心，
+        喜歡把複雜的概念轉化成有趣、實用的作品與工具。
+      </p>
+      <div class="hero-tags">
+        <span class="tag">Cloud Architecture</span>
+        <span class="tag">CDN/DNS/Networking</span>
+        <span class="tag">Project Management</span>
+        <span class="tag">iThome 鐵人賽得獎</span>
+      </div>
+
+      <!-- 證照展示 -->
+      <div class="cert-bar">
+        <div class="cert-item">
+          <span class="cert-icon">🏅</span>
+          AWS Certified Solutions Architect
+          <span class="cert-issued">· 2024-2027</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-icon">🏅</span>
+          Professional Cloud Architect Certification
+          <span class="cert-issued">· 2024-2027</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-icon">🏅</span>
+          CKA: Certified Kubernetes Administrator
+          <span class="cert-issued">· 2024-2026</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-icon">🏅</span>
+          AWS Certified Advanced Networking – Specialty
+          <span class="cert-issued">· 2025-2028</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-icon">🏅</span>
+          Certified ScrumMaster (CSM)
+          <span class="cert-issued">· 2025-2027</span>
+        </div>
+        <div class="cert-item">
+          <span class="cert-icon">🏅</span>
+          Project Management Professional (PMP)
+          <span class="cert-issued">· 2026-2029</span>
+        </div>
+        <!-- 依實際證照更新 -->
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="section" id="projects">
+    <div class="section-header">
+      <h2 class="section-title">我的作品</h2>
+      <div class="section-line"></div>
+      <span class="section-count">4 Projects</span>
+    </div>
+    <div class="grid">
+
+      <!-- CARD 1: SSL 遊戲 -->
+      <div class="card">
+        <div class="card-thumb">
+          <!--
+            請把遊戲截圖存成 ssl-cover.jpg 放在同一資料夾。
+            若圖片不存在，會自動顯示佔位樣式。
+          -->
+          <img
+            src="ssl-cover.jpg"
+            alt="SSL 業務大亨"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-placeholder" style="display:none;">
+            <div class="thumb-icon">🎮</div>
+            <div class="thumb-label">SSL 業務大亨</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-badge">互動遊戲</span>
+          <h3 class="card-title">SSL 業務大亨</h3>
+          <p class="card-desc">以輕鬆遊戲的方式認識 SSL 憑證業務與銷售邏輯。在模擬情境中挑戰業績目標，邊玩邊學SSL類型概念。</p>
+          <div class="card-footer">
+            <span class="card-meta">Web Game · SSL</span>
+            <a class="card-link" href="https://bb25379.github.io/SSL-game/" target="_blank">
+              去遊玩
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: 人生里程碑 PPT — 自訂封面圖 -->
+      <div class="card">
+        <div class="card-thumb">
+          <!--
+            請把 Image 6（插圖）存成 milestone-cover.jpg 放在同一資料夾。
+            如果圖片不存在，會自動顯示佔位樣式。
+          -->
+          <img
+            src="milestone-cover.jpg"
+            alt="人生里程碑 PPT"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-placeholder" style="display:none;">
+            <div class="thumb-icon">📋</div>
+            <div class="thumb-label">人生里程碑 PPT 系列</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-badge">設計工具</span>
+          <h3 class="card-title">人生里程碑 PPT</h3>
+          <p class="card-desc">10 種風格的「人生里程碑」 PowerPoint 範本產生器，涵蓋深色藝術、北歐極簡、遊戲通關等主題，適合作為個人紀錄或是在 LinkedIn 分享個人成長歷程。</p>
+          <div class="card-footer">
+            <span class="card-meta">10 Editions · Age 20–32</span>
+            <a class="card-link" href="milestone.html" target="_blank">
+              去下載
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3: iThome 鐵人賽 — 可替換圖 -->
+      <div class="card">
+        <div class="card-thumb">
+          <!--
+            可替換成截圖：<img src="ithome-cover.jpg" alt="iThome">
+            目前顯示佔位樣式
+          -->
+          <img
+            src="ithome-cover.jpg"
+            alt="iThome"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-placeholder">
+            <div class="thumb-icon">🏆</div>
+            <div class="thumb-label">iThome 鐵人賽 得獎文章</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-badge">技術文章</span>
+          <h3 class="card-title">iThome 鐵人賽作品</h3>
+          <p class="card-desc">於2025年參加 iThome 鐵人賽的 30 天系列文章比賽，寫下這篇「從一個網站的誕生，看懂 AWS 架構與自動化的全流程！」，深入淺出地分享雲端與 DevOps 實戰經驗，獲得本屆【Build on AWS組】優選肯定。</p>
+          <div class="card-footer">
+            <span class="card-meta">30 篇 · 2025鐵人賽文章</span>
+            <a class="card-link" href="https://ithelp.ithome.com.tw/users/20172743/ironman/8243" target="_blank">
+              去看看
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4: Terraform — 可替換圖 -->
+      <div class="card">
+        <div class="card-thumb">
+          <!--
+            可替換成截圖：<img src="terraform-cover.jpg" alt="Terraform">
+          -->
+          <div class="thumb-placeholder">
+            <div class="thumb-icon">🏗</div>
+            <div class="thumb-label">Coming Soon</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-badge">基礎建設</span>
+          <h3 class="card-title">其他專案</h3>
+          <p class="card-desc">等待更新中</p>
+          <!-- 原本的範例：
+          使用 Terraform 實作的雲端基礎建設自動化專案。涵蓋 IaC 最佳實踐、模組化架構設計與 CI/CD 整合。-->
+          <div class="card-footer">
+            <span class="card-meta">規劃中</span>
+            <!-- 原本的範例：
+            Terraform · IaC · -->
+            <a class="card-link" href="https://github.com/bb25379" target="_blank">
+              去看看
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="section-header">
+      <h2 class="section-title">關於我</h2>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-block">
+        <div class="about-block-title">技術專長 Technical Expertise</div>
+        <div class="skill-row">
+          <span class="skill-tag">AWS</span>
+          <span class="skill-tag">Google Cloud</span>
+          <span class="skill-tag">Azure</span>
+          <span class="skill-tag">Ali Cloud</span>
+          <span class="skill-tag">Tencent Cloud</span>
+          <span class="skill-tag">Haiwei Cloud</span>
+          <span class="skill-tag">Akamai</span>
+          <span class="skill-tag">Imperva</span>
+          <span class="skill-tag">Kubernetes</span>
+          <span class="skill-tag">CI/CD</span>
+          <span class="skill-tag">Shell Script</span>
+          <span class="skill-tag">GitHub Actions</span>
+          <span class="skill-tag">Scrum Master</span>
+        </div>
+      </div>
+      <div class="about-block row-span2">
+        <div class="about-block-title">工作經歷 Professional Experience</div>
+        <div class="exp-item">
+          <div class="exp-role">Project Manager</div>
+          <div class="exp-place">GAIA INFORMATION TECHNOLOGY · 2025 – Present</div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-role">Cloud Engineer</div>
+          <div class="exp-place">GAIA INFORMATION TECHNOLOGY · 2023 – 2025</div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-role">Middle Management</div>
+          <div class="exp-place">Food manufacturing industry · 2017 – 2023</div>
+        </div>
+      </div>
+      <div class="about-block">
+        <div class="about-block-title">跨領域技術專長/興趣 Multidisciplinary Skills & Interests</div>
+        <div class="skill-row">
+          <span class="skill-tag">Web Design</span>
+          <span class="skill-tag">Computer Hardware Maintenance</span>
+          <span class="skill-tag">Lean Management</span>
+          <span class="skill-tag">Digital Illustration</span>
+          <span class="skill-tag">Car Maintenance</span>
+          <span class="skill-tag">Motorcycle Maintenance</span>
+          <span class="skill-tag">Professional Baking</span>
+        </div>
+      </div>
+      <div class="about-block">
+        <div class="about-block-title">學歷與證照 Education & Certifications</div>
+        <div class="exp-item">
+          <div class="exp-role">AWS Certified Solutions Architect</div>
+          <div class="exp-place">2024-2027</div>
+          <div class="exp-role">AWS Certified Advanced Networking – Specialty</div>
+          <div class="exp-place">2025-2028</div>
+          <div class="exp-role">Professional Cloud Architect Certification</div>
+          <div class="exp-place">2024-2027</div>
+          <div class="exp-role">CKA: Certified Kubernetes Administrator</div>
+          <div class="exp-place">2024-2026</div>
+          <div class="exp-role">Certified ScrumMaster (CSM)</div>
+          <div class="exp-place">2025-2027</div>
+          <div class="exp-role">Project Management Professional (PMP)</div>
+          <div class="exp-place">2026-2029</div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-role">國立臺灣大學 · 食品科學系</div>
+          <div class="exp-place">2012-2016</div>
+        </div>
+      </div>
+      <div class="about-block">
+        <div class="about-block-title">近期動態 Latest Updates</div>
+        <div class="exp-item">
+          <div class="exp-role">人生里程碑 PPT 系列發布</div>
+          <div class="exp-place">2026/03 · 10 種PPT模板</div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-role">SSL 業務大亨遊戲上線</div>
+          <div class="exp-place">2026/02 · Side Project</div>
+        </div>
+        <div class="exp-item">
+          <div class="exp-role">iThome 鐵人賽得獎</div>
+          <div class="exp-place">2025/12 · 優選</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="page-footer">
+    <p>© 2024 Ducky Huang · Built with care</p>
+    <p>
+      <a href="https://www.linkedin.com/in/ducky-huang" target="_blank">LinkedIn</a>
+      &ensp;·&ensp;
+      <a href="https://github.com/bb25379" target="_blank">GitHub</a>
+      &ensp;·&ensp;
+      <a href="https://ithelp.ithome.com.tw/users/20172743/ironman/8243" target="_blank">iThome</a>
+    </p>
+  </footer>
+
+</main>
+
+<script>
+/* SSL iframe 動態縮放：讓 1280px 內容等比填滿 card-thumb */
+function scaleSSL(){
+  var frame = document.getElementById('ssl-frame');
+  if(!frame) return;
+  var thumb = frame.parentElement;
+  var s = thumb.clientWidth / 1280;
+  frame.style.setProperty('--s', s);
+  frame.style.transform = 'scale('+s+')';
+  frame.style.height = (thumb.clientHeight / s) + 'px';
+}
+scaleSSL();
+window.addEventListener('resize', scaleSSL);
+
+/* 滾動時更新側欄 active */
+var sections = ['home','projects','about'];
+var links = document.querySelectorAll('.nav-link');
+var obs = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      links.forEach(function(l){l.classList.remove('active');});
+      var a = document.querySelector('.nav-link[href="#'+e.target.id+'"]');
+      if(a) a.classList.add('active');
+    }
+  });
+},{threshold:0.35});
+sections.forEach(function(id){
+  var el = document.getElementById(id);
+  if(el) obs.observe(el);
+});
+</script>
+</body>
+</html>

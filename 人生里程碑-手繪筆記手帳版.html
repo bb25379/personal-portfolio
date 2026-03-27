@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>人生里程碑 — 手繪筆記手帳版</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:Georgia,'Times New Roman',serif;background:#F5EDD8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2.5rem 1rem;}
+  .card{background:#FEFAF2;border-radius:4px;padding:2.8rem 2.4rem;max-width:500px;width:100%;border:1.5px solid #D4C4A0;box-shadow:4px 4px 0 #D4C4A0,8px 8px 0 rgba(180,160,120,0.2);}
+  .tape{height:22px;background:rgba(178,214,200,0.7);margin:-2.8rem -2.4rem 1.6rem;display:flex;align-items:center;padding:0 1.2rem;font-size:10px;color:#5A7A6A;letter-spacing:2px;font-family:'Courier New',monospace;}
+  .title-wrap{position:relative;margin-bottom:6px;}
+  h1{font-size:22px;font-weight:700;color:#3A2E22;line-height:1.35;font-family:Georgia,serif;}
+  .underline-draw{height:3px;background:repeating-linear-gradient(90deg,#C4956A 0,#C4956A 8px,transparent 8px,transparent 12px);margin:4px 0 8px;width:80%;}
+  .sub{font-size:12px;color:#8A7A60;margin-bottom:1.8rem;font-family:'Courier New',monospace;}
+  .sticker-row{display:flex;gap:10px;margin-bottom:1.6rem;flex-wrap:wrap;}
+  .sticker{font-size:20px;background:#FEFAF2;border:1.5px solid #D4C4A0;padding:6px 10px;transform:rotate(-3deg);box-shadow:2px 2px 0 #D4C4A0;}
+  .sticker:nth-child(2){transform:rotate(2deg);}
+  .sticker:nth-child(3){transform:rotate(-1deg);}
+  .sticker:nth-child(4){transform:rotate(3deg);}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.6rem;}
+  .stat{background:#F5EDD8;border:1.5px dashed #C4956A;padding:.85rem 1rem;position:relative;}
+  .stat::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:30px;height:10px;background:rgba(178,214,200,0.8);}
+  .sl{font-size:9px;color:#8A7A60;letter-spacing:2px;margin-bottom:4px;font-family:'Courier New',monospace;}
+  .sv{font-size:24px;font-weight:700;color:#3A2E22;letter-spacing:-1px;}
+  .ss{font-size:10px;color:#8A7A60;font-family:'Courier New',monospace;}
+  .cats{display:flex;flex-direction:column;gap:8px;margin-bottom:1.8rem;}
+  .cat-row{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#FEFAF2;border:1.5px solid #D4C4A0;position:relative;overflow:hidden;}
+  .cat-row::after{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+  .cat-row:nth-child(1)::after{background:#F2A7B0;}
+  .cat-row:nth-child(2)::after{background:#C4956A;}
+  .cat-row:nth-child(3)::after{background:#8BB8A0;}
+  .cat-row:nth-child(4)::after{background:#B8A0C8;}
+  .cat-ico{font-size:16px;width:24px;}
+  .cat-k{font-size:12px;font-weight:700;color:#3A2E22;width:36px;font-family:Georgia,serif;}
+  .cat-d{font-size:10px;color:#8A7A60;flex:1;font-family:'Courier New',monospace;}
+  hr{border:none;border-top:1.5px dashed #D4C4A0;margin:1.4rem 0;}
+  button{width:100%;padding:14px;font-size:13px;font-weight:700;letter-spacing:1px;background:#C4956A;color:#FEFAF2;border:2px solid #3A2E22;cursor:pointer;font-family:Georgia,serif;box-shadow:3px 3px 0 #3A2E22;transition:transform .1s,box-shadow .1s;}
+  button:hover:not(:disabled){transform:translate(1px,1px);box-shadow:2px 2px 0 #3A2E22;}
+  button:disabled{opacity:.45;cursor:default;}
+  #status{text-align:center;font-size:11px;color:#8A7A60;margin-top:10px;min-height:1.4em;font-family:'Courier New',monospace;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="tape">✦  MY JOURNAL  ✦  BUJO EDITION  ✦</div>
+  <div class="title-wrap">
+    <h1>人生里程碑✍<br>手繪筆記手帳版</h1>
+    <div class="underline-draw"></div>
+  </div>
+  <p class="sub">// bullet journal · collage · age 20–32 ♡</p>
+
+  <div class="sticker-row">
+    <div class="sticker">🌸</div>
+    <div class="sticker">📎</div>
+    <div class="sticker">✨</div>
+    <div class="sticker">🎀</div>
+    <div class="sticker">🍃</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="sl">PAGES</div><div class="sv">15</div><div class="ss">// 頁日記</div></div>
+    <div class="stat"><div class="sl">YEARS</div><div class="sv">13</div><div class="ss">// 20 → 32 歲</div></div>
+    <div class="stat"><div class="sl">MONTHS</div><div class="sv">156</div><div class="ss">// 月份記事格</div></div>
+    <div class="stat"><div class="sl">THEMES</div><div class="sv">4</div><div class="ss">// 生活工作學習健康</div></div>
+  </div>
+
+  <div class="cats">
+    <div class="cat-row"><span class="cat-ico">🌸</span><span class="cat-k">生活</span><span class="cat-d">日常 · 人際關係 · 美好時刻</span></div>
+    <div class="cat-row"><span class="cat-ico">✏️</span><span class="cat-k">工作</span><span class="cat-d">職涯成長 · 成就 · 晉升</span></div>
+    <div class="cat-row"><span class="cat-ico">📚</span><span class="cat-k">學習</span><span class="cat-d">技能習得 · 進修 · 閱讀</span></div>
+    <div class="cat-row"><span class="cat-ico">🌿</span><span class="cat-k">健康</span><span class="cat-d">身心狀態 · 運動 · 療癒</span></div>
+  </div>
+  <hr>
+  <button id="btn" onclick="generate()">♡ 生成手帳 &amp; 下載 PPTX</button>
+  <p id="status">// 點擊開始製作你的手帳 (約 5–10 秒)</p>
+</div>
+
+<script>
+function tick(){return new Promise(r=>setTimeout(r,20));}
+
+async function generate(){
+  const btn=document.getElementById('btn');
+  const st=document.getElementById('status');
+  btn.disabled=true;
+
+  const W=13.33, H=7.5;
+
+  // ── Palette (warm journal tones) ──
+  const KRAFT  ='F5EDD8'; // kraft paper bg
+  const CREAM  ='FEFAF2'; // page surface
+  const CREAM2 ='F8F2E4'; // slightly deeper cream
+  const LINEN  ='EDE0C8'; // linen / aged paper
+  const RULE   ='DDD0B8'; // ruled line
+  const GRID   ='E8DCC8'; // grid line
+  const BROWN  ='3A2E22'; // ink / dark text
+  const MOCHA  ='8A7A60'; // muted text
+  const RUST   ='C4956A'; // warm rust accent
+
+  // Per-age rotating themes
+  const THEMES=[
+    {name:'春日粉',   tape:'F2A7B0', tapeD:'B86878', bg:CREAM,  card:'FFF5F7', deco:'FAD4DC', icon:'🌸', sticker:'🎀'},
+    {name:'薰衣草',   tape:'C8B0DC', tapeD:'806898', bg:'FAF5FF', card:'F8F0FF', deco:'E8D8F4', icon:'💜', sticker:'🌙'},
+    {name:'抹茶綠',   tape:'8BB8A0', tapeD:'4A7860', bg:'F5FAF7', card:'EEF8F2', deco:'C8E8D8', icon:'🍃', sticker:'🌿'},
+    {name:'奶油黃',   tape:'E8C870', tapeD:'A08830', bg:'FFFDF0', card:'FFFAE8', deco:'F8EDBC', icon:'🌼', sticker:'⭐'},
+    {name:'天空藍',   tape:'A8CCDC', tapeD:'507890', bg:'F0F8FF', card:'E8F4FB', deco:'C8E0F0', icon:'☁️', sticker:'🫧'},
+    {name:'蜜桃橘',   tape:'F0B898', tapeD:'A86840', bg:'FFF5EE', card:'FFF0E4', deco:'FAD8C0', icon:'🍑', sticker:'🧡'},
+    {name:'玫瑰粉',   tape:'F0A0A8', tapeD:'A85860', bg:'FFF5F5', card:'FFEEEE', deco:'F8CCD0', icon:'🌹', sticker:'💕'},
+    {name:'薄荷藍',   tape:'90C8C0', tapeD:'408880', bg:'F0FAFA', card:'E8F8F8', deco:'BEE8E4', icon:'🪴', sticker:'💚'},
+    {name:'雲霧灰',   tape:'C0B8D0', tapeD:'807888', bg:'F8F6FA', card:'F2EEF8', deco:'DCD8EC', icon:'🌫', sticker:'🩶'},
+    {name:'楓糖棕',   tape:'C89870', tapeD:'886038', bg:'FEF8F0', card:'FDF2E4', deco:'ECD8BC', icon:'🍂', sticker:'☕'},
+    {name:'丁香紫',   tape:'B898C8', tapeD:'785888', bg:'FAF5FF', card:'F5EEFF', deco:'E0CFF0', icon:'🪻', sticker:'🔮'},
+    {name:'草莓紅',   tape:'F09898', tapeD:'A05050', bg:'FFF5F5', card:'FFF0F0', deco:'FAC8C8', icon:'🍓', sticker:'❤️'},
+    {name:'向日葵',   tape:'F0D060', tapeD:'A08010', bg:'FFFEEE', card:'FFFBDC', deco:'F8ECA0', icon:'🌻', sticker:'💛'},
+  ];
+
+  const CATS=[
+    {key:'生活', icon:'🌸', acc:'F2A7B0', dark:'8A4858', bg:'FFF5F7'},
+    {key:'工作', icon:'✏️', acc:'C4956A', dark:'6A4828', bg:'FFF8F0'},
+    {key:'學習', icon:'📚', acc:'8BB8A0', dark:'3A6850', bg:'F0F8F4'},
+    {key:'健康', icon:'🌿', acc:'B8A0C8', dark:'604878', bg:'F8F0FF'},
+  ];
+
+  const MZH=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  const MEN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const MNUM=['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const MDECO=['🌷','🌼','🌸','🌺','🌻','🌹','☘️','🍁','🍂','❄️','⛄','✨'];
+  const MSTAMP=['★','♡','✿','◎','✦','◇','♪','✾','◉','♧','✤','☆'];
+
+  const pres=new PptxGenJS();
+  pres.layout='LAYOUT_WIDE';
+
+  // ── helpers ──
+  const bg=(s,c=CREAM)=>s.addShape('rect',{x:0,y:0,w:W,h:H,fill:{color:c},line:{type:'none'}});
+
+  // Grid paper background
+  const gridBg=(s,gc=GRID)=>{
+    bg(s,KRAFT);
+    // draw light grid lines
+    const gSz=0.32;
+    for(let gx=0;gx<W;gx+=gSz) s.addShape('rect',{x:gx,y:0,w:0.008,h:H,fill:{color:gc},line:{type:'none'}});
+    for(let gy=0;gy<H;gy+=gSz) s.addShape('rect',{x:0,y:gy,w:W,h:0.008,fill:{color:gc},line:{type:'none'}});
+  };
+
+  // Washi tape strip
+  const tape=(s,x,y,w,h,c,angle=0)=>{
+    s.addShape('rect',{x,y,w,h,fill:{color:c+'CC'},line:{color:c,width:0.3}});
+    // texture dots on tape
+    for(let ti=0;ti<Math.floor(w/0.4);ti++){
+      s.addShape('ellipse',{x:x+0.1+ti*0.4,y:y+h*0.3,w:0.08,h:0.08,fill:{color:c+'88'},line:{type:'none'}});
+    }
+  };
+
+  // Sticky note
+  const sticky=(s,x,y,w,h,c,tapeC)=>{
+    // shadow
+    s.addShape('rect',{x:x+0.08,y:y+0.08,w,h,fill:{color:LINEN},line:{type:'none'}});
+    // body
+    s.addShape('rect',{x,y,w,h,fill:{color:c},line:{color:RULE,width:0.5}});
+    // fold corner
+    s.addShape('rect',{x:x+w-0.28,y,w:0.28,h:0.28,fill:{color:KRAFT},line:{type:'none'}});
+    // tape at top
+    tape(s,x+w/2-0.5,y-0.08,1.0,0.18,tapeC);
+  };
+
+  // Photo frame (Polaroid style)
+  const polaroid=(s,x,y,w,h,bgC,tapeC)=>{
+    // shadow
+    s.addShape('rect',{x:x+0.1,y:y+0.1,w,h:h+0.45,fill:{color:LINEN},line:{type:'none'}});
+    // white frame
+    s.addShape('rect',{x,y,w,h:h+0.45,fill:{color:CREAM},line:{color:RULE,width:0.5}});
+    // photo area
+    s.addShape('rect',{x:x+0.12,y:y+0.12,w:w-0.24,h,fill:{color:bgC},line:{type:'none'}});
+    // tape
+    tape(s,x+w/2-0.45,y-0.1,0.9,0.18,tapeC);
+  };
+
+  // Hand-drawn arrow (two rects forming arrow)
+  const arrow=(s,x,y,w,c=MOCHA)=>{
+    s.addShape('rect',{x,y:y+0.04,w:w-0.14,h:0.06,fill:{color:c},line:{type:'none'}});
+    s.addShape('rect',{x:x+w-0.2,y,w:0.14,h:0.14,fill:{color:c},line:{type:'none'}});
+    s.addShape('rect',{x:x+w-0.14,y:y+0.035,w:0.14,h:0.07,fill:{color:c},line:{type:'none'}});
+  };
+
+  // Dashed border
+  const dashedBox=(s,x,y,w,h,c=RULE)=>{
+    s.addShape('rect',{x,y,w,h,fill:{color:'transparent'},line:{color:c,width:1,dashType:'dash'}});
+  };
+
+  // ═══════════════ COVER ═══════════════
+  st.textContent='✍ 繪製封面...'; await tick();
+  {
+    const s=pres.addSlide();
+    gridBg(s);
+
+    // main page area (like an open notebook)
+    s.addShape('rect',{x:0.28,y:0.22,w:W-0.56,h:H-0.44,fill:{color:CREAM},line:{color:RULE,width:1}});
+    // notebook spine line
+    s.addShape('rect',{x:1.6,y:0.22,w:0.025,h:H-0.44,fill:{color:LINEN},line:{type:'none'}});
+    // hole punches
+    [1.2,2.5,3.8,5.1,6.4].forEach(py=>{
+      s.addShape('ellipse',{x:0.62,y:py,w:0.22,h:0.22,fill:{color:KRAFT},line:{color:RULE,width:1}});
+    });
+
+    // ruled lines on right page
+    for(let rl=1;rl<17;rl++){
+      s.addShape('rect',{x:1.72,y:0.22+rl*0.44,w:W-2.0,h:0.01,fill:{color:GRID},line:{type:'none'}});
+    }
+
+    // washi tape strips (decorative)
+    tape(s,0.28,0.22,1.32,0.26,'F2A7B0');
+    tape(s,2.8,0.22,3.5,0.22,'8BB8A0');
+    tape(s,W-3.0,0.22,3.0,0.24,'C8B0DC');
+    tape(s,0.28,H-0.46,2.4,0.24,'E8C870');
+    tape(s,W-2.6,H-0.46,2.34,0.24,'A8CCDC');
+
+    // Polaroid photo frames (left page decoration)
+    polaroid(s,0.38,0.68,1.12,0.82,'E8D8F4','C8B0DC');
+    s.addText('memories',{x:0.38,y:1.56,w:1.12,h:0.38,fontSize:8,color:MOCHA,align:'center',fontFace:'Georgia',italic:true});
+    polaroid(s,0.38,2.18,1.12,0.78,'C8E8D8','8BB8A0');
+    s.addText('moments',{x:0.38,y:3.02,w:1.12,h:0.38,fontSize:8,color:MOCHA,align:'center',fontFace:'Georgia',italic:true});
+    polaroid(s,0.38,3.62,1.12,0.80,'FAD4DC','F2A7B0');
+    s.addText('life',{x:0.38,y:4.48,w:1.12,h:0.38,fontSize:8,color:MOCHA,align:'center',fontFace:'Georgia',italic:true});
+
+    // doodle stars scattered
+    ['1.88,0.52','3.2,0.48','5.6,0.55','8.4,0.44','11.2,0.52','12.4,0.48'].forEach(pos=>{
+      const [px2,py]=pos.split(',').map(Number);
+      s.addText('✦',{x:px2,y:py,w:0.3,h:0.3,fontSize:11,color:RUST,fontFace:'Arial'});
+    });
+
+    // Main title area
+    s.addText('My Life',{x:1.88,y:0.88,w:11.0,h:0.95,fontSize:48,bold:false,color:MOCHA,fontFace:'Georgia',italic:true});
+    s.addText('Milestone',{x:1.88,y:1.72,w:11.0,h:1.15,fontSize:52,bold:true,color:BROWN,fontFace:'Georgia'});
+
+    // hand-drawn underline (two wobbly rects)
+    s.addShape('rect',{x:1.90,y:2.94,w:7.2,h:0.055,fill:{color:RUST},line:{type:'none'}});
+    s.addShape('rect',{x:2.10,y:3.01,w:6.5,h:0.03,fill:{color:'E8C870'},line:{type:'none'}});
+
+    // subtitle
+    s.addText('20 歲 ──── 32 歲',{x:1.92,y:3.12,w:7,h:0.55,fontSize:20,color:BROWN,fontFace:'Georgia'});
+    s.addText('記錄每一個珍貴的人生片刻 ♡',{x:1.92,y:3.72,w:8,h:0.4,fontSize:13,color:MOCHA,fontFace:'Georgia',italic:true});
+
+    // arrow pointing to sub text
+    arrow(s,1.92,4.22,1.2,RUST);
+    s.addText('my personal journal',{x:3.22,y:4.12,w:5,h:0.36,fontSize:12,color:RUST,fontFace:'Georgia',italic:true});
+
+    // category sticky notes row
+    CATS.forEach((c,i)=>{
+      const sx=1.92+i*2.65, sy=4.7;
+      sticky(s,sx,sy,2.4,0.82,c.bg,c.acc);
+      s.addText(`${c.icon}  ${c.key}`,{x:sx+0.1,y:sy+0.06,w:2.2,h:0.36,fontSize:13,bold:true,color:c.dark,fontFace:'Microsoft JhengHei'});
+      s.addText(i===0?'日常 · 人際 · 美好':i===1?'職涯 · 成就 · 晉升':i===2?'技能 · 進修 · 閱讀':'身心 · 運動 · 療癒',
+        {x:sx+0.1,y:sy+0.44,w:2.2,h:0.3,fontSize:9,color:c.dark,fontFace:'Microsoft JhengHei'});
+    });
+
+    // page number
+    s.addText('— 1 —',{x:W/2-0.8,y:H-0.36,w:1.6,h:0.26,fontSize:10,color:MOCHA,align:'center',fontFace:'Georgia',italic:true});
+    s.addText('♡  life is beautiful  ♡',{x:W-4.5,y:H-0.36,w:4.2,h:0.24,fontSize:9,color:MOCHA,align:'right',fontFace:'Georgia',italic:true});
+  }
+
+  // ═══════════════ AGE SLIDES 20–32 ═══════════════
+  const MX=0.24, HDR=1.34, GAP=0.1, COLS=4, ROWS=3;
+  const cW=(W-2*MX-(COLS-1)*GAP)/COLS;
+  const cH=(H-HDR-0.18-(ROWS-1)*GAP)/ROWS;
+
+  for(let age=20;age<=32;age++){
+    const li=age-20, T=THEMES[li];
+    st.textContent=`✍ 手繪 ${age} 歲頁面 (${li+1}/13)...`; await tick();
+    const s=pres.addSlide();
+    gridBg(s,GRID);
+
+    // page surface
+    s.addShape('rect',{x:0.2,y:0.18,w:W-0.4,h:H-0.36,fill:{color:T.bg},line:{color:RULE,width:0.5}});
+
+    // ruled lines on page
+    for(let rl=1;rl<22;rl++){
+      s.addShape('rect',{x:0.22,y:0.18+rl*0.33,w:W-0.44,h:0.008,fill:{color:GRID},line:{type:'none'}});
+    }
+
+    // left margin line (like a notebook)
+    s.addShape('rect',{x:1.42,y:0.18,w:0.018,h:H-0.36,fill:{color:T.tape+'88'},line:{type:'none'}});
+
+    // ── HEADER AREA ──
+    // top washi tape (full width)
+    tape(s,0.2,0.18,W-0.4,0.28,T.tape);
+
+    // age + title block (left of header)
+    s.addText(`${T.icon}`,{x:0.3,y:0.5,w:0.7,h:0.68,fontSize:28,valign:'middle',fontFace:'Arial'});
+    s.addText(`${age}`,{x:0.92,y:0.42,w:1.35,h:0.72,fontSize:46,bold:true,color:BROWN,fontFace:'Georgia'});
+    s.addText('歲',{x:2.14,y:0.76,w:0.42,h:0.36,fontSize:14,bold:true,color:T.tapeD,fontFace:'Microsoft JhengHei'});
+
+    // divider
+    s.addShape('rect',{x:2.68,y:0.52,w:0.018,h:0.6,fill:{color:RULE},line:{type:'none'}});
+
+    s.addText(`人生第 ${li+1} 個章節`,{x:2.84,y:0.5,w:5.5,h:0.36,fontSize:13,bold:true,color:BROWN,fontFace:'Microsoft JhengHei'});
+    s.addText(`Chapter ${li+1} of 13  ·  ${T.name}`,{x:2.84,y:0.88,w:5.5,h:0.28,fontSize:10,color:MOCHA,fontFace:'Georgia',italic:true});
+
+    // decorative arrow + sticker top right
+    s.addText(T.sticker,{x:W-1.8,y:0.38,w:0.72,h:0.72,fontSize:28,align:'center',fontFace:'Arial'});
+    tape(s,W-1.6,0.3,1.35,0.2,T.tape);
+    s.addText(`${age} yrs`,{x:W-1.58,y:0.52,w:1.3,h:0.28,fontSize:10,color:T.tapeD,align:'center',fontFace:'Georgia',italic:true});
+
+    // separator rule (hand-drawn wavy look: 2 offset lines)
+    s.addShape('rect',{x:0.22,y:HDR-0.06,w:W-0.44,h:0.025,fill:{color:T.tape},line:{type:'none'}});
+    s.addShape('rect',{x:0.3,y:HDR-0.03,w:W-0.6,h:0.012,fill:{color:T.tape+'88'},line:{type:'none'}});
+
+    // ── 12 MONTH CARDS ──
+    MZH.forEach((mZh,idx)=>{
+      const col=idx%COLS, row=Math.floor(idx/COLS);
+      const x=MX+col*(cW+GAP), y=HDR+row*(cH+GAP);
+      const T2=THEMES[(li+idx)%THEMES.length]; // slightly varied tapes
+
+      // card shadow (paper shadow)
+      s.addShape('rect',{x:x+0.07,y:y+0.08,w:cW,h:cH,fill:{color:LINEN},line:{type:'none'}});
+      // card body
+      s.addShape('rect',{x,y,w:cW,h:cH,fill:{color:CREAM},line:{color:RULE,width:0.8}});
+      // ruled lines inside card
+      [0.44,0.68,0.92,1.16,1.40].forEach(off=>{
+        if(off<cH-0.18) s.addShape('rect',{x:x+0.1,y:y+off,w:cW-0.2,h:0.008,fill:{color:GRID},line:{type:'none'}});
+      });
+
+      // washi tape on top of card (alternating)
+      const tapeColors=[T.tape,T2.tape,THEMES[(li+idx+2)%13].tape];
+      tape(s,x+cW/2-0.55,y-0.09,1.1,0.2,tapeColors[idx%3]);
+
+      // month header
+      s.addShape('rect',{x,y:y+0.0,w:cW,h:0.34,fill:{color:T.deco},line:{type:'none'}});
+      // month number badge (like a stamp)
+      dashedBox(s,x+0.1,y+0.06,0.34,0.22,T.tapeD);
+      s.addText(MNUM[idx],{x:x+0.1,y:y+0.06,w:0.34,h:0.22,fontSize:9,bold:true,color:T.tapeD,align:'center',valign:'middle',fontFace:'Courier New'});
+      // month name ZH
+      s.addText(mZh,{x:x+0.5,y:y+0.07,w:1.1,h:0.2,fontSize:11,bold:true,color:BROWN,fontFace:'Microsoft JhengHei'});
+      // month name EN italic
+      s.addText(MEN[idx],{x:x+cW-1.22,y:y+0.09,w:0.8,h:0.18,fontSize:9,color:MOCHA,align:'right',fontFace:'Georgia',italic:true});
+      // deco emoji
+      s.addText(MDECO[idx],{x:x+cW-0.42,y:y+0.07,w:0.36,h:0.22,fontSize:12,align:'center',fontFace:'Arial'});
+      // stamp char
+      s.addText(MSTAMP[idx],{x:x+cW-0.78,y:y+0.07,w:0.3,h:0.22,fontSize:11,color:T.tape,align:'center',fontFace:'Arial'});
+
+      // placeholder prompt
+      s.addText('✏ 本月記事...',{x:x+0.12,y:y+0.38,w:cW-0.24,h:0.22,fontSize:9,color:RULE,fontFace:'Microsoft JhengHei',italic:true});
+      // editable body
+      s.addText('',{x:x+0.12,y:y+0.58,w:cW-0.24,h:cH-0.7,fontSize:10,color:BROWN,valign:'top',wrap:true,fontFace:'Microsoft JhengHei'});
+
+      // small arrow doodle at bottom right
+      s.addText('→',{x:x+cW-0.34,y:y+cH-0.28,w:0.28,h:0.24,fontSize:11,color:RULE,align:'center',fontFace:'Arial'});
+    });
+
+    // page number bottom center
+    s.addText(`✿  ${li+2}  ✿`,{x:W/2-1,y:H-0.3,w:2,h:0.22,fontSize:10,color:MOCHA,align:'center',fontFace:'Georgia',italic:true});
+    s.addText(`${age} years old`,{x:W-3.2,y:H-0.3,w:3.0,h:0.2,fontSize:9,color:T.tapeD,align:'right',fontFace:'Georgia',italic:true});
+  }
+
+  // ═══════════════ MILESTONE COLLAGE SUMMARY ═══════════════
+  st.textContent='✍ 繪製里程碑總覽...'; await tick();
+  {
+    const s=pres.addSlide();
+    gridBg(s,GRID);
+
+    // page surface
+    s.addShape('rect',{x:0.2,y:0.18,w:W-0.4,h:H-0.36,fill:{color:CREAM2},line:{color:RULE,width:0.5}});
+    // ruled lines
+    for(let rl=1;rl<22;rl++) s.addShape('rect',{x:0.22,y:0.18+rl*0.33,w:W-0.44,h:0.008,fill:{color:GRID},line:{type:'none'}});
+
+    // top tape strip
+    tape(s,0.2,0.18,W-0.4,0.28,RUST);
+
+    // header section
+    s.addText('My Life Milestone',{x:0.42,y:0.56,w:7,h:0.68,fontSize:26,bold:true,color:BROWN,fontFace:'Georgia'});
+    s.addText('里程碑總覽  ·  20 歲 ── 32 歲',{x:0.42,y:1.22,w:8,h:0.36,fontSize:13,color:MOCHA,fontFace:'Microsoft JhengHei',italic:true});
+    s.addShape('rect',{x:0.44,y:1.64,w:6.5,h:0.04,fill:{color:RUST},line:{type:'none'}});
+    s.addShape('rect',{x:0.54,y:1.71,w:5.2,h:0.02,fill:{color:'E8C870'},line:{type:'none'}});
+
+    // deco items top right
+    tape(s,W-3.6,0.22,3.35,0.24,'8BB8A0');
+    s.addText('🌸✦🍃✦🌼',{x:W-3.5,y:0.55,w:3.2,h:0.44,fontSize:14,align:'right',fontFace:'Arial'});
+
+    // ── GRID TABLE ──
+    const LW=0.92, GX=0.3+LW, GY=1.88;
+    const GW=W-0.36-LW, GH=H-GY-0.28;
+    const NY=13, yW=GW/NY;
+    const HDH=0.48, rH=(GH-HDH)/4;
+
+    // year header row (polaroid-style chips)
+    for(let i=0;i<NY;i++){
+      const T=THEMES[i], x=GX+i*yW;
+      s.addShape('rect',{x:x+0.03,y:GY+0.06,w:yW-0.06,h:HDH,fill:{color:CREAM},line:{color:RULE,width:0.5}});
+      s.addShape('rect',{x:x+0.03,y:GY+0.06,w:yW-0.06,h:0.1,fill:{color:T.tape},line:{type:'none'}});
+      s.addText(`${20+i}`,{x:x+0.03,y:GY+0.16,w:yW-0.06,h:0.24,fontSize:10,bold:true,color:BROWN,align:'center',fontFace:'Georgia'});
+      s.addText(T.icon,{x:x+0.03,y:GY+0.36,w:yW-0.06,h:0.18,fontSize:9,align:'center',fontFace:'Arial'});
+    }
+
+    // category rows
+    CATS.forEach((cat,ci)=>{
+      const ry=GY+HDH+ci*rH+0.06;
+      // label sticky note
+      s.addShape('rect',{x:0.28,y:ry+0.04,w:LW-0.06,h:rH-0.08,fill:{color:cat.bg},line:{color:cat.acc,width:1.2}});
+      s.addShape('rect',{x:0.28,y:ry+0.04,w:LW-0.06,h:0.12,fill:{color:cat.acc+'88'},line:{type:'none'}});
+      s.addText(`${cat.icon}`,{x:0.3,y:ry+0.06,w:0.4,h:rH-0.12,fontSize:13,align:'center',valign:'middle',fontFace:'Arial'});
+      s.addText(cat.key,{x:0.68,y:ry+0.04,w:LW-0.48,h:rH-0.08,fontSize:10,bold:true,color:cat.dark,align:'center',valign:'middle',fontFace:'Microsoft JhengHei'});
+
+      for(let i=0;i<NY;i++){
+        const x=GX+i*yW, T=THEMES[i];
+        const even=i%2===0;
+        s.addShape('rect',{x:x+0.03,y:ry+0.04,w:yW-0.06,h:rH-0.08,fill:{color:even?cat.bg:CREAM},line:{color:RULE,width:0.4}});
+        // tiny washi tape at top of cell (alternate)
+        if(i%3===0) s.addShape('rect',{x:x+0.12,y:ry+0.04,w:yW-0.3,h:0.06,fill:{color:T.tape+'AA'},line:{type:'none'}});
+        // pencil prompt
+        s.addText('✏',{x:x+0.06,y:ry+0.12,w:0.18,h:rH-0.22,fontSize:7,color:RULE,valign:'top',fontFace:'Arial'});
+        s.addText('記錄',{x:x+0.22,y:ry+0.14,w:yW-0.3,h:rH-0.28,fontSize:6.5,color:RULE,align:'center',valign:'top',fontFace:'Microsoft JhengHei'});
+      }
+    });
+
+    // bottom legend
+    s.addShape('rect',{x:0.22,y:H-0.34,w:W-0.44,h:0.025,fill:{color:RUST},line:{type:'none'}});
+    CATS.forEach((c,i)=>{
+      const lx=0.3+i*2.95;
+      s.addShape('rect',{x:lx,y:H-0.28,w:0.28,h:0.14,fill:{color:c.acc+'CC'},line:{color:c.acc,width:0.5}});
+      s.addText(`${c.icon} ${c.key}`,{x:lx+0.35,y:H-0.3,w:2.5,h:0.2,fontSize:9,color:c.dark,fontFace:'Microsoft JhengHei',bold:true});
+    });
+    s.addText('♡  my story  ♡',{x:W-3.2,y:H-0.3,w:3.0,h:0.2,fontSize:9,color:MOCHA,align:'right',fontFace:'Georgia',italic:true});
+  }
+
+  st.textContent='💾 封裝手帳中...'; await tick();
+  const blob=await pres.write({outputType:'blob'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='人生里程碑_手繪手帳版.pptx';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},3000);
+  st.textContent='🎀 手帳完成！→ 人生里程碑_手繪手帳版.pptx';
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>

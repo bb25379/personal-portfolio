@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>人生里程碑 — 宇宙星系軌道版</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Courier New',monospace;background:#060818;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2.5rem 1rem;color:#C8D8F8;}
+  .card{background:#0A0E22;border:1px solid #1A2440;border-radius:8px;padding:2.6rem 2.2rem;max-width:520px;width:100%;box-shadow:0 0 60px rgba(60,100,255,0.08),0 0 120px rgba(120,60,255,0.04);}
+  .cosmos-header{text-align:center;margin-bottom:1.8rem;}
+  .orbit-ring{width:64px;height:64px;border-radius:50%;border:2px solid #3060CC;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;position:relative;box-shadow:0 0 18px rgba(60,100,255,0.3);}
+  .orbit-ring::before{content:'';position:absolute;width:80px;height:80px;border-radius:50%;border:1px dashed #1A2A50;}
+  .orbit-dot{width:10px;height:10px;border-radius:50%;background:#66AAFF;box-shadow:0 0 10px #66AAFF;}
+  .eyebrow{font-size:9px;letter-spacing:4px;color:#3060CC;margin-bottom:8px;}
+  h1{font-size:20px;font-weight:700;color:#E8F0FF;line-height:1.3;}
+  .sub{font-size:10px;color:#3A5080;margin-top:4px;}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#0F1830;border:1px solid #1A2440;margin:1.5rem 0;}
+  .stat{background:#0A0E22;padding:.85rem 1rem;}
+  .sl{font-size:8px;letter-spacing:2px;color:#3060CC;margin-bottom:4px;}
+  .sv{font-size:22px;font-weight:700;color:#88BBFF;letter-spacing:-1px;}
+  .ss{font-size:9px;color:#2A3A60;}
+  .cats{display:flex;flex-direction:column;gap:1px;background:#0F1830;border:1px solid #1A2440;margin-bottom:1.8rem;}
+  .cat-row{display:flex;align-items:center;gap:12px;padding:9px 12px;background:#0A0E22;}
+  .cat-orb{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .cat-k{font-size:11px;font-weight:700;width:40px;}
+  .cat-d{font-size:9px;flex:1;color:#3A5080;}
+  button{width:100%;padding:14px;font-size:11px;font-weight:700;letter-spacing:3px;background:transparent;color:#66AAFF;border:1px solid #1A3060;cursor:pointer;font-family:'Courier New',monospace;transition:border-color .2s,box-shadow .2s;}
+  button:hover:not(:disabled){border-color:#66AAFF;box-shadow:0 0 20px rgba(100,170,255,0.15);}
+  button:disabled{opacity:.3;cursor:default;}
+  #status{text-align:center;font-size:10px;color:#3A5080;margin-top:10px;min-height:1.4em;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="cosmos-header">
+    <div class="orbit-ring"><div class="orbit-dot"></div></div>
+    <p class="eyebrow">COSMIC ORBIT EDITION</p>
+    <h1>人生里程碑<br>宇宙星系軌道版</h1>
+    <p class="sub">// stellar_chronicle.pptx · age 20 → 32 · 13 orbits</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="sl">SLIDES</div><div class="sv">15</div><div class="ss">// total slides</div></div>
+    <div class="stat"><div class="sl">ORBITS</div><div class="sv">13</div><div class="ss">// age 20 → 32</div></div>
+    <div class="stat"><div class="sl">SECTORS</div><div class="sv">156</div><div class="ss">// month cells</div></div>
+    <div class="stat"><div class="sl">ELEMENTS</div><div class="sv">4</div><div class="ss">// cosmic categories</div></div>
+  </div>
+  <div class="cats">
+    <div class="cat-row"><div class="cat-orb" style="background:#4488FF;box-shadow:0 0 8px #4488FF"></div><span class="cat-k" style="color:#4488FF">生活</span><span class="cat-d">[ PLANET ]  日常軌道 · 人際引力 · 生命里程</span></div>
+    <div class="cat-row"><div class="cat-orb" style="background:#FFB840;box-shadow:0 0 8px #FFB840"></div><span class="cat-k" style="color:#FFB840">工作</span><span class="cat-d">[ STAR ]    職涯核融合 · 成就發光 · 晉升爆發</span></div>
+    <div class="cat-row"><div class="cat-orb" style="background:#CC66FF;box-shadow:0 0 8px #CC66FF"></div><span class="cat-k" style="color:#CC66FF">學習</span><span class="cat-d">[ NEBULA ]  知識星雲 · 技能成形 · 智慧成星</span></div>
+    <div class="cat-row"><div class="cat-orb" style="background:#44FFCC;box-shadow:0 0 8px #44FFCC"></div><span class="cat-k" style="color:#44FFCC">健康</span><span class="cat-d">[ COMET ]   生命彗尾 · 身心軌跡 · 活力運行</span></div>
+  </div>
+  <button id="btn" onclick="generate()">⊙ LAUNCH &amp; DOWNLOAD PPTX</button>
+  <p id="status">// ready to launch — click to generate (est. 5–10s)</p>
+</div>
+
+<script>
+function tick(){return new Promise(r=>setTimeout(r,20));}
+
+async function generate(){
+  const btn=document.getElementById('btn'), st=document.getElementById('status');
+  btn.disabled=true;
+
+  const W=13.33, H=7.5;
+
+  // ── Deep Space Palette ──
+  const VOID   ='060818';
+  const DEEP   ='080C1E';
+  const NEBULA ='0C1228';
+  const CARD   ='0A0E22';
+  const BORDER ='141E38';
+  const BORDER2='1A2A4A';
+  const TEXT   ='E8F0FF';
+  const TEXT2  ='8AA0C8';
+  const MUTED  ='3A5080';
+  const DIM    ='1A2440';
+
+  // 13 celestial body themes per age
+  const STARS=[
+    {name:'星雲誕生',   eng:'Stellar Nebula',   acc:'CC88FF', glow:'881ACC', dim:'180A28', core:'EECCff', icon:'✦', body:'nebula'},
+    {name:'原恆星',     eng:'Protostar',         acc:'FFB840', glow:'CC8800', dim:'281800', core:'FFE088', icon:'◉', body:'protostar'},
+    {name:'主序星',     eng:'Main Sequence',     acc:'88CCFF', glow:'2266CC', dim:'081828', core:'CCECFF', icon:'☀', body:'star'},
+    {name:'藍超巨星',   eng:'Blue Supergiant',   acc:'44AAFF', glow:'0044CC', dim:'000C28', core:'AADDFF', icon:'✺', body:'blue'},
+    {name:'雙星系統',   eng:'Binary Star',       acc:'FFD844', glow:'CC9900', dim:'201800', core:'FFEEBB', icon:'⊕', body:'binary'},
+    {name:'白矮星',     eng:'White Dwarf',       acc:'DDEEFF', glow:'6688BB', dim:'101820', core:'FFFFFF', icon:'◎', body:'white'},
+    {name:'紅巨星',     eng:'Red Giant',         acc:'FF6644', glow:'CC2200', dim:'280800', core:'FFCCAA', icon:'◈', body:'red'},
+    {name:'脈衝星',     eng:'Pulsar',            acc:'00FFDD', glow:'009988', dim:'001818', core:'AAFFEE', icon:'⊗', body:'pulsar'},
+    {name:'磁星',       eng:'Magnetar',          acc:'FF44CC', glow:'AA0088', dim:'280018', core:'FFAAEE', icon:'✦', body:'magnet'},
+    {name:'中子星',     eng:'Neutron Star',      acc:'CCDDFF', glow:'4466BB', dim:'0A1020', core:'EEF4FF', icon:'◉', body:'neutron'},
+    {name:'黑洞',       eng:'Black Hole',        acc:'9944FF', glow:'660099', dim:'100018', core:'CC88FF', icon:'◯', body:'blackhole'},
+    {name:'類星體',     eng:'Quasar',            acc:'FFEE44', glow:'CCAA00', dim:'201C00', core:'FFFFAA', icon:'⊙', body:'quasar'},
+    {name:'超新星爆發', eng:'Supernova',         acc:'FF8844', glow:'FF3300', dim:'200800', core:'FFDDC0', icon:'✸', body:'supernova'},
+  ];
+
+  const CATS=[
+    {key:'生活', eng:'PLANET',  acc:'4488FF', glow:'1A4499', dim:'040C20', icon:'⬡'},
+    {key:'工作', eng:'STAR',    acc:'FFB840', glow:'994400', dim:'201000', icon:'★'},
+    {key:'學習', eng:'NEBULA',  acc:'CC66FF', glow:'660099', dim:'180028', icon:'✦'},
+    {key:'健康', eng:'COMET',   acc:'44FFCC', glow:'008866', dim:'002018', icon:'☄'},
+  ];
+
+  const MZH=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  const MEN=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  const MNUM=['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const CONSTELLATION=['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+
+  const pres=new PptxGenJS();
+  pres.layout='LAYOUT_WIDE';
+
+  // ── Helpers ──
+  const bg=(s,c=VOID)=>s.addShape('rect',{x:0,y:0,w:W,h:H,fill:{color:c},line:{type:'none'}});
+  const hln=(s,x,y,w,c=BORDER)=>s.addShape('rect',{x,y,w,h:0.01,fill:{color:c},line:{type:'none'}});
+  const vln=(s,x,y,h,c=BORDER)=>s.addShape('rect',{x,y,w:0.01,h,fill:{color:c},line:{type:'none'}});
+
+  // Star field — layered dots of varying brightness
+  const starField=(s,seed=0)=>{
+    const pts=[
+      [0.4,0.3,0.06],[1.8,0.7,0.05],[2.9,0.2,0.07],[4.1,0.5,0.04],[5.6,0.2,0.06],
+      [6.8,0.4,0.05],[7.7,0.1,0.08],[8.9,0.6,0.04],[9.8,0.3,0.07],[11.0,0.5,0.05],
+      [12.1,0.2,0.06],[12.8,0.7,0.04],[0.7,1.8,0.05],[1.2,3.2,0.04],[2.5,2.6,0.06],
+      [3.0,4.4,0.05],[4.6,1.4,0.04],[5.1,5.8,0.06],[6.2,3.0,0.05],[6.9,6.5,0.07],
+      [7.5,2.2,0.04],[8.2,4.8,0.06],[9.4,1.6,0.05],[10.1,5.2,0.04],[10.8,2.8,0.07],
+      [11.5,4.0,0.05],[12.4,3.6,0.06],[0.2,5.0,0.04],[1.6,6.2,0.05],[2.8,7.0,0.06],
+      [3.9,6.6,0.04],[5.3,7.2,0.05],[6.7,5.6,0.04],[7.9,6.8,0.06],[9.1,7.3,0.05],
+      [10.5,6.4,0.04],[11.8,7.0,0.05],[12.6,5.8,0.06],[0.9,4.2,0.04],[3.5,1.0,0.05],
+      [8.6,1.2,0.04],[13.0,2.0,0.06],[4.8,6.0,0.04],[9.7,4.0,0.05],[11.2,1.4,0.04],
+    ];
+    const cols=['FFFFFF','EEEEFF','FFEEEE','EEFFEE','DDDDFF'];
+    pts.forEach(([px,py,sz],i)=>{
+      const c=cols[(i+seed)%cols.length];
+      s.addShape('ellipse',{x:px,y:py,w:sz,h:sz,fill:{color:c},line:{type:'none'}});
+      // glow halo on brighter stars
+      if(sz>0.055) s.addShape('ellipse',{x:px-sz,y:py-sz,w:sz*3,h:sz*3,fill:{color:c+'22'},line:{type:'none'}});
+    });
+  };
+
+  // Glowing circle (planet/star)
+  const glowCircle=(s,cx,cy,r,c,gc,layers=3)=>{
+    for(let l=layers;l>=0;l--){
+      const lr=r+l*0.22, alpha=l===0?'FF':'44'.padStart(2,'0');
+      s.addShape('ellipse',{x:cx-lr,y:cy-lr,w:lr*2,h:lr*2,fill:{color:l===0?c:gc+Math.round(40-l*10).toString(16).padStart(2,'0')},line:{type:'none'}});
+    }
+  };
+
+  // Orbital arc (partial ellipse simulation with thin rect)
+  const orbit=(s,cx,cy,rx,ry,c=BORDER2)=>{
+    // simulate ellipse orbit with a very thin ring (two nested ellipses)
+    s.addShape('ellipse',{x:cx-rx,y:cy-ry,w:rx*2,h:ry*2,fill:{color:'transparent'},line:{color:c,width:0.5}});
+  };
+
+  // Constellation line
+  const conLine=(s,x1,y1,x2,y2,c='2A4060')=>{
+    // approximate line with rotated rect
+    const dx=x2-x1, dy=y2-y1;
+    const len=Math.sqrt(dx*dx+dy*dy);
+    const angle=Math.atan2(dy,dx)*180/Math.PI;
+    s.addShape('rect',{x:x1,y:y1-0.008,w:len,h:0.016,fill:{color:c},line:{type:'none'},rotate:angle});
+  };
+
+  // Meteor streak
+  const meteor=(s,x,y,len,angle,c='FFFFFF')=>{
+    s.addShape('rect',{x,y,w:len,h:0.018,fill:{color:c+'AA'},line:{type:'none'},rotate:angle});
+    s.addShape('rect',{x:x+len*0.6,y,w:len*0.4,h:0.012,fill:{color:c+'44'},line:{type:'none'},rotate:angle});
+  };
+
+  // Nebula cloud (overlapping translucent ellipses)
+  const nebulaCloud=(s,cx,cy,rx,ry,c,alpha='18')=>{
+    const pts=[[-0.2,-0.2,1.4,0.9],[0.3,0.1,1.0,0.7],[-0.1,0.2,0.8,0.5],[0.4,-0.1,0.6,0.8]];
+    pts.forEach(([dx,dy,scx,scy])=>{
+      s.addShape('ellipse',{x:cx-rx*scx/2+dx,y:cy-ry*scy/2+dy,w:rx*scx,h:ry*scy,fill:{color:c+alpha},line:{type:'none'}});
+    });
+  };
+
+  // ═══════════════ COVER ═══════════════
+  st.textContent='⊙ Rendering cosmic title screen...'; await tick();
+  {
+    const s=pres.addSlide();
+    bg(s,VOID);
+    starField(s,0);
+
+    // Deep nebula clouds background
+    nebulaCloud(s,2.5,3.5,5.0,4.0,'3030CC','10');
+    nebulaCloud(s,9.0,2.0,4.5,3.5,'9900CC','0C');
+    nebulaCloud(s,6.5,5.5,3.5,3.0,'CC3060','0A');
+    nebulaCloud(s,0.5,1.0,3.0,2.5,'0066CC','0E');
+
+    // Meteor streaks
+    meteor(s,1.2,1.4,2.2,-18,'AACCFF');
+    meteor(s,9.5,0.8,1.8,-12,'CCAAFF');
+    meteor(s,5.0,2.2,1.4,-22,'FFCCAA');
+    meteor(s,11.0,3.5,2.0,-15,'AAFFEE');
+
+    // ── CENTRAL SOLAR SYSTEM ──
+    // Central star (sun of the life system)
+    const SX=7.5, SY=3.75;
+    nebulaCloud(s,SX,SY,3.2,2.8,'FFB840','1A');
+    glowCircle(s,SX,SY,0.55,'FFE088','FFB840',4);
+    s.addText('⊙',{x:SX-0.4,y:SY-0.38,w:0.8,h:0.76,fontSize:24,color:'FFFFFF',align:'center',valign:'middle',fontFace:'Arial'});
+
+    // Orbital rings around centre
+    orbit(s,SX,SY,1.5,0.7,'1A2A4A');
+    orbit(s,SX,SY,2.4,1.1,'142038');
+    orbit(s,SX,SY,3.2,1.5,'0E1830');
+
+    // Planets on orbits
+    glowCircle(s,SX+1.5,SY-0.1,0.22,'4488FF','1A4499',2); // life planet
+    glowCircle(s,SX-2.0,SY+0.6,0.18,'FFB840','994400',2); // work star
+    glowCircle(s,SX+2.8,SY+0.8,0.16,'CC66FF','660099',2); // learn nebula
+    // Comet
+    s.addShape('ellipse',{x:SX-1.2,y:SY-1.4,w:0.22,h:0.22,fill:{color:'44FFCC'},line:{type:'none'}});
+    s.addShape('rect',{x:SX-1.8,y:SY-1.4,w:0.6,h:0.06,fill:{color:'44FFCC33'},line:{type:'none'}});
+
+    // ── TITLE PANEL (left) ──
+    s.addShape('rect',{x:0,y:0,w:5.8,h:H,fill:{color:'06081888'},line:{type:'none'}});
+    vln(s,5.8,0,H,'1A3060');
+
+    // Top eyebrow
+    s.addText('✦  C O S M I C   O R B I T   E D I T I O N  ✦',{
+      x:0.3,y:0.55,w:5.2,h:0.3,fontSize:8,color:'3060CC',fontFace:'Courier New',charSpacing:1,bold:true,align:'center'
+    });
+    hln(s,0.3,0.88,5.2,'1A2A4A');
+
+    // Main title
+    s.addText('宇宙',{x:0.3,y:0.96,w:5.2,h:0.88,fontSize:44,bold:false,color:MUTED,fontFace:'Microsoft JhengHei',align:'center'});
+    s.addText('星系軌道版',{x:0.3,y:1.72,w:5.2,h:0.92,fontSize:36,bold:true,color:TEXT,fontFace:'Microsoft JhengHei',align:'center'});
+    s.addText('LIFE MILESTONE',{x:0.3,y:2.64,w:5.2,h:0.4,fontSize:14,bold:true,color:'4488FF',fontFace:'Courier New',charSpacing:4,align:'center'});
+
+    hln(s,0.3,3.1,5.2,'1A3060');
+
+    s.addText('人生如星辰運行，每一年是一次公轉，\n每一月是宇宙給你的星際座標。',{
+      x:0.3,y:3.2,w:5.2,h:0.72,fontSize:11,color:TEXT2,fontFace:'Microsoft JhengHei',align:'center',lineSpacingMultiple:1.5
+    });
+    s.addText('Age 20 ──── ◉ ──── Age 32',{
+      x:0.3,y:4.02,w:5.2,h:0.36,fontSize:12,color:'3060CC',fontFace:'Courier New',align:'center'
+    });
+    s.addText('13 Orbital Periods  ·  156 Stellar Sectors',{
+      x:0.3,y:4.4,w:5.2,h:0.26,fontSize:9,color:MUTED,fontFace:'Courier New',align:'center'
+    });
+
+    hln(s,0.3,4.76,5.2,'1A3060');
+
+    // Category legend
+    CATS.forEach((c,i)=>{
+      const ly=5.0+i*0.42;
+      s.addShape('ellipse',{x:0.5,y:ly+0.06,w:0.2,h:0.2,fill:{color:c.acc},line:{type:'none'}});
+      s.addShape('ellipse',{x:0.46,y:ly+0.02,w:0.28,h:0.28,fill:{color:c.acc+'33'},line:{type:'none'}});
+      s.addText(`[ ${c.eng} ]  ${c.key}`,{x:0.8,y:ly,w:4.6,h:0.34,fontSize:10,bold:true,color:c.acc,fontFace:'Courier New'});
+    });
+
+    // Bottom signature
+    hln(s,0.3,H-0.4,5.2,'1A2A4A');
+    s.addText('stellar_chronicle.pptx  ·  cosmic orbit system',{
+      x:0.3,y:H-0.36,w:5.2,h:0.22,fontSize:8,color:MUTED,fontFace:'Courier New',align:'center'
+    });
+  }
+
+  // ═══════════════ AGE SLIDES 20–32 ═══════════════
+  const MX=0.22, HDR=1.38, GAP=0.09, COLS=4, ROWS=3;
+  const cW=(W-2*MX-(COLS-1)*GAP)/COLS;
+  const cH=(H-HDR-0.16-(ROWS-1)*GAP)/ROWS;
+
+  for(let age=20;age<=32;age++){
+    const li=age-20, ST=STARS[li];
+    st.textContent=`⊙ Rendering orbit ${li+1}/13 — Age ${age} [${ST.eng}]...`; await tick();
+    const s=pres.addSlide();
+    bg(s,VOID);
+    starField(s,li*3);
+
+    // Background nebula (unique per star type)
+    nebulaCloud(s,W*0.7,H*0.4,5.5,4.5,ST.glow,'14');
+    nebulaCloud(s,W*0.15,H*0.6,3.5,3.0,ST.glow,'0C');
+
+    // Meteors
+    meteor(s,2.0,0.6,1.6,-20,ST.acc);
+    meteor(s,10.5,1.2,1.2,-15,ST.acc);
+
+    // Orbital rings behind header (top right)
+    orbit(s,W-1.2,0.65,3.2,1.4,'1A2440');
+    orbit(s,W-1.2,0.65,2.0,0.88,'1A2A4A');
+    glowCircle(s,W-1.2+1.8,0.65,0.2,ST.acc,ST.glow,2);
+    s.addText(ST.icon,{x:W-1.0,y:0.5,w:0.4,h:0.32,fontSize:13,color:ST.acc,fontFace:'Arial',align:'center'});
+
+    // ── TOP STATUS BAR ──
+    s.addShape('rect',{x:0,y:0,w:W,h:0.28,fill:{color:DEEP},line:{type:'none'}});
+    hln(s,0,0.28,W,BORDER2);
+    s.addShape('rect',{x:0,y:0,w:W,h:0.04,fill:{color:ST.acc},line:{type:'none'}});
+    s.addText(`stellar_chronicle.pptx  >  orbit_${li+1}.slide  >  age_${age}`,{x:0.2,y:0.07,w:8,h:0.18,fontSize:8,color:MUTED,fontFace:'Courier New'});
+    s.addText(`${ST.eng.toUpperCase()}  ·  ORBIT ${li+1}/13`,{x:W-4.5,y:0.07,w:4.3,h:0.18,fontSize:8,color:ST.acc,align:'right',fontFace:'Courier New',bold:true});
+
+    // ── HEADER PANEL ──
+    s.addShape('rect',{x:0,y:0.28,w:W,h:HDR-0.3,fill:{color:NEBULA},line:{type:'none'}});
+    hln(s,0,HDR-0.02,W,ST.acc);
+
+    // Central body glow (header left)
+    nebulaCloud(s,0.9,0.85,1.8,1.2,ST.glow,'22');
+    glowCircle(s,0.9,0.85,0.3,ST.acc,ST.glow,3);
+    s.addText(ST.icon,{x:0.62,y:0.62,w:0.56,h:0.46,fontSize:18,color:'FFFFFF',fontFace:'Arial',align:'center',valign:'middle'});
+
+    // Constellation link dots
+    conLine(s,1.2,0.82,1.95,0.6,ST.acc+'44');
+    s.addShape('ellipse',{x:1.88,y:0.54,w:0.12,h:0.12,fill:{color:ST.acc},line:{type:'none'}});
+
+    // Age + title
+    s.addText(`${age}`,{x:1.55,y:0.32,w:1.55,h:0.82,fontSize:48,bold:true,color:ST.acc,fontFace:'Courier New'});
+    s.addText('歲',{x:2.96,y:0.84,w:0.44,h:0.32,fontSize:14,bold:true,color:ST.core,fontFace:'Microsoft JhengHei'});
+    vln(s,3.54,0.42,0.68,BORDER2);
+    s.addText(`${ST.name}  ·  ${ST.eng}`,{x:3.68,y:0.4,w:6.2,h:0.34,fontSize:12,bold:true,color:TEXT,fontFace:'Microsoft JhengHei'});
+    s.addText(`人生第 ${li+1} 個軌道週期  ·  Orbital Period ${li+1} of 13`,{x:3.68,y:0.76,w:6.2,h:0.26,fontSize:9,color:TEXT2,fontFace:'Courier New'});
+
+    // Orbital progress bar
+    const pct=li/12;
+    s.addText('ORBIT',{x:3.68,y:1.08,w:0.65,h:0.22,fontSize:8,color:ST.acc,fontFace:'Courier New',bold:true});
+    s.addShape('rect',{x:4.36,y:1.1,w:5.5,h:0.12,fill:{color:DIM},line:{color:BORDER2,width:0.5}});
+    s.addShape('rect',{x:4.36,y:1.1,w:5.5*pct,h:0.12,fill:{color:ST.acc},line:{type:'none'}});
+    // glow on progress bar tip
+    if(pct>0) s.addShape('ellipse',{x:4.36+5.5*pct-0.1,y:1.07,w:0.2,h:0.18,fill:{color:ST.acc+'88'},line:{type:'none'}});
+    s.addText(`${Math.round(pct*100)}%`,{x:9.9,y:1.08,w:0.55,h:0.22,fontSize:8,color:ST.acc,fontFace:'Courier New'});
+
+    // ── 12 MONTH SECTOR CARDS ──
+    MZH.forEach((mZh,idx)=>{
+      const col=idx%COLS, row=Math.floor(idx/COLS);
+      const x=MX+col*(cW+GAP), y=HDR+row*(cH+GAP);
+
+      // card glow shadow
+      s.addShape('rect',{x:x-0.04,y:y-0.04,w:cW+0.08,h:cH+0.08,fill:{color:ST.acc+'0A'},line:{type:'none'}});
+      // card body
+      s.addShape('rect',{x,y,w:cW,h:cH,fill:{color:CARD},line:{color:BORDER,width:0.5}});
+      // top accent glow strip
+      s.addShape('rect',{x,y,w:cW,h:0.04,fill:{color:ST.acc},line:{type:'none'}});
+      // header area
+      s.addShape('rect',{x,y:y+0.04,w:cW,h:0.26,fill:{color:NEBULA},line:{type:'none'}});
+      hln(s,x,y+0.3,cW,BORDER2);
+
+      // constellation symbol badge
+      s.addShape('ellipse',{x:x+0.1,y:y+0.07,w:0.2,h:0.2,fill:{color:ST.dim},line:{color:ST.acc,width:0.8}});
+      s.addText(CONSTELLATION[idx],{x:x+0.1,y:y+0.07,w:0.2,h:0.2,fontSize:8,color:ST.acc,align:'center',valign:'middle',fontFace:'Arial'});
+
+      // Month num
+      s.addText(MNUM[idx],{x:x+0.34,y:y+0.07,w:0.38,h:0.2,fontSize:9,bold:true,color:ST.acc,fontFace:'Courier New'});
+      vln(s,x+0.74,y+0.09,0.16,BORDER2);
+      // ZH name
+      s.addText(mZh,{x:x+0.78,y:y+0.08,w:1.1,h:0.2,fontSize:10,bold:true,color:TEXT,fontFace:'Microsoft JhengHei'});
+      // EN name right
+      s.addText(MEN[idx],{x:x+cW-0.95,y:y+0.09,w:0.88,h:0.18,fontSize:8,color:ST.acc,align:'right',fontFace:'Courier New',bold:true});
+
+      // constellation deco — tiny linked dots
+      [[x+cW-0.22,y+0.08],[x+cW-0.32,y+0.15],[x+cW-0.18,y+0.2]].forEach(([dx,dy],di)=>{
+        s.addShape('ellipse',{x:dx,y:dy,w:0.05,h:0.05,fill:{color:ST.acc+(di===0?'FF':'88')},line:{type:'none'}});
+      });
+      conLine(s,x+cW-0.2,y+0.1,x+cW-0.3,y+0.17,ST.acc+'44');
+      conLine(s,x+cW-0.3,y+0.17,x+cW-0.16,y+0.22,ST.acc+'44');
+
+      // Sector label
+      s.addText('STELLAR LOG:',{x:x+0.1,y:y+0.34,w:cW-0.2,h:0.18,fontSize:7.5,color:MUTED,fontFace:'Courier New',bold:true});
+      // prompt
+      s.addText('▌ 輸入本月星際記錄',{x:x+0.1,y:y+0.5,w:cW-0.2,h:0.2,fontSize:9,color:BORDER2,fontFace:'Microsoft JhengHei'});
+      // editable
+      s.addText('',{x:x+0.1,y:y+0.68,w:cW-0.2,h:cH-0.82,fontSize:9.5,color:TEXT,valign:'top',wrap:true,fontFace:'Microsoft JhengHei'});
+      // ruled lines
+      [0.66,0.90,1.14,1.38].forEach(off=>{
+        if(off<cH-0.2) hln(s,x+0.1,y+off,cW-0.2,BORDER);
+      });
+      // bottom: mini orbit indicator
+      s.addShape('ellipse',{x:x+cW-0.24,y:y+cH-0.22,w:0.16,h:0.16,fill:{color:ST.dim},line:{color:ST.acc,width:0.6}});
+      s.addShape('ellipse',{x:x+cW-0.21,y:y+cH-0.19,w:0.1,h:0.1,fill:{color:ST.acc+'88'},line:{type:'none'}});
+    });
+
+    // ── BOTTOM STATUS BAR ──
+    s.addShape('rect',{x:0,y:H-0.24,w:W,h:0.24,fill:{color:DEEP},line:{type:'none'}});
+    hln(s,0,H-0.24,W,ST.acc+'88');
+    s.addShape('rect',{x:0,y:H-0.04,w:W,h:0.04,fill:{color:ST.acc+'44'},line:{type:'none'}});
+    s.addText(`${ST.icon}  ${ST.name}  ·  ORBIT ${li+1}  ·  AGE ${age}`,{x:0.2,y:H-0.22,w:8,h:0.18,fontSize:8,color:ST.acc,fontFace:'Courier New'});
+    s.addText(`${li+1} / 13  STELLAR_CHRONICLE`,{x:W-3.8,y:H-0.22,w:3.6,h:0.18,fontSize:8,color:MUTED,align:'right',fontFace:'Courier New'});
+  }
+
+  // ═══════════════ GALAXY MAP SUMMARY ═══════════════
+  st.textContent='⊙ Rendering galaxy map summary...'; await tick();
+  {
+    const s=pres.addSlide();
+    bg(s,VOID);
+    starField(s,42);
+
+    // Large nebula backdrops
+    nebulaCloud(s,W/2,H/2,9,7,'2030CC','10');
+    nebulaCloud(s,2,2,5,4,'9900CC','0A');
+    nebulaCloud(s,11,5,4,3,'CC3060','0C');
+    meteor(s,0.8,0.5,2.5,-18,'AACCFF');
+    meteor(s,11.0,0.7,1.8,-12,'CCAAFF');
+    meteor(s,4.5,6.8,2.0,-22,'FFCCAA');
+
+    // ── HEADER ──
+    s.addShape('rect',{x:0,y:0,w:W,h:0.28,fill:{color:DEEP},line:{type:'none'}});
+    hln(s,0,0.28,W,BORDER2);
+    s.addShape('rect',{x:0,y:0,w:W,h:0.04,fill:{color:'4488FF'},line:{type:'none'}});
+    s.addText('stellar_chronicle.pptx  >  galaxy_map.slide',{x:0.2,y:0.07,w:6,h:0.18,fontSize:8,color:MUTED,fontFace:'Courier New'});
+
+    s.addShape('rect',{x:0,y:0.28,w:W,h:0.9,fill:{color:NEBULA},line:{type:'none'}});
+    hln(s,0,1.18,W,'4488FF');
+    s.addShape('rect',{x:0,y:1.18,w:W,h:0.24,fill:{color:'060818CC'},line:{type:'none'}});
+
+    // Central star glyph
+    glowCircle(s,0.65,0.72,0.28,'FFE088','FFB84088',3);
+    s.addText('⊙',{x:0.42,y:0.56,w:0.46,h:0.4,fontSize:18,color:'FFFFFF',fontFace:'Arial',align:'center'});
+    s.addText('✦  GALAXY MAP  —  人生星系軌道總覽',{x:1.2,y:0.36,w:9,h:0.5,fontSize:18,bold:true,color:TEXT,fontFace:'Microsoft JhengHei'});
+    s.addText('Age 20 → 32  ·  13 Orbital Periods  ·  All Systems Documented',{x:1.2,y:0.84,w:10,h:0.28,fontSize:9,color:TEXT2,fontFace:'Courier New'});
+    s.addText('LIFE · CAREER · KNOWLEDGE · HEALTH  ·  4 COSMIC CATEGORIES',{
+      x:0.2,y:1.2,w:W-0.4,h:0.2,fontSize:8,bold:true,color:'3060CC',align:'center',fontFace:'Courier New',charSpacing:2
+    });
+
+    // ── ORBITAL TIMELINE (S-curve of star nodes) ──
+    const MAP_Y=1.52, MAP_H=2.52;
+    s.addShape('rect',{x:0.18,y:MAP_Y,w:W-0.36,h:MAP_H,fill:{color:CARD+'CC'},line:{color:BORDER,width:0.5}});
+
+    const nW=1.6, nH=0.72, nStep=1.72;
+    const r1y=MAP_Y+0.2, r2y=MAP_Y+MAP_H-nH-0.18;
+
+    // S-path connectors
+    for(let i=0;i<6;i++){
+      const cx=0.28+i*nStep+nW, cy=r1y+nH/2-0.04;
+      s.addShape('rect',{x:cx,y:cy,w:nStep-nW,h:0.025,fill:{color:'1A3060'},line:{type:'none'}});
+      // glowing dots along path
+      s.addShape('ellipse',{x:cx+(nStep-nW)/2-0.05,y:cy-0.04,w:0.1,h:0.1,fill:{color:'2A4888'},line:{type:'none'}});
+    }
+    // vertical connector
+    const r1end=0.28+6*nStep+nW/2-0.04;
+    s.addShape('rect',{x:r1end,y:r1y+nH,w:0.025,h:r2y-(r1y+nH),fill:{color:'1A3060'},line:{type:'none'}});
+    for(let i=0;i<5;i++){
+      const cx=0.28+(5-i)*nStep, cy=r2y+nH/2-0.04;
+      s.addShape('rect',{x:cx-nStep+nW,y:cy,w:nStep-nW,h:0.025,fill:{color:'1A3060'},line:{type:'none'}});
+      s.addShape('ellipse',{x:cx-nStep+nW+(nStep-nW)/2-0.05,y:cy-0.04,w:0.1,h:0.1,fill:{color:'2A4888'},line:{type:'none'}});
+    }
+
+    // Star nodes ROW 1 (LV1–7)
+    for(let i=0;i<7;i++){
+      const ST=STARS[i], nx=0.28+i*nStep, ny=r1y;
+      // node glow
+      s.addShape('ellipse',{x:nx-0.1,y:ny-0.1,w:nW+0.2,h:nH+0.2,fill:{color:ST.acc+'0A'},line:{type:'none'}});
+      s.addShape('rect',{x:nx,y:ny,w:nW,h:nH,fill:{color:NEBULA},line:{color:ST.acc,width:1.2}});
+      s.addShape('rect',{x:nx,y:ny,w:nW,h:0.04,fill:{color:ST.acc},line:{type:'none'}});
+      // small glowing orb
+      s.addShape('ellipse',{x:nx+0.12,y:ny+0.1,w:0.22,h:0.22,fill:{color:ST.acc+'AA'},line:{type:'none'}});
+      s.addShape('ellipse',{x:nx+0.14,y:ny+0.12,w:0.18,h:0.18,fill:{color:ST.core+'88'},line:{type:'none'}});
+      s.addText(ST.icon,{x:nx+0.08,y:ny+0.08,w:0.28,h:0.3,fontSize:10,color:ST.core,fontFace:'Arial',align:'center',valign:'middle'});
+      s.addText(`${20+i}`,{x:nx+0.36,y:ny+0.08,w:nW-0.48,h:0.3,fontSize:13,bold:true,color:ST.acc,fontFace:'Courier New'});
+      s.addText(ST.name,{x:nx+0.06,y:ny+0.38,w:nW-0.12,h:0.28,fontSize:8.5,color:TEXT2,fontFace:'Microsoft JhengHei',align:'center'});
+    }
+    // ROW 2 (LV8–13, right to left)
+    for(let i=0;i<6;i++){
+      const ST=STARS[7+i], nx=0.28+(5-i)*nStep, ny=r2y;
+      s.addShape('ellipse',{x:nx-0.1,y:ny-0.1,w:nW+0.2,h:nH+0.2,fill:{color:ST.acc+'0A'},line:{type:'none'}});
+      s.addShape('rect',{x:nx,y:ny,w:nW,h:nH,fill:{color:NEBULA},line:{color:ST.acc,width:1.2}});
+      s.addShape('rect',{x:nx,y:ny,w:nW,h:0.04,fill:{color:ST.acc},line:{type:'none'}});
+      s.addShape('ellipse',{x:nx+0.12,y:ny+0.1,w:0.22,h:0.22,fill:{color:ST.acc+'AA'},line:{type:'none'}});
+      s.addShape('ellipse',{x:nx+0.14,y:ny+0.12,w:0.18,h:0.18,fill:{color:ST.core+'88'},line:{type:'none'}});
+      s.addText(ST.icon,{x:nx+0.08,y:ny+0.08,w:0.28,h:0.3,fontSize:10,color:ST.core,fontFace:'Arial',align:'center',valign:'middle'});
+      s.addText(`${28+i}`,{x:nx+0.36,y:ny+0.08,w:nW-0.48,h:0.3,fontSize:13,bold:true,color:ST.acc,fontFace:'Courier New'});
+      s.addText(ST.name,{x:nx+0.06,y:ny+0.38,w:nW-0.12,h:0.28,fontSize:8.5,color:TEXT2,fontFace:'Microsoft JhengHei',align:'center'});
+    }
+
+    // ── COSMIC CATEGORY GRID ──
+    const GY=4.14;
+    const LW=0.9, GX=0.22+LW, GW=W-0.3-LW, GH=H-GY-0.26;
+    const NY=13, yW=GW/NY, HDH=0.38, rH=(GH-HDH)/4;
+
+    // year headers
+    for(let i=0;i<NY;i++){
+      const ST=STARS[i], x=GX+i*yW;
+      s.addShape('rect',{x:x+0.01,y:GY,w:yW-0.02,h:HDH,fill:{color:NEBULA},line:{color:ST.acc,width:0.8}});
+      s.addShape('rect',{x:x+0.01,y:GY,w:yW-0.02,h:0.04,fill:{color:ST.acc},line:{type:'none'}});
+      // mini glow dot
+      s.addShape('ellipse',{x:x+yW/2-0.07,y:GY+0.07,w:0.14,h:0.14,fill:{color:ST.acc+'AA'},line:{type:'none'}});
+      s.addText(`${20+i}`,{x:x+0.01,y:GY+0.2,w:yW-0.02,h:0.18,fontSize:8.5,bold:true,color:ST.acc,align:'center',fontFace:'Courier New'});
+    }
+
+    // Category rows
+    CATS.forEach((cat,ci)=>{
+      const ry=GY+HDH+ci*rH;
+      s.addShape('rect',{x:0.22,y:ry+0.02,w:LW-0.06,h:rH-0.04,fill:{color:cat.dim},line:{color:cat.acc,width:1}});
+      s.addShape('rect',{x:0.22,y:ry+0.02,w:0.06,h:rH-0.04,fill:{color:cat.acc},line:{type:'none'}});
+      // glow orb label
+      s.addShape('ellipse',{x:0.36,y:ry+rH/2-0.18,w:0.22,h:0.22,fill:{color:cat.acc+'88'},line:{type:'none'}});
+      s.addText(cat.icon,{x:0.34,y:ry+rH/2-0.2,w:0.26,h:0.28,fontSize:10,color:cat.acc,align:'center',valign:'middle',fontFace:'Arial'});
+      s.addText(cat.key,{x:0.6,y:ry+0.02,w:LW-0.44,h:rH-0.04,fontSize:9.5,bold:true,color:cat.acc,align:'center',valign:'middle',fontFace:'Microsoft JhengHei'});
+
+      for(let i=0;i<NY;i++){
+        const x=GX+i*yW, ST=STARS[i], even=i%2===0;
+        s.addShape('rect',{x:x+0.01,y:ry+0.02,w:yW-0.02,h:rH-0.04,fill:{color:even?cat.dim:CARD},line:{color:BORDER,width:0.3}});
+        if(even) s.addShape('rect',{x:x+0.01,y:ry+0.02,w:yW-0.02,h:0.03,fill:{color:cat.acc+'55'},line:{type:'none'}});
+        s.addText('▌',{x:x+0.04,y:ry+0.08,w:0.14,h:rH-0.2,fontSize:6,color:cat.acc+'88',valign:'top',fontFace:'Courier New'});
+      }
+    });
+
+    // ── BOTTOM BAR ──
+    s.addShape('rect',{x:0,y:H-0.26,w:W,h:0.26,fill:{color:DEEP},line:{type:'none'}});
+    hln(s,0,H-0.26,W,'4488FF88');
+    CATS.forEach((c,i)=>{
+      const lx=0.22+i*2.88;
+      s.addShape('ellipse',{x:lx,y:H-0.2,w:0.14,h:0.14,fill:{color:c.acc},line:{type:'none'}});
+      s.addShape('ellipse',{x:lx-0.03,y:H-0.23,w:0.2,h:0.2,fill:{color:c.acc+'33'},line:{type:'none'}});
+      s.addText(`[ ${c.eng} ]  ${c.key}`,{x:lx+0.2,y:H-0.24,w:2.6,h:0.2,fontSize:8,color:c.acc,fontFace:'Courier New',bold:true});
+    });
+    s.addText('⊙  STELLAR CHRONICLE  ·  COSMIC ORBIT SYSTEM',{x:W-5.5,y:H-0.24,w:5.3,h:0.2,fontSize:8,color:MUTED,align:'right',fontFace:'Courier New'});
+  }
+
+  st.textContent='⊙ Transmitting file to ground control...'; await tick();
+  const blob=await pres.write({outputType:'blob'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='人生里程碑_宇宙星系版.pptx';
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},3000);
+  st.textContent='✦ TRANSMISSION COMPLETE → 人生里程碑_宇宙星系版.pptx';
+  btn.disabled=false;
+}
+</script>
+</body>
+</html>
