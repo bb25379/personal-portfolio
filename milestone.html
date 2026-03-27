@@ -54,46 +54,36 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);display:flex;
 
 /* ── SIDEBAR ── */
 .sidebar{
-  width:300px;flex-shrink:0;
+  width:320px;flex-shrink:0;
   border-right:1px solid var(--border);
   background:var(--surface);
   overflow-y:auto;
   padding:.5rem 0;
 }
-.sidebar::-webkit-scrollbar{width:3px;}
-.sidebar::-webkit-scrollbar-thumb{background:var(--border);}
-
 .vi{
-  padding:.85rem 1.6rem;
+  padding:.85rem 1.2rem;
   cursor:pointer;
   border-left:3px solid transparent;
   transition:all .18s ease;
-  display:flex;align-items:center;gap:12px;
+  display:flex;align-items:center;gap:10px;
 }
 .vi:hover{background:#FAF8F4;}
 .vi.active{background:var(--gold-pale);border-left-color:var(--gold);}
-.vi.active .vi-name{color:var(--ink);}
 .vi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .vi-info{flex:1;min-width:0;}
-.vi-name{
-  font-size:14px;font-weight:500;color:var(--ink2);
-  margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  transition:color .18s;
+.vi-name{font-size:14px;font-weight:500;color:var(--ink2);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vi-tag{font-size:10px;color:var(--ink3);letter-spacing:1px;text-transform:uppercase;}
+
+/* 下載按鈕樣式 */
+.vi-dl-btn{
+  width:32px;height:24px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:4px;color:var(--ink3);font-size:12px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.2s;text-decoration:none;
 }
-.vi.active .vi-name,.vi:hover .vi-name{color:var(--ink);}
-.vi-tag{font-size:10px;font-weight:400;color:var(--ink3);letter-spacing:1.5px;text-transform:uppercase;}
-.vi-count{
-  font-size:11px;font-weight:500;color:var(--gold);
-  background:var(--gold-pale);padding:2px 9px;
-  border:1px solid #E8D5A8;
-  white-space:nowrap;flex-shrink:0;letter-spacing:.5px;
-}
-.vi-count.dim{color:var(--ink3);background:var(--surface2);border-color:var(--border);}
+.vi-dl-btn:hover{background:var(--gold);color:white;border-color:var(--gold);}
 
 /* ── RIGHT ── */
 .right{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;background:var(--bg);}
-
-/* ── PREVIEW HEADER ── */
 .pvhdr{
   padding:.9rem 2rem;
   border-bottom:1px solid var(--border);
@@ -101,122 +91,42 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);display:flex;
   display:flex;align-items:center;justify-content:space-between;
   flex-shrink:0;gap:1.5rem;
 }
-.pvhdr-title{
-  font-family:var(--serif);font-size:17px;font-weight:400;font-style:italic;
-  color:var(--ink2);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
+.pvhdr-title{font-family:var(--serif);font-size:17px;font-weight:400;font-style:italic;color:var(--ink2);}
 .tab-row{display:flex;border:1px solid var(--border2);overflow:hidden;}
 .tab-btn{
   font-family:var(--sans);font-size:12px;font-weight:500;
   padding:7px 20px;background:transparent;color:var(--ink3);
   border:none;border-right:1px solid var(--border2);cursor:pointer;
-  letter-spacing:.5px;transition:all .15s;white-space:nowrap;
+  letter-spacing:.5px;transition:all .15s;
 }
-.tab-btn:last-child{border-right:none;}
-.tab-btn:hover{background:var(--surface2);color:var(--ink2);}
 .tab-btn.on{background:var(--gold-pale);color:var(--gold);font-weight:600;}
 
-/* ── PANELS ── */
 .pv-panels{flex:1;overflow:hidden;position:relative;min-height:0;}
-
-.pv-a{width:100%;height:100%;display:none;}
-.pv-a.on{display:block;}
+.pv-a, .pv-b{width:100%;height:100%;display:none;}
+.pv-a.on, .pv-b.on{display:block;}
 .pv-a iframe{width:100%;height:100%;border:none;display:block;}
 
-.pv-b{width:100%;height:100%;display:none;overflow-y:auto;padding:2rem 2.5rem;}
-.pv-b.on{display:flex;flex-direction:column;}
-.pv-b::-webkit-scrollbar{width:4px;}
-.pv-b::-webkit-scrollbar-thumb{background:var(--border2);}
+.pv-b{overflow-y:auto;padding:2rem 2.5rem;}
+.slides-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;}
+.slide-box{width:100%;aspect-ratio:16/9;background:white;border:1px solid var(--border);position:relative;overflow:hidden;}
+.slide-box iframe{position:absolute;top:0;left:0;width:620px;height:348px;border:none;transform-origin:0 0;}
 
-.slides-label{
-  font-family:var(--sans);font-size:10.5px;font-weight:500;
-  color:var(--ink3);letter-spacing:3px;text-transform:uppercase;
-  margin-bottom:1.4rem;flex-shrink:0;
-  display:flex;align-items:center;gap:12px;
-}
-.slides-label::after{content:'';flex:1;height:1px;background:var(--border);}
-
-.slides-row{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:1.8rem;flex:1;min-height:0;
-}
-.slide-wrap{display:flex;flex-direction:column;gap:10px;min-width:0;}
-.slide-tag{
-  font-family:var(--sans);font-size:11px;font-weight:500;
-  color:var(--ink2);letter-spacing:.5px;
-  display:flex;align-items:center;gap:8px;
-}
-.slide-tag span{
-  font-size:9.5px;font-weight:400;color:var(--ink3);
-  letter-spacing:1.5px;text-transform:uppercase;
-}
-.slide-box{
-  width:100%;aspect-ratio:16/9;
-  background:var(--surface);
-  border:1px solid var(--border);
-  overflow:hidden;position:relative;
-  box-shadow:var(--shadow);
-  transition:box-shadow .2s,transform .2s;
-}
-.slide-box:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
-.slide-box iframe{
-  position:absolute;top:0;left:0;
-  width:620px;height:348px;
-  border:none;pointer-events:none;
-  transform-origin:0 0;
-}
-
-/* ── TOAST ── */
-.toast{
-  position:fixed;bottom:2rem;right:2rem;
-  background:var(--surface);border:1px solid var(--border2);
-  color:var(--ink);padding:12px 22px;font-size:13px;
-  box-shadow:var(--shadow-md);
-  opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;
-}
-.toast.show{opacity:1;}
-
-/* ── FOOTER ── */
-.ftr{
-  padding:.75rem 3rem;
-  border-top:1px solid var(--border);
-  background:var(--surface);
-  display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;
-}
-.ftr p{font-size:11.5px;color:var(--ink3);letter-spacing:.3px;}
-.ftr-total{font-size:12px;font-weight:500;color:var(--gold);}
-
-/* ── SECTION DIVIDER in sidebar ── */
-.sidebar-section{
-  padding:.4rem 1.6rem .3rem;
-  font-size:9.5px;font-weight:600;color:var(--ink3);
-  letter-spacing:2.5px;text-transform:uppercase;
-  margin-top:.3rem;
-}
+.ftr{padding:.75rem 3rem;border-top:1px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:var(--ink3);}
 </style>
 </head>
 <body>
 
-<script>
-const GAS_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
-</script>
-
-<!-- HEADER -->
 <div class="hdr">
   <div class="hdr-brand">
     <div class="hdr-title">Life <span>Milestone</span> · 人生里程碑</div>
     <div class="hdr-divider"></div>
     <div class="hdr-sub">PPT Series · 10 Editions · Age 20–32</div>
   </div>
-  <span class="total-pill" id="total-badge">載入中…</span>
+  <span class="total-pill" id="total-badge">總下載 0 次</span>
 </div>
 
 <div class="main">
-  <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar"></div>
-
-  <!-- RIGHT -->
   <div class="right">
     <div class="pvhdr">
       <span class="pvhdr-title" id="pvtitle">← 請點選左側版本以預覽</span>
@@ -227,15 +137,10 @@ const GAS_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
     </div>
     <div class="pv-panels">
       <div class="pv-a on" id="panelA">
-        <iframe id="frame-gen"
-          srcdoc="<div style='display:flex;align-items:center;justify-content:center;height:100vh;background:#F8F6F1;font-family:sans-serif;'><div style='text-align:center;color:#A8A29E'><div style='font-size:40px;margin-bottom:14px;opacity:.4'>←</div><div style='font-size:13px;letter-spacing:3px;text-transform:uppercase'>Select a version</div></div></div>">
-        </iframe>
+        <iframe id="frame-gen" srcdoc="<div style='display:flex;align-items:center;justify-content:center;height:100vh;background:#F8F6F1;color:#A8A29E;letter-spacing:3px;'>SELECT A VERSION</div>"></iframe>
       </div>
       <div class="pv-b" id="panelB">
-        <p class="slides-label">Slide Preview — 投影片樣式預覽</p>
-        <div class="slides-row" id="slides-row">
-          <div style="color:#A8A29E;font-size:13px;grid-column:1/-1;padding-top:1rem;">← 請先選擇左側版本</div>
-        </div>
+        <div class="slides-row" id="slides-row"></div>
       </div>
     </div>
   </div>
@@ -243,271 +148,68 @@ const GAS_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
 
 <div class="ftr">
   <p>將所有 HTML 檔案放於同一資料夾，以 Chrome 開啟即可生成 PPTX</p>
-  <span class="ftr-total" id="ftr-total">全版本總下載次數：讀取中…</span>
+  <span id="ftr-total">全版本總下載次數：0</span>
 </div>
-<div class="toast" id="toast"></div>
 
 <script>
-// ════════════════════════════════════════════
-//  版本清單
-// ════════════════════════════════════════════
+// 修正檔案路徑至 PPT_Templates 資料夾
+const BASE_PATH = 'PPT_Templates/';
 const VERSIONS=[
-  {id:'v01',name:'深色藝術版',      file:'人生里程碑-一般版本.html',             tag:'Dark Artistic · LinkedIn',        dot:'#C9A84C'},
-  {id:'v02',name:'手繪筆記手帳版',  file:'人生里程碑-手繪筆記手帳版.html',       tag:'Bullet Journal · Collage',        dot:'#C4956A'},
-  {id:'v03',name:'卡通可愛版',      file:'人生里程碑-卡通可愛版.html',           tag:'Cute Pastel · Tiffany Blue',      dot:'#5BBDBD'},
-  {id:'v04',name:'宇宙星系軌道版',  file:'人生里程碑-宇宙星系軌道版.html',       tag:'Cosmic Orbit · Stellar',          dot:'#66AAFF'},
-  {id:'v05',name:'明亮藝術版',      file:'人生里程碑-明亮藝術版.html',           tag:'Bright Artistic · Magazine',      dot:'#C8973A'},
-  {id:'v06',name:'科技深色版',      file:'人生里程碑-科技深色版.html',           tag:'Tech Dark · GitHub Style',        dot:'#58A6FF'},
-  {id:'v07',name:'專業質感版',      file:'人生里程碑-專業質感版.html',           tag:'Professional · Elegant',          dot:'#8A7560'},
-  {id:'v08',name:'復古懷舊報刊版',  file:'人生里程碑-復古懷舊報刊版-還行.html', tag:'Vintage Newspaper · 19th Century',dot:'#7A3A1A'},
-  {id:'v09',name:'極簡北歐居家版',  file:'人生里程碑-極簡北歐居家版.html',       tag:'Scandi Minimalist · Morandi',     dot:'#8FA8B2'},
-  {id:'v10',name:'遊戲通關大地圖',file:'人生里程碑-遊戲通關大地圖版.html', tag:'Game Map RPG · Pixel Art',        dot:'#FF6AC1'},
+  {id:'v01',name:'深色藝術版',      file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E4%B8%80%E8%88%AC%E7%89%88%E6%9C%AC.html',             tag:'Dark Artistic · LinkedIn',        dot:'#C9A84C'},
+  {id:'v02',name:'手繪筆記手帳版',  file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E6%89%8B%E7%B9%AA%E7%AD%86%E8%A8%98%E6%89%8B%E5%B8%B3%E7%89%88.html',       tag:'Bullet Journal · Collage',        dot:'#C4956A'},
+  {id:'v03',name:'卡通可愛版',      file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E5%8D%A1%E9%80%9A%E5%8F%AF%愛%E7%89%88.html',           tag:'Cute Pastel · Tiffany Blue',      dot:'#5BBDBD'},
+  {id:'v04',name:'宇宙星系軌道版',  file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E5%AE%87%E5%AE%99%E6%98%9F%E7%B3%BB%E8%BB%82%E9%81%93%E7%89%88.html',       tag:'Cosmic Orbit · Stellar',          dot:'#66AAFF'},
+  {id:'v05',name:'明亮藝術版',      file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E6%98%8E%亮%E8%97%9D%E8%A1%93%E7%89%88.html',           tag:'Bright Artistic · Magazine',      dot:'#C8973A'},
+  {id:'v06',name:'科技深色版',      file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E7%A7%91%E6%8A%80%E6%B7%B1%E8%89%B2%E7%89%88.html',           tag:'Tech Dark · GitHub Style',        dot:'#58A6FF'},
+  {id:'v07',name:'專業質感版',      file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E5%B0%88%E6%A5%AD%E8%B3%AA%E6%84%9F%E7%89%88.html',           tag:'Professional · Elegant',          dot:'#8A7560'},
+  {id:'v08',name:'復古懷舊報刊版',  file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E5%BE%A9%E5%8F%A4%E6%87%B4%E8%88%8A%E5%A0%B1%E5%88%8A%E7%89%88.html', tag:'Vintage Newspaper · 19th Century',dot:'#7A3A1A'},
+  {id:'v09',name:'極簡北歐居家版',  file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E6%A5%B5%E7%B0%A1%E5%8C%97%E6%AD%90%E5%B1%85%E5%AE%B6%E7%89%88.html',       tag:'Scandi Minimalist · Morandi',     dot:'#8FA8B2'},
+  {id:'v10',name:'遊戲通關大地圖',  file:'%E4%BA%BA%E7%94%9F%E9%87%8C%E7%A8%8B%E7%A2%91-%E9%81%8A%E6%88%B2%E9%80%9A%E9%97%9C%E5%A4%A7%E5%9C%B0%E5%9C%96%E7%89%88.html', tag:'Game Map RPG · Pixel Art',        dot:'#FF6AC1'},
 ];
 
-let activeId=null, countsCache={}, activeTab='A';
-
-// ════════════════════════════════════════════
-//  Tab 切換
-// ════════════════════════════════════════════
-function switchTab(t){
-  activeTab=t;
-  document.getElementById('panelA').classList.toggle('on',t==='A');
-  document.getElementById('panelB').classList.toggle('on',t==='B');
-  document.getElementById('tabA').classList.toggle('on',t==='A');
-  document.getElementById('tabB').classList.toggle('on',t==='B');
-  if(t==='B') setTimeout(scaleSlides,50);
-}
-function scaleSlides(){
-  document.querySelectorAll('.slide-box').forEach(box=>{
-    const s=Math.min(box.clientWidth/620,box.clientHeight/348);
-    const f=box.querySelector('iframe');
-    if(f) f.style.transform=`scale(${s})`;
-  });
-}
-
-// ════════════════════════════════════════════
-//  版本選擇
-// ════════════════════════════════════════════
-function selectVersion(v){
-  if(activeId===v.id) return;
-  activeId=v.id;
-  document.querySelectorAll('.vi').forEach(el=>el.classList.remove('active'));
-  const el=document.getElementById('vi-'+v.id);
-  if(el) el.classList.add('active');
-  document.getElementById('pvtitle').textContent=v.name+'  ·  '+v.file;
-  document.getElementById('frame-gen').srcdoc=GEN_PREVIEWS[v.id]||'';
-  renderSlides(v);
-  if(activeTab==='B') setTimeout(scaleSlides,80);
-  if(GAS_URL&&GAS_URL!=='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') logDownload(v);
-}
-
-// ════════════════════════════════════════════
-//  Slides 渲染
-// ════════════════════════════════════════════
-const SLIDE_LABELS=[
-  {title:'封面',     sub:'Cover Slide'},
-  {title:'年齡頁',   sub:'Age Slide'},
-  {title:'總覽',     sub:'Summary'},
-];
-function renderSlides(v){
-  const slides=getSlides(v.id);
-  document.getElementById('slides-row').innerHTML=slides.map((html,i)=>`
-    <div class="slide-wrap">
-      <div class="slide-tag">
-        ${SLIDE_LABELS[i]?.title||'Slide '+(i+1)}
-        <span>${SLIDE_LABELS[i]?.sub||''}</span>
-      </div>
-      <div class="slide-box">
-        <iframe srcdoc="${html.replace(/"/g,'&quot;').replace(/'/g,"&#39;")}"></iframe>
-      </div>
-    </div>
-  `).join('');
-  setTimeout(scaleSlides,80);
-}
-
-// ════════════════════════════════════════════
-//  計數 / Log
-// ════════════════════════════════════════════
-async function loadCounts(){
-  if(!GAS_URL||GAS_URL==='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE'){updateTotals({});return;}
-  try{
-    const r=await fetch(GAS_URL+'?action=counts',{cache:'no-store'});
-    const j=await r.json();
-    if(j.ok){countsCache=j.counts||{};renderCounts();updateTotals(countsCache);}
-  }catch(e){}
-}
-function renderCounts(){
-  VERSIONS.forEach(v=>{
-    const el=document.getElementById('cnt-'+v.id);
-    if(!el)return;
-    const c=(countsCache[v.id]?.count)||0;
-    el.textContent=c+'次';el.classList.remove('dim');
-  });
-}
-function updateTotals(counts){
-  let t=0;Object.values(counts).forEach(v=>{t+=(v.count||0);});
-  document.getElementById('total-badge').textContent='總下載 '+t+' 次';
-  document.getElementById('ftr-total').textContent='全版本總下載次數：'+t;
-}
-async function logDownload(v){
-  let ip='',country='',city='';
-  try{const r=await fetch('https://ipapi.co/json/',{cache:'no-store'});const d=await r.json();ip=d.ip||'';country=d.country_name||'';city=d.city||'';}catch(e){}
-  const ua=navigator.userAgent,br=parseBr(ua),os=parseOS(ua);
-  const params=new URLSearchParams(window.location.search);
-  const payload={versionId:v.id,versionName:v.name,ip,country,city,browser:br.name,browserVer:br.ver,os,device:/Mobi|Android|iPhone|iPad/i.test(ua)?'Mobile':'Desktop',language:navigator.language||'',timezone:Intl.DateTimeFormat().resolvedOptions().timeZone||'',screen:screen.width+'x'+screen.height,referrer:document.referrer||'(direct)',currentUrl:window.location.href,utm_source:params.get('utm_source')||'',utm_medium:params.get('utm_medium')||'',utm_campaign:params.get('utm_campaign')||''};
-  if(GAS_URL&&GAS_URL!=='YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)}).catch(()=>{});
-  if(!countsCache[v.id])countsCache[v.id]={count:0};
-  countsCache[v.id].count+=1;renderCounts();updateTotals(countsCache);
-}
-function parseBr(ua){const T=[{name:'Edge',re:/Edg\/([\d.]+)/},{name:'Chrome',re:/Chrome\/([\d.]+)/},{name:'Firefox',re:/Firefox\/([\d.]+)/},{name:'Safari',re:/Version\/([\d.]+).*Safari/}];for(const t of T){const m=ua.match(t.re);if(m)return{name:t.name,ver:m[1]||''};}return{name:'Unknown',ver:''};}
-function parseOS(ua){if(/Windows NT 10/.test(ua))return'Windows 10/11';if(/Windows NT 6/.test(ua))return'Windows 7/8';if(/Mac OS X/.test(ua))return'macOS';if(/iPhone|iPad/.test(ua))return'iOS';if(/Android/.test(ua))return'Android';return'Unknown';}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
-
-// ════════════════════════════════════════════
-//  側欄建立
-// ════════════════════════════════════════════
 function buildSidebar(){
-  const sb=document.getElementById('sidebar');
-  VERSIONS.forEach((v,i)=>{
-    const el=document.createElement('div');
-    el.className='vi';el.id='vi-'+v.id;
-    el.innerHTML=`
-      <div class="vi-dot" style="background:${v.dot};box-shadow:0 0 6px ${v.dot}88;"></div>
-      <div class="vi-info">
-        <div class="vi-name">${i+1}.&ensp;${v.name}</div>
+  const sb = document.getElementById('sidebar');
+  VERSIONS.forEach((v, i) => {
+    const el = document.createElement('div');
+    el.className = 'vi';
+    el.innerHTML = `
+      <div class="vi-dot" style="background:${v.dot}"></div>
+      <div class="vi-info" onclick="selectVersionById('${v.id}')">
+        <div class="vi-name">${i+1}. ${v.name}</div>
         <div class="vi-tag">${v.tag}</div>
       </div>
-      <div class="vi-count dim" id="cnt-${v.id}">…</div>
+      <a href="${BASE_PATH + v.file}" class="vi-dl-btn" download title="下載此版本">...</a>
     `;
-    el.addEventListener('click',()=>selectVersion(v));
     sb.appendChild(el);
   });
 }
 
-// ════════════════════════════════════════════
-//  產生器介面預覽
-// ════════════════════════════════════════════
-const GEN_PREVIEWS={
-  v01:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="font-family:-apple-system,sans-serif;background:#0D0C1D;color:#F0EEF8;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;"><h1 style="font-size:28px;font-weight:500;color:#C9A84C;margin:0 0 6px;">人生里程碑 PPT 產生器</h1><p style="color:#4E4C6A;font-size:14px;margin:0 0 2rem;">20 歲 — 32 歲 · 深色藝術風格 · LinkedIn 適用</p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:2rem;"><div style="font-size:12px;padding:4px 14px;border-radius:20px;background:#1C1840;border:0.5px solid #7C6BE0;color:#B8AEFF;">生活</div><div style="font-size:12px;padding:4px 14px;border-radius:20px;background:#281816;border:0.5px solid #D97060;color:#FFBDB5;">工作</div><div style="font-size:12px;padding:4px 14px;border-radius:20px;background:#0B231E;border:0.5px solid #5ECFB4;color:#AAFFF0;">學習</div><div style="font-size:12px;padding:4px 14px;border-radius:20px;background:#131F09;border:0.5px solid #8DCF5A;color:#C8FFAA;">健康</div></div><button style="font-size:15px;padding:12px 36px;border-radius:10px;background:transparent;color:#C9A84C;border:1.5px solid #C9A84C;">⬇ 生成並下載 人生里程碑.pptx</button></div></body></html>`,
-  v02:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="font-family:Georgia,serif;background:#F5EDD8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;"><div style="background:#FEFAF2;max-width:500px;width:100%;border:1.5px solid #D4C4A0;box-shadow:4px 4px 0 #D4C4A0;"><div style="height:22px;background:rgba(178,214,200,0.7);display:flex;align-items:center;padding:0 1.2rem;font-size:10px;color:#5A7A6A;letter-spacing:2px;">✦  MY JOURNAL  ✦  BUJO EDITION  ✦</div><div style="padding:2rem;"><h1 style="font-size:22px;font-weight:700;color:#3A2E22;">人生里程碑✍<br>手繪筆記手帳版</h1><div style="height:3px;background:repeating-linear-gradient(90deg,#C4956A 0,#C4956A 8px,transparent 8px,transparent 12px);margin:8px 0;width:80%;"></div><p style="font-size:12px;color:#8A7A60;margin-bottom:1.5rem;">// bullet journal · collage · age 20–32 ♡</p><div style="display:flex;gap:10px;margin-bottom:1.5rem;"><div style="font-size:20px;border:1.5px solid #D4C4A0;padding:6px 10px;transform:rotate(-3deg);">🌸</div><div style="font-size:20px;border:1.5px solid #D4C4A0;padding:6px 10px;transform:rotate(2deg);">📎</div><div style="font-size:20px;border:1.5px solid #D4C4A0;padding:6px 10px;transform:rotate(-1deg);">✨</div><div style="font-size:20px;border:1.5px solid #D4C4A0;padding:6px 10px;transform:rotate(3deg);">🎀</div></div><button style="width:100%;padding:12px;font-size:13px;font-weight:700;background:#C4956A;color:#FEFAF2;border:2px solid #3A2E22;box-shadow:3px 3px 0 #3A2E22;">♡ 生成手帳 &amp; 下載 PPTX</button></div></div></div></body></html>`,
-  v03:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="font-family:-apple-system,sans-serif;background:#F0FAFA;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;"><div style="background:#fff;border-radius:28px;padding:2.5rem 2rem;max-width:460px;width:100%;border:2.5px solid #B2E8E8;box-shadow:0 6px 32px rgba(129,210,210,0.15);"><div style="font-size:28px;margin-bottom:1rem;letter-spacing:4px;">🌸✨🎀🌿💛</div><h1 style="font-size:22px;font-weight:700;color:#2D7D7D;margin-bottom:4px;">人生里程碑 PPT</h1><p style="font-size:13px;color:#7ABFBF;margin-bottom:1.5rem;">卡通可愛版 · 粉嫩淺色系 · 20–32 歲</p><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;"><div style="font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;border:2px solid #81D4D4;background:#E8FAFA;color:#2D7D7D;">🌈 生活</div><div style="font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;border:2px solid #FFB8CC;background:#FFF0F5;color:#AA4466;">💼 工作</div><div style="font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;border:2px solid #A8E6CF;background:#F0FFF5;color:#2D6B4A;">📚 學習</div><div style="font-size:11px;font-weight:700;padding:5px 14px;border-radius:20px;border:2px solid #FFE066;background:#FFFBE6;color:#886600;">🌿 健康</div></div><button style="width:100%;padding:14px;border-radius:16px;font-size:15px;font-weight:800;background:linear-gradient(135deg,#81D4D4,#A8E6CF);color:#fff;border:none;">🎀 生成並下載 人生里程碑.pptx</button></div></div></body></html>`,
-  v04:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="font-family:'Courier New',monospace;background:#060818;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;color:#C8D8F8;"><div style="background:#0A0E22;border:1px solid #1A2440;border-radius:8px;padding:2.5rem 2.2rem;max-width:480px;width:100%;"><div style="text-align:center;margin-bottom:1.5rem;"><div style="width:64px;height:64px;border-radius:50%;border:2px solid #3060CC;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;box-shadow:0 0 18px rgba(60,100,255,0.3);"><div style="width:10px;height:10px;border-radius:50%;background:#66AAFF;"></div></div><p style="font-size:9px;letter-spacing:4px;color:#3060CC;margin-bottom:8px;">COSMIC ORBIT EDITION</p><h1 style="font-size:20px;font-weight:700;color:#E8F0FF;">人生里程碑<br>宇宙星系軌道版</h1></div><button style="width:100%;padding:13px;font-size:11px;font-weight:700;letter-spacing:3px;background:transparent;color:#66AAFF;border:1px solid #1A3060;">⊙ LAUNCH &amp; DOWNLOAD PPTX</button></div></div></body></html>`,
-  v05:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="font-family:-apple-system,sans-serif;background:#F7F3EE;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;"><div style="background:#fff;border-radius:20px;padding:2.5rem 2rem;max-width:480px;width:100%;box-shadow:0 2px 24px rgba(0,0,0,0.07);"><p style="font-size:10px;letter-spacing:3px;color:#B09A6E;margin-bottom:10px;">LIFE MILESTONE TEMPLATE</p><h1 style="font-size:26px;font-weight:600;color:#1B1A2E;line-height:1.3;margin-bottom:6px;">人生里程碑 PPT<br>明亮藝術版</h1><p style="font-size:13px;color:#8A8499;margin-bottom:1.5rem;">20 歲 — 32 歲 · 雜誌風藝術排版 · LinkedIn 適用</p><button style="width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:600;background:#1B1A2E;color:#F7F3EE;border:none;">⬇ 生成並下載 人生里程碑.pptx</button></div></div></body></html>`,
-  v06:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="font-family:'Courier New',monospace;background:#0A0E14;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;"><div style="background:#0D1117;border:1px solid #21262D;border-radius:6px;padding:2.5rem 2.2rem;max-width:460px;width:100%;"><div style="display:flex;gap:6px;margin-bottom:1.5rem;"><div style="width:12px;height:12px;border-radius:50%;background:#FF5F57;"></div><div style="width:12px;height:12px;border-radius:50%;background:#FFBD2E;"></div><div style="width:12px;height:12px;border-radius:50%;background:#28C840;"></div></div><p style="font-size:10px;letter-spacing:3px;color:#58A6FF;margin-bottom:10px;">// LIFE_MILESTONE.pptx</p><h1 style="font-size:22px;font-weight:700;color:#E6EDF3;line-height:1.35;margin-bottom:5px;">人生里程碑 PPT<br>科技深色版</h1><p style="font-size:12px;color:#8B949E;margin-bottom:1.5rem;">$ init --age 20..32 --theme tech-dark --lang zh</p><button style="width:100%;padding:13px;font-size:12px;font-weight:700;letter-spacing:3px;background:transparent;color:#58A6FF;border:1px solid #30363D;">▶ GENERATE &amp; DOWNLOAD</button></div></div></body></html>`,
-  v07:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="font-family:-apple-system,sans-serif;background:#F2F0EB;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;"><div style="background:#FAFAF8;border-radius:4px;padding:2.8rem 2.4rem;max-width:440px;width:100%;border:1px solid #DDD8D0;"><p style="font-size:10px;letter-spacing:4px;color:#9A8F80;margin-bottom:1.2rem;font-weight:500;">LIFE MILESTONE  ·  PROFESSIONAL EDITION</p><h1 style="font-size:24px;font-weight:600;color:#1A1814;line-height:1.3;margin-bottom:6px;">人生里程碑 PPT<br>專業質感版</h1><p style="font-size:13px;color:#9A8F80;margin-bottom:1.5rem;">20 歲 — 32 歲 · 典雅配色 · 適合 LinkedIn 發布</p><hr style="border:none;border-top:1px solid #DDD8D0;margin:0 0 1.5rem;"><button style="width:100%;padding:14px;font-size:13px;font-weight:600;letter-spacing:2px;background:#1A1814;color:#F2F0EB;border:none;">GENERATE &amp; DOWNLOAD</button></div></div></body></html>`,
-  v08:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="font-family:'Times New Roman',serif;background:#C8B88A;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;"><div style="background:#F5EDD0;max-width:500px;width:100%;border:3px double #2A1F0E;outline:6px solid #F5EDD0;box-shadow:0 0 0 9px #2A1F0E,8px 8px 32px rgba(0,0,0,0.4);"><div style="background:#2A1F0E;color:#F5EDD0;text-align:center;padding:10px 2rem;letter-spacing:6px;font-size:10px;">✦ ESTABLISHED ANNO DOMINI ✦</div><div style="text-align:center;padding:1.2rem 2rem 0.6rem;border-bottom:4px double #2A1F0E;"><h1 style="font-size:28px;font-weight:900;color:#2A1F0E;line-height:1.1;">THE LIFE MILESTONE<br>GAZETTE</h1><hr style="border:none;border-top:2px solid #2A1F0E;margin:6px 0 4px;"><div style="display:flex;justify-content:space-between;font-size:10px;color:#5A4A2A;font-style:italic;"><span>VOL. I  NO. 1</span><span>AGES 20 TO 32</span><span>ONE LIFETIME</span></div></div><div style="padding:1rem 2rem 1.2rem;"><button style="width:100%;padding:12px;font-size:12px;font-weight:900;letter-spacing:3px;background:#2A1F0E;color:#F5EDD0;border:none;">Print &amp; Download Edition</button></div></div></div></body></html>`,
-  v09:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="font-family:'Georgia',serif;background:#EDE8E1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;"><div style="background:#F7F4EF;max-width:440px;width:100%;padding:3rem 2.6rem;"><div style="font-size:28px;margin-bottom:1.4rem;opacity:.75;">🌿</div><h1 style="font-size:20px;font-weight:400;color:#3A3530;line-height:1.5;margin-bottom:4px;">人生里程碑<br>極簡北歐居家版</h1><p style="font-size:11px;color:#9A9088;letter-spacing:2px;margin-bottom:2rem;font-style:italic;">scandi minimalist · morandi palette · age 20–32</p><hr style="border:none;border-top:1px solid #D8D0C4;margin:0 0 1.5rem;"><button style="width:100%;padding:14px;font-size:10px;letter-spacing:4px;background:transparent;color:#3A3530;border:1px solid #C0B8AC;">generate &amp; download</button></div></div></body></html>`,
-  v10:`<!DOCTYPE html><html><head><meta charset="UTF-8"><style>*{margin:0;padding:0;box-sizing:border-box;}html,body{height:100%;}</style></head><body><div style="background:#1a0533;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;font-family:'Courier New',monospace;"><div style="background:#2d1b69;border:4px solid #ff6ac1;box-shadow:0 0 0 8px #1a0533,0 0 0 12px #ff6ac1;max-width:480px;width:100%;"><div style="background:#ff6ac1;padding:8px 16px;display:flex;align-items:center;gap:8px;"><span style="font-size:11px;font-weight:700;color:#1a0533;">LIFE_MILESTONE.exe</span><div style="display:flex;gap:5px;margin-left:auto;"><div style="width:10px;height:10px;border-radius:50%;background:#ff5f56;"></div><div style="width:10px;height:10px;border-radius:50%;background:#ffbd2e;"></div><div style="width:10px;height:10px;border-radius:50%;background:#27c93f;"></div></div></div><div style="padding:2rem;"><p style="font-size:14px;color:#ffe066;line-height:1.6;margin-bottom:6px;">人生里程碑<br>遊戲通關大地圖版</p><p style="font-size:9px;color:#a78bfa;letter-spacing:2px;margin-bottom:1.5rem;">// RPG · PIXEL ART · AGE 20 to 32</p><div style="height:12px;background:#0f0a1e;border:2px solid #4a3580;margin-bottom:1.5rem;"><div style="height:100%;width:85%;background:#ff4444;"></div></div><button style="width:100%;padding:12px;font-size:10px;font-weight:700;letter-spacing:3px;background:#ff6ac1;color:#1a0533;border:none;">INSERT COIN &amp; START GAME</button></div></div></div></body></html>`,
-};
-
-// ════════════════════════════════════════════
-//  投影片 Mockup（各版本 3 張）
-// ════════════════════════════════════════════
-function getSlides(id){
-  const S={
-    v01:[covDark(),ageDark(),sumDark()],
-    v02:[covBujo(),ageBujo(),sumBujo()],
-    v03:[covCute(),ageCute(),sumCute()],
-    v04:[covCosmic(),ageCosmic(),sumCosmic()],
-    v05:[covBright(),ageBright(),sumBright()],
-    v06:[covTech(),ageTech(),sumTech()],
-    v07:[covPro(),agePro(),sumPro()],
-    v08:[covVintage(),ageVintage(),sumVintage()],
-    v09:[covScandi(),ageScandi(),sumScandi()],
-    v10:[covGame(),ageGame(),sumGame()],
-  };
-  return S[id]||S.v01;
+function selectVersionById(id){
+  const v = VERSIONS.find(item => item.id === id);
+  if(!v) return;
+  document.querySelectorAll('.vi').forEach(el => el.classList.remove('active'));
+  document.getElementById('pvtitle').textContent = v.name;
+  
+  // 更新產生器預覽 (模擬圖示中的點擊下載介面)
+  const previewHtml = `
+    <div style="background:#0D0C1D; color:white; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif;">
+      <h2 style="color:${v.dot}">${v.name} PPT 產生器</h2>
+      <p style="opacity:0.6; margin-bottom:30px;">20 歲 — 32 歲 · ${v.tag}</p>
+      <a href="${BASE_PATH + v.file}" download style="padding:15px 40px; border:1px solid ${v.dot}; color:${v.dot}; text-decoration:none; border-radius:8px;">⬇ 生成並下載 人生里程碑.pptx</a>
+    </div>
+  `;
+  document.getElementById('frame-gen').srcdoc = previewHtml;
 }
 
-/* shared helpers */
-function wrap(bg,content){return`<div style="width:620px;height:348px;background:${bg};position:relative;overflow:hidden;font-family:-apple-system,sans-serif;">${content}</div>`;}
-function rect(x,y,w,h,bg,extra=''){return`<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;background:${bg};${extra}"></div>`;}
-function text(x,y,w,h,txt,style){return`<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px;${style}">${txt}</div>`;}
-function monthGrid(bg,card,bdr,acc,tc,mu,hdrY=62){
-  const ms=['一','二','三','四','五','六','七','八','九','十','十一','十二'];
-  const cols=4,mx=14,gap=4,cW=(620-2*mx-(cols-1)*gap)/cols,cH=(348-hdrY-8-2*gap)/3;
-  return ms.map((m,i)=>{
-    const col=i%cols,row=Math.floor(i/cols),x=mx+col*(cW+gap),y=hdrY+row*(cH+gap);
-    return `<div style="position:absolute;left:${x}px;top:${y}px;width:${cW}px;height:${cH}px;background:${card};border:0.5px solid ${bdr};">`+
-      `<div style="height:13px;background:${bg==='#0D0C1D'?'#1E1C38':bg};display:flex;align-items:center;padding:0 4px;gap:3px;">`+
-      `<span style="font-size:7px;font-weight:700;color:${acc}">${String(i+1).padStart(2,'0')}</span>`+
-      `<span style="font-size:7px;color:${tc};margin-left:auto">${m}月</span></div>`+
-      `<div style="height:0.5px;background:${bdr};margin:5px 4px"></div><div style="height:0.5px;background:${bdr};margin:5px 4px"></div></div>`;
-  }).join('');
+function switchTab(t){
+  document.getElementById('panelA').classList.toggle('on', t==='A');
+  document.getElementById('panelB').classList.toggle('on', t==='B');
+  document.getElementById('tabA').classList.toggle('on', t==='A');
+  document.getElementById('tabB').classList.toggle('on', t==='B');
 }
-function sumGrid(bgs,accs,labels,hdrBg,hdrAcc){
-  const NY=13,LW=42,GX=14+LW,GY=50,yW=(620-14-LW)/NY,HDH=20,GH=348-GY-12,rH=(GH-HDH)/4;
-  let o='';
-  for(let i=0;i<NY;i++){const x=GX+i*yW;o+=`<div style="position:absolute;left:${x}px;top:${GY}px;width:${yW-1}px;height:${HDH}px;background:${hdrBg};border:0.3px solid ${hdrAcc}22;"><div style="height:1.5px;background:${accs[i%4]}"></div><div style="font-size:6.5px;font-weight:700;color:${accs[i%4]};text-align:center;margin-top:2px">${20+i}</div></div>`;}
-  labels.forEach((lbl,ci)=>{
-    const ry=GY+HDH+ci*rH;
-    o+=`<div style="position:absolute;left:14px;top:${ry+1}px;width:${LW-2}px;height:${rH-2}px;background:${bgs[ci]};border:0.5px solid ${accs[ci]};display:flex;align-items:center;justify-content:center;"><span style="font-size:7.5px;font-weight:700;color:${accs[ci]}">${lbl}</span></div>`;
-    for(let i=0;i<NY;i++){const x=GX+i*yW;o+=`<div style="position:absolute;left:${x}px;top:${ry+1}px;width:${yW-1}px;height:${rH-2}px;background:${i%2===0?bgs[ci]:'transparent'};border:0.3px solid ${accs[ci]}44;"></div>`;}
-  });
-  return o;
-}
-function stars(n){return`<div style="position:absolute;">${[[50,22],[120,14],[210,28],[300,10],[390,22],[480,14],[560,26],[30,80],[590,100],[20,190],[605,170],[40,280],[590,290]].map(([x,y],i)=>`<div style="position:absolute;left:${x}px;top:${y}px;width:${i%3?2:3}px;height:${i%3?2:3}px;border-radius:50%;background:${'#FFF,#FF8,#8FF,#F8F'.split(',')[i%4]}"></div>`).slice(0,n).join('')}</div>`;}
-function pixG(){let o='';for(let i=0;i<350;i+=14)o+=`<div style="position:absolute;top:${i}px;left:0;right:0;height:0.3px;background:#FFF2"></div>`;return o;}
 
-/* v01 dark */
-function covDark(){return wrap('#0D0C1D',rect(0,0,4,348,'#C9A84C')+rect(9.6*620/13.33,0,3.73*620/13.33,3.5*348/7.5,'#1E1C38')+text(14,100,300,100,'我的人生里程碑','font-size:22px;font-weight:700;color:#F0EEF8;')+text(14,210,200,28,'20 歲 — 32 歲','font-size:12px;color:#E8D5A3;')+text(14,245,280,10,'','border-top:1px solid #C9A84C;')+text(14,260,200,20,'記錄每一個重要的人生時刻','font-size:9px;color:#4E4C6A;')+[['#1C1840','#7C6BE0','#B8AEFF','生活'],['#281816','#D97060','#FFBDB5','工作'],['#0B231E','#5ECFB4','#AAFFF0','學習'],['#131F09','#8DCF5A','#C8FFAA','健康']].map((c,i)=>rect(14+i*80,295,70,24,c[0],`border:0.5px solid ${c[1]};display:flex;align-items:center;justify-content:center;`)+text(14+i*80,295,70,24,c[3],`font-size:8px;color:${c[2]};text-align:center;line-height:24px;`)).join(''));}
-function ageDark(){return wrap('#0D0C1D',rect(0,0,620,60,'#1E1C38')+rect(0,60,620,2,'#C9A84C')+text(12,6,80,48,'25','font-size:32px;font-weight:700;color:#C9A84C;')+text(52,30,200,20,'歲 · 人生第6章','font-size:9px;color:#4E4C6A;')+monthGrid('#0D0C1D','#161429','#252242','#C9A84C','#E8D5A3','#4E4C6A'));}
-function sumDark(){return wrap('#0D0C1D',rect(0,0,620,48,'#1E1C38')+text(14,8,300,30,'人生里程碑總覽','font-size:13px;font-weight:700;color:#F0EEF8;')+sumGrid(['#1C1840','#281816','#0B231E','#131F09'],['#7C6BE0','#D97060','#5ECFB4','#8DCF5A'],['生活','工作','學習','健康'],'#1E1C38','#C9A84C'));}
-
-/* v02 bujo */
-function covBujo(){return wrap('#F5EDD8',rect(0.28*620/13.33,0.22*348/7.5,620-0.56*620/13.33,348-0.44*348/7.5,'#FEFAF2','border:1px solid #DDD0B8;')+rect(0,0.22*348/7.5,620,12,'rgba(178,214,200,0.7)')+text(120,60,'','','My Life','font-size:24px;color:#8A7A60;font-family:Georgia;font-style:italic;position:absolute;left:120px;top:60px;')+text(120,92,'','','Milestone','font-size:26px;font-weight:700;color:#3A2E22;font-family:Georgia;position:absolute;left:120px;top:92px;')+text(120,130,'','','20 歲 ──── 32 歲','font-size:11px;color:#3A2E22;position:absolute;left:120px;top:130px;font-family:Georgia;')+`<div style="position:absolute;left:120px;top:145px;width:220px;height:2px;background:repeating-linear-gradient(90deg,#C4956A 0,#C4956A 6px,transparent 6px,transparent 9px);"></div>`+text(120,155,'','','記錄每一個珍貴的人生片刻 ♡','font-size:9px;color:#8A7A60;position:absolute;left:120px;top:155px;font-style:italic;font-family:Georgia;')+[['#FFF5F7','#F2A7B0','生活'],['#FFF8F0','#C4956A','工作'],['#F0F8F4','#8BB8A0','學習'],['#F8F0FF','#B8A0C8','健康']].map((c,i)=>`<div style="position:absolute;left:${120+i*118}px;top:200px;width:108px;height:30px;background:${c[0]};border:1px solid ${c[1]};display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#3A2E22;">${c[2]}</div>`).join(''));}
-function ageBujo(){return wrap('#FFFDF0',rect(0,0,620,14,'rgba(232,200,112,0.7)')+rect(0,14,620,1,'#E8C870')+text(14,20,60,48,'25','font-size:28px;font-weight:700;color:#3A2E22;font-family:Georgia;')+text(58,34,200,18,'歲 · 人生第6章','font-size:9px;color:#8A7A60;')+`<div style="position:absolute;top:65px;left:0;right:0;height:1px;background:#E8C870;"></div>`+monthGrid('#FFFDF0','#FFFAE8','#E8DCC8','#A08830','#3A2E22','#8A7A60'));}
-function sumBujo(){return wrap('#F8F2E4',rect(0,0,620,2,'#C4956A')+text(14,10,300,28,'My Life Milestone — 里程碑總覽','font-size:12px;font-weight:700;color:#3A2E22;font-family:Georgia;')+sumGrid(['#FFF5F7','#FFF8F0','#F0F8F4','#F8F0FF'],['#F2A7B0','#C4956A','#8BB8A0','#B8A0C8'],['生活','工作','學習','健康'],'#EDE0C8','#C4956A'));}
-
-/* v03 cute */
-function covCute(){return wrap('#F8FFFE',rect(0,0,30,348,'#B2E8E8')+rect(0,0,14,348,'#81D4D4')+rect(620-170,0,170,120,'#E0F7F7')+rect(620-120,0,120,85,'#FFD3E0')+rect(0,348-38,620,38,'#B2E8E8')+rect(0,348-14,620,14,'#81D4D4')+text(50,62,300,18,'✦ LIFE MILESTONE ✦','font-size:9px;font-weight:700;color:#81D4D4;letter-spacing:2px;')+text(50,82,300,60,'我的人生里程碑','font-size:22px;font-weight:700;color:#2D7D7D;')+text(50,148,300,20,'🌸 20 歲 ——— 32 歲 🌸','font-size:11px;color:#5BBDBD;')+[['#E0F7F7','#B2E8E8','#2D7D7D','🌈 生活'],['#FFF0F5','#FFD3E0','#AA4466','💼 工作'],['#F0FFF8','#A8E6CF','#2D6B4A','📚 學習'],['#FFFDF0','#FFF3B0','#886600','🌿 健康']].map((c,i)=>`<div style="position:absolute;left:${50+i*138}px;top:180px;width:125px;height:24px;background:${c[0]};border:2px solid ${c[1]};border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:${c[2]};">${c[3]}</div>`).join(''));}
-function ageCute(){return wrap('#FFFDF0',rect(0,0,620,60,'#FFF3B0')+rect(0,0,24,60,'#DDBB33')+rect(0,60,620,3,'#DDBB33')+text(34,8,60,44,'25','font-size:26px;font-weight:700;color:#886600;')+text(74,24,200,18,'🌟 神秘森林 · 人生第6章','font-size:9px;font-weight:700;color:#2D7D7D;')+monthGrid('#FFFDF0','#FFFAE8','#FFF3B0','#886600','#3A2E22','#8A7A60'));}
-function sumCute(){return wrap('#F8FFFE',rect(0,0,620,50,'#B2E8E8')+rect(0,0,24,50,'#5BBDBD')+text(34,8,300,14,'🌈 人生里程碑總覽','font-size:12px;font-weight:700;color:#2D7D7D;')+sumGrid(['#E0F7F7','#FFF0F5','#F0FFF8','#FFFDF0'],['#B2E8E8','#FFD3E0','#A8E6CF','#FFF3B0'],['生活','工作','學習','健康'],'#E8FAFA','#5BBDBD'));}
-
-/* v04 cosmic */
-function covCosmic(){return wrap('#060818',stars(18)+rect(0,0,280,348,'rgba(6,8,24,0.5)')+`<div style="position:absolute;left:280px;top:0;width:1px;height:348px;background:#1A3060;"></div>`+`<div style="position:absolute;right:30px;top:40px;width:140px;height:120px;border-radius:50%;background:radial-gradient(circle,#FFB84022,transparent 70%);"></div>`+`<div style="position:absolute;right:80px;top:80px;width:42px;height:42px;border-radius:50%;background:#FFE088;box-shadow:0 0 18px #FFB840;"></div>`+text(14,28,260,16,'✦ COSMIC ORBIT EDITION ✦','font-size:7px;color:#3060CC;letter-spacing:2px;')+text(14,50,260,24,'宇宙','font-size:14px;color:#8AA0C8;')+text(14,68,260,32,'星系軌道版','font-size:18px;font-weight:700;color:#E8F0FF;')+text(14,106,260,16,'LIFE MILESTONE','font-size:9px;font-weight:700;color:#4488FF;letter-spacing:3px;')+`<div style="position:absolute;left:14px;top:122px;width:240px;height:1px;background:#1A3060;"></div>`+text(14,130,260,36,'人生如星辰運行，每一年是一次公轉','font-size:8px;color:#8AA0C8;line-height:1.7;'));}
-function ageCosmic(){return wrap('#060818',stars(12)+rect(0,0,620,14,'#080C1E')+rect(0,0,620,2,'#CC88FF')+text(12,18,60,42,'25','font-size:22px;font-weight:700;color:#CC88FF;font-family:Courier New;')+text(54,24,200,18,'星雲誕生 · Stellar Nebula','font-size:9px;color:#EECCff;')+rect(0,62,620,2,'#CC88FF')+monthGrid('#0A0E22','#0C1228','#141E38','#CC88FF','#EECCff','#3A5080'));}
-function sumCosmic(){return wrap('#060818',stars(20)+rect(0,0,620,14,'#080C1E')+rect(0,0,620,2,'#4488FF')+text(14,18,300,20,'✦ GALAXY MAP — 人生星系軌道總覽','font-size:11px;font-weight:700;color:#E8F0FF;')+sumGrid(['#040C20','#201000','#180028','#002018'],['#4488FF','#FFB840','#CC66FF','#44FFCC'],['生活','工作','學習','健康'],'#0A0E22','#4488FF'));}
-
-/* v05 bright */
-function covBright(){return wrap('#FBF8F3',rect(0,0,26,348,'#E8D5A3')+rect(0,0,14,348,'#C8973A')+rect(620-130,0,130,130,'#E8E0D0')+rect(620-110,20,100,90,'#F5F0E8')+text(42,56,360,16,'L I F E   M I L E S T O N E','font-size:8px;color:#C8973A;letter-spacing:3px;')+text(42,74,380,50,'我的人生里程碑','font-size:22px;font-weight:700;color:#1B1A2E;')+`<div style="position:absolute;left:42px;top:132px;width:240px;height:1.5px;background:#C8973A;"></div>`+text(42,140,260,22,'20 歲 —— 32 歲','font-size:11px;color:#1B1A2E;')+text(42,164,260,18,'記錄每一個重要的人生時刻','font-size:9px;color:#A09898;')+[['#F5ECD8','#C8973A','生活'],['#FAE8E7','#C85A52','工作'],['#DFF0E8','#3A8C64','學習'],['#DCE8F5','#3A5CA8','健康']].map((c,i)=>`<div style="position:absolute;left:${42+i*136}px;top:204px;width:124px;height:18px;background:${c[0]};border:1px solid ${c[1]};display:flex;align-items:center;"><div style="width:6px;height:100%;background:${c[1]};"></div><span style="font-size:8px;font-weight:700;color:${c[1]};margin-left:5px;">${c[2]}</span></div>`).join(''));}
-function ageBright(){return wrap('#FBF8F3',rect(0,0,620,58,'#FAE8E7')+rect(0,0,20,58,'#C85A52')+rect(0,58,620,1.5,'#C85A52')+text(30,7,60,44,'25','font-size:28px;font-weight:700;color:#7A2A26;')+text(68,22,200,18,'工作 · 人生第6章','font-size:9px;color:#C85A52;')+monthGrid('#FBF8F3','#FFFFFF','#EDE8E0','#C85A52','#1B1A2E','#A09898'));}
-function sumBright(){return wrap('#FBF8F3',rect(0,0,620,50,'#1B1A2E')+rect(0,0,20,50,'#C8973A')+text(30,8,300,14,'人生里程碑總覽','font-size:12px;font-weight:700;color:#FFFFFF;')+sumGrid(['#F5ECD8','#FAE8E7','#DFF0E8','#DCE8F5'],['#C8973A','#C85A52','#3A8C64','#3A5CA8'],['生活','工作','學習','健康'],'#F0EDE6','#C8973A'));}
-
-/* v06 tech */
-function covTech(){return wrap('#0D1117',`<div style="position:absolute;right:0;top:0;width:220px;height:348px;background:#161B22;border-left:1px solid #21262D;"></div>`+`<div style="position:absolute;top:0;left:0;width:400px;height:15px;background:#1C2128;border-bottom:1px solid #21262D;"></div>`+text(10,1,200,13,'● life_milestone.pptx','font-size:7px;color:#8B949E;font-family:Courier New;')+text(28,22,360,16,'// LIFE MILESTONE','font-size:8px;color:#8B949E;font-family:Courier New;')+text(28,40,360,20,'我的','font-size:14px;color:#8B949E;')+text(28,60,360,28,'人生里程碑','font-size:18px;font-weight:700;color:#E6EDF3;')+`<div style="position:absolute;left:28px;top:94px;width:80px;height:2.5px;background:#58A6FF;"></div>`+`<div style="position:absolute;left:108px;top:94px;width:30px;height:2.5px;background:#3FB950;"></div>`+text(28,100,360,18,'20 years old → 32 years old','font-size:9px;color:#C9D1D9;font-family:Courier New;')+[['#1F3A5C','#58A6FF','生活'],['#1A3D24','#3FB950','工作'],['#3D2E10','#E3B341','學習'],['#4A2018','#F78166','健康']].map((c,i)=>`<div style="position:absolute;left:${28+i*82}px;top:132px;width:74px;height:16px;background:${c[0]};border:1px solid ${c[1]};display:flex;align-items:center;"><div style="width:3px;height:100%;background:${c[1]};"></div><span style="font-size:7px;color:${c[1]};margin-left:4px;">${c[2]}</span></div>`).join('')+`<div style="position:absolute;right:10px;top:24px;color:#A5D6FF;font-size:8px;font-family:Courier New;line-height:1.8;">const milestone = {<br>&nbsp;&nbsp;age: {20..32},<br>&nbsp;&nbsp;cats: ['生活',<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'工作'],<br>};</div>`);}
-function ageTech(){return wrap('#0D1117',rect(0,0,620,14,'#1C2128')+rect(0,14,620,1,'#21262D')+rect(0,0,620,1.5,'#58A6FF')+rect(0,15,620,48,'#161B22')+text(10,2,200,12,'age_25.slide','font-size:7px;color:#C9D1D9;font-family:Courier New;')+rect(0,15,3,348,'#58A6FF')+text(12,18,70,40,'25','font-size:22px;font-weight:700;color:#58A6FF;font-family:Courier New;')+text(48,26,200,16,'歲 · 人生第6個章節','font-size:8px;color:#E6EDF3;')+text(48,40,200,14,'Chapter 6 · life theme','font-size:7px;color:#8B949E;font-family:Courier New;')+monthGrid('#0D1117','#161B22','#21262D','#58A6FF','#C9D1D9','#484F58'));}
-function sumTech(){return wrap('#0D1117',rect(0,0,620,50,'#161B22')+rect(0,0,620,2,'#58A6FF')+text(14,8,300,14,'人生里程碑總覽','font-size:12px;font-weight:700;color:#E6EDF3;')+text(14,26,300,16,'// 20 → 32 · life · work · learn · health','font-size:8px;color:#8B949E;font-family:Courier New;')+sumGrid(['#1F3A5C','#1A3D24','#3D2E10','#4A2018'],['#58A6FF','#3FB950','#E3B341','#F78166'],['生活','工作','學習','健康'],'#161B22','#58A6FF'));}
-
-/* v07 pro */
-function covPro(){return wrap('#F7F5F0',rect(620-210,0,210,348,'#1A1814')+rect(620-208,0,2,348,'#2E2C28')+[['#8A7560','生活','Life · Moments'],['#4A6670','工作','Career · Growth'],['#5A7050','學習','Learning · Skills'],['#7A6080','健康','Health · Wellness']].map((c,i)=>`<div style="position:absolute;right:14px;top:${90+i*56}px;display:flex;align-items:center;gap:6px;"><div style="width:3px;height:38px;background:${c[0]};"></div><div><div style="font-size:9px;font-weight:700;color:#F7F5F0;">${c[1]}</div><div style="font-size:7px;color:#8A8278;margin-top:1px;">${c[2]}</div></div></div>`).join('')+text(32,50,350,16,'LIFE MILESTONE','font-size:8px;color:#8A8278;letter-spacing:4px;font-weight:600;')+`<div style="position:absolute;left:32px;top:68px;width:330px;height:0.5px;background:#D0CBC0;"></div>`+text(32,76,350,20,'我的','font-size:16px;color:#8A8278;')+text(32,96,350,30,'人生里程碑','font-size:20px;font-weight:600;color:#1A1814;')+`<div style="position:absolute;left:32px;top:132px;width:280px;height:0.5px;background:#C8C2B8;"></div>`+text(32,140,280,18,'記錄每一個重要的人生時刻','font-size:9px;color:#8A8278;')+`<div style="position:absolute;left:32px;top:162px;width:280px;height:0.5px;background:#D0CBC0;"></div>`+text(32,170,280,16,'Professional Edition · 2024','font-size:7px;color:#C8C2B8;letter-spacing:1px;'));}
-function agePro(){return wrap('#F7F5F0',rect(0,0,14,348,'#DDE8EC')+rect(0,0,3,348,'#4A6670')+rect(14,0,620,56,'#F0EDE6')+rect(14,56,620,1,'#4A6670')+text(24,6,60,44,'25','font-size:26px;font-weight:700;color:#1A1814;font-family:Georgia;')+text(62,20,200,16,'歲 · 人生第6個章節','font-size:9px;font-weight:600;color:#1A1814;')+text(62,36,200,14,'Chapter 6 of 13','font-size:8px;color:#8A8278;')+text(620-60,36,55,18,'06 / 13','font-size:8px;color:#C8C2B8;font-family:Georgia;text-align:right;')+monthGrid('#F7F5F0','#FFFFFF','#E8E4DC','#4A6670','#1A1814','#8A8278'));}
-function sumPro(){return wrap('#F7F5F0',rect(0,0,620,48,'#1A1814')+rect(0,0,620,3,'#8A7560')+text(18,7,300,16,'LIFE MILESTONE','font-size:8px;color:#8A8278;letter-spacing:3px;font-weight:600;')+text(18,20,300,22,'人生里程碑總覽','font-size:12px;font-weight:600;color:#F7F5F0;')+sumGrid(['#EDE8E0','#DDE8EC','#E0EBD8','#EAE0EE'],['#8A7560','#4A6670','#5A7050','#7A6080'],['生活','工作','學習','健康'],'#F0EDE6','#8A7560'));}
-
-/* v08 vintage */
-function covVintage(){return wrap('#F5EDD0',`<div style="position:absolute;top:5px;left:5px;right:5px;bottom:5px;border:2px solid #2A1F0E;"></div>`+rect(0,0,620,80,'#EEE0B8')+text(0,14,620,16,'THE AUTHORITATIVE RECORD OF A LIFE WELL LIVED','font-size:7px;color:#5A4A2A;text-align:center;letter-spacing:3px;font-style:italic;')+text(0,28,620,22,'THE LIFE MILESTONE','font-size:20px;font-weight:900;color:#2A1F0E;text-align:center;letter-spacing:-0.5px;font-family:Times New Roman;')+text(0,52,620,18,'GAZETTE','font-size:15px;font-weight:900;color:#2A1F0E;text-align:center;letter-spacing:6px;font-family:Times New Roman;')+rect(14,78,620-28,2,'#2A1F0E')+rect(14,82,620-28,0.5,'#2A1F0E')+text(0,86,620,14,'VOL. I  NO. 1  ·  AGES TWENTY TO THIRTY-TWO  ·  PRICE: ONE LIFETIME','font-size:7px;color:#5A4A2A;text-align:center;font-style:italic;')+rect(14,100,620-28,2,'#2A1F0E')+rect(14,104,620-28,0.5,'#2A1F0E')+text(14,108,190,20,'EXTRA! EXTRA!','font-size:8px;font-weight:900;color:#7A3A1A;letter-spacing:2px;font-family:Times New Roman;')+text(14,126,190,38,'A Young Life,\nChronicled in Full','font-size:12px;font-weight:900;color:#2A1F0E;line-height:1.3;font-family:Times New Roman;')+text(220,108,186,90,'IN the grand tradition of personal chronicle, this publication hath documented each passing year with journalistic rigour.','font-size:7px;color:#3A2A10;line-height:1.5;font-family:Times New Roman;')+`<div style="position:absolute;right:14px;top:108px;width:178px;border:1px solid #2A1F0E;background:#EEE0B8;padding:5px;"><div style="font-size:7px;font-weight:900;color:#2A1F0E;text-align:center;letter-spacing:2px;font-family:Times New Roman;">THE NUMBERS</div>${[['15','Editions'],['13','Volumes'],['156','Columns']].map(([n,l])=>`<div style="text-align:center;margin-top:3px;"><div style="font-size:10px;font-weight:900;color:#2A1F0E;font-family:Times New Roman;">${n}</div><div style="font-size:6.5px;color:#5A4A2A;font-style:italic;font-family:Times New Roman;">${l}</div></div>`).join('')}</div>`);}
-function ageVintage(){return wrap('#F5EDD0',`<div style="position:absolute;top:5px;left:5px;right:5px;bottom:5px;border:1.5px solid #2A1F0E;"></div>`+rect(0,0,620,97,'#EEE0B8')+text(0,14,620,14,'THE LIFE MILESTONE GAZETTE  ✦  人生里程碑報刊','font-size:7px;color:#5A4A2A;text-align:center;font-style:italic;letter-spacing:2px;font-family:Times New Roman;')+text(0,28,620,22,'A YOUNG CORRESPONDENT ENTERS THE WORLD','font-size:12px;font-weight:900;color:#2A1F0E;text-align:center;font-family:Times New Roman;')+rect(14,52,620-28,1.5,'#7A3A1A')+text(14,56,80,16,'Vol. VI · No. 6','font-size:7.5px;color:#5A4A2A;font-family:Times New Roman;')+text(0,56,620,16,'Anno 25','font-size:9px;font-weight:700;color:#7A3A1A;text-align:center;font-family:Times New Roman;')+rect(14,68,620-28,2,'#2A1F0E')+rect(14,72,620-28,0.5,'#2A1F0E')+rect(14,74,620-28,22,'#2A1F0E')+text(0,74,620,22,'SPECIAL EDITION · AGE 25 · TWELVE MONTHS DOCUMENTED','font-size:7px;font-weight:700;color:#F5EDD0;text-align:center;line-height:22px;letter-spacing:1px;font-family:Times New Roman;')+`<div style="position:absolute;top:100px;left:0;right:0;bottom:0;">${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].map((m,i)=>{const col=i%4,row=Math.floor(i/4),mx=14,gap=3,cW=(620-2*mx-3*gap)/4,cH=(348-104-8-2*gap)/3,x=mx+col*(cW+gap),y=row*(cH+gap);return`<div style="position:absolute;left:${x}px;top:${y}px;width:${cW}px;height:${cH}px;background:#F5EDD0;border:0.7px solid #2A1F0E;"><div style="background:#EEE0B8;height:13px;display:flex;align-items:center;padding:0 4px;"><span style="font-size:7px;font-weight:700;color:#7A3A1A;font-family:Times New Roman;">${['I.','II.','III.','IV.','V.','VI.','VII.','VIII.','IX.','X.','XI.','XII.'][i]}</span><span style="font-size:7px;color:#2A1F0E;margin-left:3px;font-family:Times New Roman;">${m}</span></div><div style="height:0.5px;background:#DCC888;margin:4px 4px;"></div><div style="height:0.5px;background:#DCC888;margin:4px 4px;"></div></div>`;}).join('')}</div>`);}
-function sumVintage(){return wrap('#F5EDD0',`<div style="position:absolute;top:5px;left:5px;right:5px;bottom:5px;border:1.5px solid #2A1F0E;"></div>`+rect(0,0,620,72,'#EEE0B8')+text(0,14,620,14,'✦ FINAL EDITION ✦ COMPLETE CHRONICLE ✦','font-size:7px;color:#5A4A2A;text-align:center;letter-spacing:2px;font-style:italic;font-family:Times New Roman;')+text(0,28,620,20,'THE GRAND SUMMARY · 人生里程碑總覽','font-size:10px;font-weight:900;color:#2A1F0E;text-align:center;letter-spacing:2px;font-family:Times New Roman;')+rect(14,50,620-28,2,'#2A1F0E')+rect(14,52,620-28,0.5,'#2A1F0E')+rect(14,54,620-28,18,'#2A1F0E')+text(0,54,620,18,'THIRTEEN YEARS · FOUR SECTIONS · ONE HUNDRED FIFTY-SIX MONTHS','font-size:6.5px;font-weight:700;color:#F5EDD0;text-align:center;line-height:18px;letter-spacing:1.5px;font-family:Times New Roman;')+sumGrid(['#EDE0BA','#F0E0C8','#D8E0E8','#D8E8D0'],['#4A3818','#6A2A0A','#1A2A3A','#1A3A1A'],['生活','工作','學習','健康'],'#EEE0B8','#7A3A1A'));}
-
-/* v09 scandi */
-function fernSvg(x,y,sc,col){return`<div style="position:absolute;left:${x}px;top:${y}px;opacity:0.55;"><svg width="${sc*0.4}" height="${sc*0.9}" viewBox="0 0 40 90"><line x1="18" y1="0" x2="18" y2="90" stroke="${col}" stroke-width="1.2"/>${[0,14,28,42,56,70].map(oy=>`<ellipse cx="${4}" cy="${oy+4}" rx="${22-oy*0.22}" ry="4" fill="${col}" opacity="0.6" transform="rotate(-18,${4},${oy+4})"/><ellipse cx="${32}" cy="${oy+6}" rx="${20-oy*0.2}" ry="4" fill="${col}" opacity="0.6" transform="rotate(18,${32},${oy+6})"/>`).join('')}</svg></div>`;}
-function covScandi(){return wrap('#F7F4EF',rect(620-200,0,200,348,'#F0EBE3')+`<div style="position:absolute;right:198px;top:0;width:1px;height:348px;background:#D0C8B8;"></div>`+fernSvg(400,18,130,'#8FA8B2')+fernSvg(490,58,90,'#90A888')+fernSvg(180,240,70,'#8FA8B2')+`<div style="position:absolute;left:34px;top:28px;width:340px;height:0.5px;background:#D0C8B888;"></div>`+text(34,38,300,14,'life milestone','font-size:9px;color:#9A9088;font-style:italic;letter-spacing:3px;font-family:Georgia;')+text(34,56,300,24,'我的','font-size:20px;font-weight:400;color:#C0B8AC;font-family:Georgia;')+text(34,80,300,28,'人生里程碑','font-size:22px;font-weight:400;color:#3A3530;font-family:Georgia;')+`<div style="position:absolute;left:34px;top:115px;width:195px;height:0.5px;background:#D0C8B8;"></div>`+`<div style="position:absolute;left:34px;top:118px;width:120px;height:0.5px;background:#DDD5C5;"></div>`+text(34,126,200,16,'20 岁 ———— 32 岁','font-size:9px;color:#5A5248;font-family:Georgia;')+text(34,144,220,14,'記錄每一個靜好的人生時刻','font-size:8px;color:#9A9088;font-style:italic;font-family:Georgia;')+[['#E2EBF0','#8FA8B2','#4A6A76','生活'],['#EDE8DC','#A89880','#6A5C3C','工作'],['#DFF0E8','#8EA898','#486860','學習'],['#F0E4E8','#A89898','#6A5058','健康']].map((c,i)=>`<div style="position:absolute;left:${34+i*72}px;top:172px;width:64px;height:15px;background:${c[0]};border:0.5px solid ${c[1]};display:flex;align-items:center;justify-content:center;font-size:7.5px;color:${c[2]};">${c[3]}</div>`).join(''));}
-function ageScandi(){return wrap('#F7F4EF',rect(0,0,18,348,'#E2EBF0')+`<div style="position:absolute;left:17px;top:0;width:0.5px;height:348px;background:#D0C8B8;"></div>`+rect(18,0,620,58,'#F0EBE3')+`<div style="position:absolute;left:18px;top:58px;right:0;height:0.5px;background:#8FA8B288;"></div>`+fernSvg(540,2,90,'#8FA8B2')+text(28,6,50,44,'25','font-size:26px;font-weight:400;color:#8FA8B2;font-family:Georgia;')+text(66,20,200,16,'人生第6章','font-size:9px;color:#3A3530;')+text(66,34,200,14,'Chapter 6 of 13 · 霧藍','font-size:8px;color:#9A9088;font-style:italic;font-family:Georgia;')+`<div style="position:absolute;left:28px;top:42px;width:260px;height:0.5px;background:#DDD5C5;"></div>`+`<div style="position:absolute;left:28px;top:46px;width:180px;height:0.3px;background:#8FA8B244;"></div>`+[0,1,2,3].map(col=>[0,1,2].map(row=>{const mx=28,gap=3,cW=(620-mx-0.5-3*gap)/4,cH=(348-62-6-2*gap)/3,x=mx+col*(cW+gap),y=62+row*(cH+gap);return`<div style="position:absolute;left:${x}px;top:${y}px;width:${cW}px;height:${cH}px;background:#F7F4EF;border:0.4px solid #D0C8B8;"><div style="background:#E2EBF0;height:1.5px;"></div><div style="height:11px;display:flex;align-items:center;padding:0 3px;background:#E2EBF0BB;"><span style="font-size:6.5px;color:#4A6A76;">${String(col*3+row+1).padStart(2,'0')}</span><span style="font-size:6.5px;color:#3A3530;margin-left:auto;">月</span></div><div style="height:0.4px;background:#DDD5C5;margin:4px 3px;"></div><div style="height:0.4px;background:#DDD5C5;margin:4px 3px;"></div></div>`;}).join('')).join('')+`<div style="position:absolute;left:28px;bottom:8px;right:0;font-size:7px;color:#9A9088;font-style:italic;font-family:Georgia;">age 25 · 霧藍 · life milestone</div>`);}
-function sumScandi(){return wrap('#F7F4EF',rect(0,0,620,50,'#F0EBE3')+rect(0,0,18,50,'#DDD5C5')+fernSvg(490,2,80,'#8FA8B2')+text(28,8,300,12,'milestone','font-size:9px;color:#9A9088;font-style:italic;letter-spacing:2px;font-family:Georgia;')+text(28,22,300,20,'人生里程碑總覽','font-size:12px;font-weight:400;color:#3A3530;font-family:Georgia;')+sumGrid(['#E2EBF0','#EDE8DC','#DFF0E8','#F0E4E8'],['#8FA8B2','#A89880','#8EA898','#A89898'],['生活','工作','學習','健康'],'#F0EBE3','#8FA8B2'));}
-
-/* v10 game */
-function covGame(){return wrap('#0F0A1E',pixG()+stars(16)+`<div style="position:absolute;top:4px;left:4px;right:4px;bottom:4px;border:2px solid #FF6AC1;"></div>`+rect(620-254,14,250,314,'#231555','border:1px solid #4A3580;')+rect(620-254,14,250,14,'#4A3580')+text(620-250,18,245,12,'WORLD SELECT','font-size:7px;font-weight:700;color:#FFE066;text-align:center;letter-spacing:1px;font-family:Courier New;')+[0,1,2,3,4,5,6].map(i=>`<div style="position:absolute;right:${14+i*34}px;top:32px;width:30px;height:26px;border:1px solid ${'#44DD44,#44AAFF,#FF6644,#FFEE44,#44FF88,#AADDFF,#FF4400'.split(',')[i]};background:${'#0A2A0A,#001838,#280800,#201800,#00200A,#081828,#200400'.split(',')[i]};"><div style="height:1.5px;background:${'#44DD44,#44AAFF,#FF6644,#FFEE44,#44FF88,#AADDFF,#FF4400'.split(',')[i]};"></div><div style="font-size:5.5px;font-weight:700;color:${'#44DD44,#44AAFF,#FF6644,#FFEE44,#44FF88,#AADDFF,#FF4400'.split(',')[i]};text-align:center;margin-top:1px;font-family:Courier New;">LV.${i+1}</div><div style="font-size:5.5px;color:#C0A8F0;text-align:center;font-family:Courier New;">${20+i}歲</div></div>`).join('')+rect(14,14,246,108,'#2D1B69','border:1px solid #FF6AC1;')+rect(14,14,246,2,'#FF6AC1')+text(20,20,240,14,'LIFE MILESTONE','font-size:8px;font-weight:700;color:#FF6AC1;letter-spacing:2px;font-family:Courier New;')+text(20,36,240,24,'人生冒險通關大地圖','font-size:12px;font-weight:700;color:#FFE066;')+text(20,62,240,16,'GAME MAP LEVEL-UP EDITION','font-size:7px;font-weight:700;color:#FF6AC1;letter-spacing:1px;font-family:Courier New;')+rect(14,126,246,190,'#1A1040','border:1px solid #4A3580;')+rect(14,126,246,14,'#231555')+text(14,126,246,14,'-- PLAYER STATUS --','font-size:7px;font-weight:700;color:#FFE066;text-align:center;line-height:14px;letter-spacing:1px;font-family:Courier New;')+`<div style="position:absolute;left:20px;top:148px;right:${620-254}px;"><div style="font-size:6px;color:#a78bfa;margin-bottom:2px;display:flex;justify-content:space-between;font-family:Courier New;"><span>HP</span><span>85/100</span></div><div style="height:8px;background:#0f0a1e;border:1px solid #4a3580;margin-bottom:6px;"><div style="height:100%;width:85%;background:#ff4444;"></div></div><div style="font-size:6px;color:#a78bfa;margin-bottom:2px;display:flex;justify-content:space-between;font-family:Courier New;"><span>XP</span><span>50%</span></div><div style="height:8px;background:#0f0a1e;border:1px solid #4a3580;margin-bottom:8px;"><div style="height:100%;width:50%;background:#ffe066;"></div></div><div style="display:flex;gap:3px;flex-wrap:wrap;">${['生活','工作','學習','健康'].map((k,i)=>`<div style="background:${'#3A0028,#302800,#001838,#00200A'.split(',')[i]};border:1px solid ${'#FF6AC1,#FFE066,#44AAFF,#44FF88'.split(',')[i]};padding:2px 5px;font-size:6.5px;color:${'#FF6AC1,#FFE066,#44AAFF,#44FF88'.split(',')[i]};font-family:Courier New;">${k}</div>`).join('')}</div></div>`+rect(26,306,220,28,'#231555','border:2px solid #FF6AC1;')+text(26,306,220,28,'PRESS START','font-size:9px;font-weight:700;color:#FF6AC1;text-align:center;line-height:28px;letter-spacing:2px;font-family:Courier New;'));}
-function ageGame(){return wrap('#0F0A1E',pixG()+stars(10)+rect(0,0,620,15,'#231555','border-bottom:1px solid #6A50A8;')+rect(0,0,620,1.5,'#44FF88')+rect(0,15,3,348,'#44FF88')+rect(3,15,617,48,'#2D1B69','border-bottom:2px solid #44FF88;')+text(12,2,200,13,'AGE_25.SLIDE — MYSTIC FOREST','font-size:6px;color:#C0A8F0;font-family:Courier New;')+rect(12,18,72,40,'#00200A','border:1.5px solid #44FF8888;')+text(12,18,72,14,'LV','font-size:6.5px;font-weight:700;color:#44FF88;text-align:center;line-height:14px;font-family:Courier New;')+text(12,32,72,24,'6','font-size:13px;font-weight:700;color:#44FF88;text-align:center;font-family:Courier New;')+text(92,20,240,18,'神秘森林  25歲','font-size:11px;font-weight:700;color:#E8E0FF;')+text(92,38,240,14,'MYSTIC FOREST · 25 years old','font-size:7px;color:#44FF88;font-family:Courier New;')+monthGrid('#1A1040','#231555','#4A3580','#44FF88','#C0A8F0','#2A1F50'));}
-function sumGame(){return wrap('#0F0A1E',pixG()+stars(18)+rect(0,0,620,15,'#231555','border-bottom:1px solid #6A50A8;')+rect(0,0,620,2,'#FFE066')+text(12,3,300,12,'WORLD_MAP.FINAL','font-size:7px;color:#FFE066;font-family:Courier New;')+rect(0,15,620,44,'#2D1B69','border-bottom:2px solid #FFE066;')+rect(0,15,3,44,'#FFE066')+text(12,18,300,18,'WORLD MAP — 人生冒險地圖總覽','font-size:10px;font-weight:700;color:#FFE066;')+text(12,36,300,14,'AGE 20 to 32 · 13 LEVELS','font-size:7px;color:#6E5A9A;font-family:Courier New;')+sumGrid(['#3A0028','#302800','#001838','#00200A'],['#FF6AC1','#FFE066','#44AAFF','#44FF88'],['生活','工作','學習','健康'],'#231555','#FFE066'));}
-
-// ════════════════════════════════════════════
-//  初始化
-// ════════════════════════════════════════════
 buildSidebar();
-loadCounts();
-setInterval(loadCounts,60000);
-setTimeout(()=>selectVersion(VERSIONS[0]),80);
-window.addEventListener('resize',scaleSlides);
+selectVersionById('v01');
 </script>
 </body>
 </html>
