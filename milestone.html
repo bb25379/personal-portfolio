@@ -216,7 +216,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--ink);display:flex;
 <body>
 
 <script>
-const GAS_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycby05gk3HAKvRSdmJQzuJuhJujZhVqKn8RkYOkrNbz4pxDEckAzm4TNvH1NEVSRDusd9/exec';
 </script>
 
 <!-- HEADER -->
@@ -288,14 +288,21 @@ function buildSidebar(){
   VERSIONS.forEach((v, i) => {
     const el = document.createElement('div');
     el.className = 'vi';
+    el.id = 'vi-' + v.id;
     el.innerHTML = `
       <div class="vi-dot" style="background:${v.dot}"></div>
-      <div class="vi-info" onclick="selectVersionById('${v.id}')">
+      <div class="vi-info">
         <div class="vi-name">${v.name}</div>
         <div class="vi-tag">${v.tag}</div>
       </div>
-      <a href="${BASE_PATH + v.file}" class="vi-dl-btn" target="_blank">去下載</a>
+      <a href="${BASE_PATH + v.file}" 
+         class="vi-dl-btn" 
+         target="_blank" 
+         onclick="logDownload({id:'${v.id}', name:'${v.name}'})">去下載</a>
+      <div class="vi-count dim" id="cnt-${v.id}">0次</div>
     `;
+    // 點擊整條列還是可以預覽，但點按鈕會觸發下載記錄
+    el.querySelector('.vi-info').addEventListener('click', () => selectVersion(v));
     sb.appendChild(el);
   });
 }
