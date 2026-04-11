@@ -507,7 +507,7 @@ async function generate(){
   const blob=await pres.write({outputType:'blob'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url; a.download='人生里程碑_宇宙星系版.pptx';
+  a.href=url; a.download='人生里程碑_宇宙星系軌道版.pptx';
   document.body.appendChild(a); a.click();
   setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},3000);
   st.textContent='✦ TRANSMISSION COMPLETE → 人生里程碑_宇宙星系版.pptx';
