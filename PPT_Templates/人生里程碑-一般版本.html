@@ -151,7 +151,7 @@ async function generate(){
   const blob=await pres.write({outputType:'blob'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url; a.download='人生里程碑.pptx';
+  a.href=url; a.download='人生里程碑-一般版本.pptx';
   document.body.appendChild(a); a.click();
   setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},3000);
   st.textContent='✓ 下載完成！請在 PowerPoint 中開啟。';
