@@ -205,7 +205,7 @@ async function generate(){
     hln(s,0.7,3.42,4.0,RULE);
     hln(s,0.7,3.46,2.5,SAND);
 
-    s.addText('20 岁 ———— 32 岁',{x:0.7,y:3.58,w:6,h:0.44,fontSize:15,color:INK2,fontFace:'Georgia'});
+    s.addText('20 歲 ———— 32 歲',{x:0.7,y:3.58,w:6,h:0.44,fontSize:15,color:INK2,fontFace:'Georgia'});
     s.addText('記錄每一個靜好的人生時刻',{x:0.7,y:4.08,w:6.5,h:0.36,fontSize:12,color:MUTED,fontFace:'Microsoft JhengHei',italic:true});
     s.addText('document the quiet beauty of living',{x:0.7,y:4.5,w:6.5,h:0.3,fontSize:10,color:GHOST,fontFace:'Georgia',italic:true});
 
@@ -253,7 +253,7 @@ async function generate(){
 
     // Age number — very large, light weight
     s.addText(`${age}`,{x:0.52,y:0.06,w:1.7,h:0.96,fontSize:54,bold:false,color:T.acc,fontFace:'Georgia'});
-    s.addText('岁',{x:2.08,y:0.6,w:0.44,h:0.38,fontSize:14,color:T.mid,fontFace:'Microsoft JhengHei'});
+    s.addText('歲',{x:2.08,y:0.6,w:0.44,h:0.38,fontSize:14,color:T.mid,fontFace:'Microsoft JhengHei'});
 
     // Vertical rule
     vln(s,2.68,0.2,0.76,RULE);
@@ -328,7 +328,7 @@ async function generate(){
 
     s.addText('milestone',{x:0.52,y:0.06,w:5,h:0.36,fontSize:11,color:MUTED,fontFace:'Georgia',italic:true,charSpacing:2});
     s.addText('人生里程碑總覽',{x:0.52,y:0.42,w:8,h:0.46,fontSize:18,bold:false,color:INK,fontFace:'Microsoft JhengHei'});
-    s.addText('20 岁 — 32 岁  ·  生活 · 工作 · 學習 · 健康',{x:0.52,y:0.86,w:10,h:0.22,fontSize:9,color:MUTED,fontFace:'Georgia',italic:true});
+    s.addText('20 歲 — 32 歲  ·  生活 · 工作 · 學習 · 健康',{x:0.52,y:0.86,w:10,h:0.22,fontSize:9,color:MUTED,fontFace:'Georgia',italic:true});
 
     // Grid
     const LW=0.9, GX=0.28+LW, GY=1.12;
@@ -379,7 +379,7 @@ async function generate(){
   const blob=await pres.write({outputType:'blob'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url; a.download='人生里程碑_北歐極簡版.pptx';
+  a.href=url; a.download='人生里程碑_極簡北歐居家版.pptx';
   document.body.appendChild(a); a.click();
   setTimeout(()=>{URL.revokeObjectURL(url);document.body.removeChild(a);},3000);
   st.textContent='done — 人生里程碑_北歐極簡版.pptx';
