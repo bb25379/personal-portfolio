@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>人生里程碑 — 遊戲通關大地圖版 v2</title>
+<title>人生里程碑 — 遊戲通關大地圖版</title>
 <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -45,7 +45,7 @@
     </div>
   </div>
   <div class="body">
-    <p class="pixel-title">人生里程碑<br>遊戲通關大地圖版 v2</p>
+    <p class="pixel-title">人生里程碑<br>遊戲通關大地圖版</p>
     <p class="pixel-sub">// RPG · PIXEL ART · AGE 20 to 32 · 13 LEVELS</p>
     <div class="bar-wrap">
       <div class="bar-label"><span>HP</span><span>85 / 100</span></div>
@@ -75,19 +75,15 @@
     <p id="status">// PRESS START TO GENERATE (EST. 5-10S)</p>
   </div>
 </div>
-
 <script>
 function tick() { return new Promise(r => setTimeout(r, 20)); }
-
 async function generate() {
   var btn = document.getElementById('btn');
   var st  = document.getElementById('status');
   btn.disabled = true;
   st.textContent = '// LOADING...';
-
   try {
     var W = 13.33, H = 7.5;
-
     var BG     = '0F0A1E';
     var BG2    = '1A1040';
     var BG3    = '231555';
@@ -100,7 +96,6 @@ async function generate() {
     var DIM    = '2A1F50';
     var PINK   = 'FF6AC1';
     var GOLD   = 'FFE066';
-
     var WORLDS = [
       {n:'新手村',    w:'NEWBIE VILLAGE',   acc:'44DD44', h:'22AA22', d:'0A2A0A', hp:80,  xp:5,   stars:1},
       {n:'水之神殿',  w:'WATER TEMPLE',     acc:'44AAFF', h:'2266CC', d:'001838', hp:82,  xp:16,  stars:1},
@@ -116,21 +111,17 @@ async function generate() {
       {n:'英雄誕生',  w:'HERO AWAKENING',   acc:'FFCC00', h:'CC8800', d:'201000', hp:95,  xp:99,  stars:5},
       {n:'傳說之巔',  w:'LEGEND SUMMIT',    acc:'FFD700', h:'D4A000', d:'201A00', hp:100, xp:100, stars:5},
     ];
-
     var CATS = [
       {k:'生活', acc:'FF6AC1', d:'3A0028', label:'LIFE'},
       {k:'工作', acc:'FFE066', d:'302800', label:'WORK'},
       {k:'學習', acc:'44AAFF', d:'001838', label:'SKILL'},
       {k:'健康', acc:'44FF88', d:'00200A', label:'HP'},
     ];
-
     var MZH  = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
     var MNUM = ['01','02','03','04','05','06','07','08','09','10','11','12'];
     var MICO = ['*','#','@','!','%','^','&','~','+','=','<','>'];
-
     var pres = new PptxGenJS();
     pres.layout = 'LAYOUT_WIDE';
-
     function bg(s, c) {
       s.addShape('rect', {x:0, y:0, w:W, h:H, fill:{color: c || BG}, line:{type:'none'}});
     }
@@ -140,12 +131,10 @@ async function generate() {
     }
     function hl(s, x, y, w, c, th) { px(s, x, y, w, th || 0.012, c || BORDER); }
     function vl(s, x, y, h, c)     { px(s, x, y, 0.012, h, c || BORDER); }
-
     function pixelGrid(s) {
       for (var i = 0; i < H; i += 0.14) px(s, 0, i, W, 0.004, 'FFFFFF03');
       for (var j = 0; j < W; j += 0.14) px(s, j, 0, 0.004, H, 'FFFFFF02');
     }
-
     function pixelBar(s, x, y, w, h, pct, fillC) {
       px(s, x, y, w, h, DIM, BORDER, 1.5);
       if (pct <= 0) return;
@@ -158,19 +147,16 @@ async function generate() {
         px(s, bx, y + 0.05, bw, h - 0.1, fillC);
       }
     }
-
     function pixelBorder(s, x, y, w, h, c, inner) {
       px(s, x, y, w, h, c);
       px(s, x + 0.08, y + 0.08, w - 0.16, h - 0.16, inner || BG2);
     }
-
     function starRow(s, x, y, earned) {
       for (var i = 0; i < 5; i++) {
         s.addText(i < earned ? '*' : '-', {x: x + i * 0.3, y: y, w: 0.26, h: 0.26,
           fontSize: 13, color: i < earned ? GOLD : BORDER2, fontFace: 'Arial'});
       }
     }
-
     function starfield(s, seed) {
       var pts = [
         [0.5,0.3],[1.9,0.7],[3.1,0.2],[4.6,0.5],[6.2,0.3],[7.8,0.5],
@@ -188,16 +174,15 @@ async function generate() {
       });
     }
 
-    // ── COVER ──
+    // ══════════════ COVER ══════════════
     st.textContent = '// LOADING TITLE SCREEN...'; await tick();
     {
       var s = pres.addSlide();
       bg(s); pixelGrid(s); starfield(s, 0);
-
       px(s, 0.08, 0.08, W - 0.16, H - 0.16, 'transparent', PINK, 3.5);
       px(s, 0.22, 0.22, W - 0.44, H - 0.44, 'transparent', 'FF44AA', 1);
 
-      // right: world select panel
+      // ── RIGHT: WORLD SELECT panel ──
       var MPX = 7.8, MPY = 0.38, MPW = 5.3, MPH = 6.5;
       px(s, MPX, MPY, MPW, MPH, BG3, BORDER, 2);
       px(s, MPX, MPY, MPW, 0.3, BORDER2);
@@ -205,38 +190,98 @@ async function generate() {
         fontSize:9, bold:true, color:GOLD, align:'center', fontFace:'Courier New', charSpacing:2});
       hl(s, MPX, MPY + 0.3, MPW, BORDER);
 
-      var nW = 1.56, nH = 0.66, nStep = 1.7, nOX = 0.28;
-      var r1y = MPY + 0.38, r2y = MPY + MPH - nH - 0.2;
+      // ══ GAME-DESIGN WORLD SELECT ══
+      // Dark starfield bg + scanline grid inside panel
+      px(s, MPX+0.02, MPY+0.31, MPW-0.04, MPH-0.33, '060314');
+      for (var si=0; si<32; si++) px(s, MPX+0.02, MPY+0.32+si*0.2, MPW-0.04, 0.005, 'FFFFFF05');
+      for (var sj=0; sj<26; sj++) px(s, MPX+0.02+sj*0.2, MPY+0.31, 0.005, MPH-0.33, 'FFFFFF03');
+      // Gold corner decorators (L-shapes)
+      var cSz=0.22, cTh=0.04;
+      // TL
+      px(s,MPX+0.06,MPY+0.35,cSz,cTh,GOLD); px(s,MPX+0.06,MPY+0.35,cTh,cSz,GOLD);
+      // TR
+      px(s,MPX+MPW-cSz-0.06,MPY+0.35,cSz,cTh,GOLD); px(s,MPX+MPW-cSz+cSz-cTh-0.06,MPY+0.35,cTh,cSz,GOLD);
+      // BL
+      px(s,MPX+0.06,MPY+MPH-0.09,cSz,cTh,GOLD); px(s,MPX+0.06,MPY+MPH-cSz-0.05,cTh,cSz,GOLD);
+      // BR
+      px(s,MPX+MPW-cSz-0.06,MPY+MPH-0.09,cSz,cTh,GOLD); px(s,MPX+MPW-cSz+cSz-cTh-0.06,MPY+MPH-cSz-0.05,cTh,cSz,GOLD);
 
-      // row 1 (LV1–7)
-      for (var i = 0; i < 7; i++) {
-        var wl = WORLDS[i];
-        var nx = nOX + i * (nW + 0.06), ny = r1y;
-        pixelBorder(s, nx, ny, nW, nH, wl.acc + '88', wl.d);
-        px(s, nx, ny, nW, 0.04, wl.acc);
-        s.addText('LV.' + (i + 1), {x:nx+0.06, y:ny+0.05, w:0.6, h:0.22,
-          fontSize:8, bold:true, color:wl.acc, fontFace:'Courier New'});
-        s.addText((20 + i) + '歲', {x:nx+0.06, y:ny+0.28, w:nW-0.12, h:0.24,
-          fontSize:10, bold:true, color:TEXT2, align:'center', fontFace:'Microsoft JhengHei'});
+      // Layout
+      var pnPadX=0.1, pnPadY=0.14, pnGapX=0.06, pnGapY=0.28;
+      var pnW   = (MPW - 2*pnPadX - 6*pnGapX) / 7;
+      var pnH   = (MPH - 0.31 - 2*pnPadY - pnGapY) / 2;
+      var pnOX  = MPX + pnPadX;
+      var pnStep= pnW + pnGapX;
+      var r1y   = MPY + 0.31 + pnPadY;
+      var r2y   = r1y + pnH + pnGapY;
+
+      // Helper: draw one styled level card
+      function drawCard(s, nx, ny, wl, lvNum, ageNum) {
+        // Neon double-border glow (3 nested rects, no alpha needed)
+        px(s, nx-0.05, ny-0.05, pnW+0.10, pnH+0.10, wl.acc); // outer ring
+        px(s, nx-0.02, ny-0.02, pnW+0.04, pnH+0.04, '060314'); // gap
+        px(s, nx, ny, pnW, pnH, wl.d);                          // dark body
+        // Inner thin border
+        s.addShape('rect',{x:nx,y:ny,w:pnW,h:pnH,fill:{color:'transparent'},line:{color:wl.acc,width:1.5}});
+        // Top accent bar
+        px(s, nx, ny, pnW, 0.1, wl.acc);
+        // Pixel corner dots (inside box)
+        px(s,nx+0.04,ny+0.12,0.06,0.06,wl.acc);
+        px(s,nx+pnW-0.1,ny+0.12,0.06,0.06,wl.acc);
+        // LV badge row
+        px(s, nx+0.04, ny+0.1, pnW-0.08, 0.3, BG3);
+        s.addText('LV.' + lvNum, {x:nx+0.04,y:ny+0.1,w:pnW-0.08,h:0.3,
+          fontSize:11,bold:true,color:wl.acc,align:'center',valign:'middle',fontFace:'Courier New'});
+        // Thin divider
+        hl(s, nx+0.04, ny+0.42, pnW-0.08, wl.acc, 0.014);
+        // Age (large)
+        s.addText(ageNum+'歲', {x:nx+0.04,y:ny+0.50,w:pnW-0.08,h:0.60,
+          fontSize:20,bold:true,color:TEXT,align:'center',fontFace:'Microsoft JhengHei'});
+        // World name
+        s.addText(wl.n, {x:nx+0.04,y:ny+1.12,w:pnW-0.08,h:0.28,
+          fontSize:8,color:wl.acc,align:'center',fontFace:'Microsoft JhengHei'});
+        // Thin divider
+        hl(s, nx+0.04, ny+1.42, pnW-0.08, wl.acc, 0.014);
+        // Stars
+        var stars=''; for(var q=0;q<5;q++) stars+=(q<wl.stars?'★':'☆');
+        s.addText(stars, {x:nx+0.04,y:ny+1.48,w:pnW-0.08,h:0.28,
+          fontSize:10,color:GOLD,align:'center',fontFace:'Arial'});
+        // HP mini pixel bar
+        s.addText('HP', {x:nx+0.04,y:ny+1.80,w:0.26,h:0.20,fontSize:7,bold:true,color:'FF4444',fontFace:'Courier New'});
+        px(s, nx+0.30, ny+1.82, pnW-0.38, 0.14, DIM, BORDER, 1);
+        var hpFill = Math.max(0, (pnW-0.42) * wl.hp/100);
+        if (hpFill>0) px(s, nx+0.32, ny+1.84, hpFill, 0.10, 'FF4444');
+        // Bottom accent stripe
+        px(s, nx, ny+pnH-0.1, pnW, 0.1, wl.acc);
+        // Pixel art corners (bottom inside)
+        px(s,nx+0.04,ny+pnH-0.18,0.06,0.06,wl.acc);
+        px(s,nx+pnW-0.1,ny+pnH-0.18,0.06,0.06,wl.acc);
       }
 
-      // connector row1 → row2
-      var connX = nOX + 6 * (nW + 0.06) + nW / 2 - 0.04;
-      px(s, connX, r1y + nH, 0.08, r2y - (r1y + nH), GOLD);
-
-      // row 2 (LV8–13, right to left)
-      for (var i = 0; i < 6; i++) {
-        var wl = WORLDS[7 + i];
-        var nx = nOX + (5 - i) * (nW + 0.06), ny = r2y;
-        pixelBorder(s, nx, ny, nW, nH, wl.acc + '88', wl.d);
-        px(s, nx, ny, nW, 0.04, wl.acc);
-        s.addText('LV.' + (8 + i), {x:nx+0.06, y:ny+0.05, w:0.6, h:0.22,
-          fontSize:8, bold:true, color:wl.acc, fontFace:'Courier New'});
-        s.addText((28 + i) + '歲', {x:nx+0.06, y:ny+0.28, w:nW-0.12, h:0.24,
-          fontSize:10, bold:true, color:TEXT2, align:'center', fontFace:'Microsoft JhengHei'});
+      // Snake path — row 1 horizontal connectors (with arrow markers)
+      for (var i=0; i<6; i++) {
+        var cx=pnOX+i*pnStep+pnW, cy=r1y+pnH/2-0.04;
+        px(s, cx, cy, pnGapX, 0.08, GOLD);
+        s.addText('▶',{x:cx,y:cy-0.04,w:pnGapX,h:0.16,fontSize:6,color:BG2,align:'center',fontFace:'Arial'});
+      }
+      // Vertical snake turn (GOLD bar + arrow)
+      var connX=pnOX+6*pnStep+pnW/2-0.04;
+      px(s, connX, r1y+pnH, 0.08, pnGapY, GOLD);
+      s.addText('▼',{x:connX-0.02,y:r1y+pnH+pnGapY/2-0.06,w:0.12,h:0.14,fontSize:6,color:BG2,align:'center',fontFace:'Arial'});
+      // Connecting dot at corner
+      s.addShape('ellipse',{x:connX-0.04,y:r1y+pnH-0.08,w:0.16,h:0.16,fill:{color:GOLD},line:{type:'none'}});
+      // Row 2 horizontal connectors (right-to-left)
+      for (var i=0; i<5; i++) {
+        var cx2=pnOX+(5-i)*pnStep+pnW, cy2=r2y+pnH/2-0.04;
+        px(s, cx2, cy2, pnGapX, 0.08, GOLD);
+        s.addText('◀',{x:cx2,y:cy2-0.04,w:pnGapX,h:0.16,fontSize:6,color:BG2,align:'center',fontFace:'Arial'});
       }
 
-      // left: title
+      // Draw all 13 level cards
+      for (var i=0; i<7; i++)  drawCard(s, pnOX+i*pnStep, r1y, WORLDS[i],   i+1,   20+i);
+      for (var i=0; i<6; i++)  drawCard(s, pnOX+(6-i)*pnStep, r2y, WORLDS[7+i], 8+i, 28+i);
+
+      // ── LEFT: Title panel ──
       px(s, 0.35, 0.38, 7.2, 2.3, BG4, PINK, 2);
       px(s, 0.35, 0.38, 7.2, 0.04, PINK);
       s.addText('LIFE MILESTONE', {x:0.5, y:0.46, w:7.0, h:0.38,
@@ -245,30 +290,25 @@ async function generate() {
         fontSize:28, bold:true, color:GOLD, fontFace:'Microsoft JhengHei', align:'center'});
       s.addText('GAME MAP LEVEL-UP EDITION', {x:0.5, y:1.76, w:7.0, h:0.28,
         fontSize:9, bold:true, color:PINK, fontFace:'Courier New', charSpacing:2, align:'center'});
-
-      // player status card
+      // Player status card
       px(s, 0.35, 2.82, 7.2, 3.55, BG2, BORDER, 1.5);
       px(s, 0.35, 2.82, 7.2, 0.28, BG3);
       hl(s, 0.35, 3.1, 7.2, BORDER);
       s.addText('-- PLAYER STATUS --', {x:0.4, y:2.86, w:7.1, h:0.2,
         fontSize:8, bold:true, color:GOLD, align:'center', fontFace:'Courier New', charSpacing:1});
-
       s.addText('NAME:', {x:0.5, y:3.16, w:0.9, h:0.28, fontSize:10, color:TEXT2, fontFace:'Courier New'});
       px(s, 1.44, 3.16, 5.95, 0.28, BG3, BORDER2, 1);
       s.addText('[ YOUR NAME ]', {x:1.5, y:3.16, w:5.83, h:0.28,
         fontSize:10, bold:true, color:GOLD, fontFace:'Courier New'});
-
       s.addText('AGE:', {x:0.5, y:3.54, w:0.9, h:0.26, fontSize:10, color:TEXT2, fontFace:'Courier New'});
       s.addText('20 -- 32', {x:1.44, y:3.54, w:5.95, h:0.26,
         fontSize:10, color:'44FF88', fontFace:'Courier New', bold:true});
-
       s.addText('HP', {x:0.5, y:3.92, w:0.7, h:0.26, fontSize:9, bold:true, color:'FF4444', fontFace:'Courier New'});
       pixelBar(s, 1.24, 3.9, 6.0, 0.3, 0.85, '44DD44');
       s.addText('XP', {x:0.5, y:4.32, w:0.7, h:0.26, fontSize:9, bold:true, color:GOLD, fontFace:'Courier New'});
       pixelBar(s, 1.24, 4.3, 6.0, 0.3, 0.62, GOLD);
       s.addText('MP', {x:0.5, y:4.72, w:0.7, h:0.26, fontSize:9, bold:true, color:'44AAFF', fontFace:'Courier New'});
       pixelBar(s, 1.24, 4.7, 6.0, 0.3, 0.70, '44AAFF');
-
       hl(s, 0.5, 5.12, 6.85, BORDER2);
       s.addText('SKILLS:', {x:0.5, y:5.2, w:0.9, h:0.26, fontSize:9, color:TEXT2, fontFace:'Courier New'});
       CATS.forEach(function(c, i) {
@@ -276,7 +316,6 @@ async function generate() {
         s.addText(c.k, {x:1.46 + i * 1.48, y:5.2, w:1.32, h:0.28,
           fontSize:10, bold:true, color:c.acc, align:'center', valign:'middle', fontFace:'Microsoft JhengHei'});
       });
-
       // PRESS START
       px(s, 1.8, 6.42, 4.95, 0.58, BG3, PINK, 2.5);
       px(s, 1.8, 6.42, 4.95, 0.04, PINK);
@@ -285,18 +324,16 @@ async function generate() {
         fontFace:'Courier New', charSpacing:3});
     }
 
-    // ── AGE SLIDES ──
+    // ══════════════ AGE SLIDES ══════════════
     var MX = 0.22, HDR = 1.38, GAP = 0.09, COLS = 4, ROWS = 3;
     var cW = (W - 2 * MX - (COLS - 1) * GAP) / COLS;
     var cH = (H - HDR - 0.18 - (ROWS - 1) * GAP) / ROWS;
-
     for (var age = 20; age <= 32; age++) {
       var li = age - 20, WL = WORLDS[li];
       st.textContent = '// LEVEL ' + (li + 1) + '/13 — AGE ' + age; await tick();
       var s = pres.addSlide();
       bg(s); pixelGrid(s); starfield(s, li * 7);
-
-      // tab bar
+      // Tab bar
       px(s, 0, 0, W, 0.3, BG3);
       hl(s, 0, 0.3, W, BORDER2);
       px(s, 0.2, 0, 3, 0.3, BG4);
@@ -307,55 +344,40 @@ async function generate() {
         fontSize:9, color:MUTED, fontFace:'Courier New'});
       s.addText('LIFE_MILESTONE_v2', {x:W - 3.5, y:0.05, w:3.3, h:0.2,
         fontSize:9, color:MUTED, align:'right', fontFace:'Courier New'});
-
-      // header
+      // Header
       px(s, 0, 0.3, W, HDR - 0.32, BG4);
       hl(s, 0, HDR - 0.02, W, WL.acc, 0.055);
       px(s, 0, 0.3, 0.055, HDR - 0.32, WL.acc);
-
-      // level badge
-      pixelBorder(s, 0.18, 0.38, 1.48, 0.82, WL.acc + 'AA', WL.d);
+      // Level badge
+      pixelBorder(s, 0.18, 0.38, 1.48, 0.82, WL.acc, WL.d);
       px(s, 0.18, 0.38, 1.48, 0.055, WL.acc);
       s.addText('LV', {x:0.18, y:0.4, w:1.48, h:0.25,
         fontSize:9, bold:true, color:WL.acc, align:'center', fontFace:'Courier New'});
       s.addText(String(li + 1), {x:0.18, y:0.62, w:1.48, h:0.48,
         fontSize:26, bold:true, color:WL.acc, align:'center', fontFace:'Courier New'});
-
       s.addText(WL.n + '  ' + age + '歲', {x:1.82, y:0.36, w:5, h:0.38,
         fontSize:16, bold:true, color:TEXT, fontFace:'Microsoft JhengHei'});
       s.addText(WL.w + '  ' + age + ' years old', {x:1.82, y:0.78, w:5.5, h:0.26,
         fontSize:10, color:WL.acc, fontFace:'Courier New', bold:true});
-
       vl(s, 7.1, 0.4, 0.78, BORDER2);
-
-      // HP / XP bars
+      // HP / XP bars (right side, limited width to avoid overflow)
       s.addText('HP', {x:7.22, y:0.38, w:0.42, h:0.26, fontSize:9, bold:true, color:'FF4444', fontFace:'Courier New'});
-      pixelBar(s, 7.66, 0.38, 3.34, 0.26, WL.hp / 100, 'FF4444');
-      s.addText(String(WL.hp), {x:11.02, y:0.38, w:0.45, h:0.24, fontSize:8, color:TEXT2, fontFace:'Courier New'});
-
+      pixelBar(s, 7.66, 0.38, 5.4, 0.26, WL.hp / 100, 'FF4444');
       s.addText('XP', {x:7.22, y:0.72, w:0.42, h:0.26, fontSize:9, bold:true, color:GOLD, fontFace:'Courier New'});
-      pixelBar(s, 7.66, 0.72, 3.34, 0.26, WL.xp / 100, GOLD);
-      s.addText(WL.xp + '%', {x:11.02, y:0.72, w:0.5, h:0.24, fontSize:8, color:GOLD, fontFace:'Courier New'});
-
+      pixelBar(s, 7.66, 0.72, 5.4, 0.26, WL.xp / 100, GOLD);
+      s.addText(WL.xp + '%', {x:13.1, y:0.72, w:0.0, h:0.24, fontSize:1, color:BG, fontFace:'Courier New'}); // hidden
       starRow(s, 7.24, 1.06, WL.stars);
+      // ── FIX 2: Progress bar REMOVED (was overflowing beyond HP/XP area) ──
 
-      // progress bar
-      px(s, W - 3.6, 0.46, 3.35, 0.1, DIM, BORDER2, 1);
-      px(s, W - 3.6, 0.46, 3.35 * (li / 12), 0.1, WL.acc);
-      s.addText('PROGRESS ' + Math.round((li / 12) * 100) + '%', {
-        x:W - 3.6, y:0.64, w:3.35, h:0.2, fontSize:8, color:WL.acc, align:'right', fontFace:'Courier New'});
-
-      // 12 month cards
+      // 12 Month cards
       MZH.forEach(function(mZh, idx) {
         var col = idx % COLS, row = Math.floor(idx / COLS);
         var x = MX + col * (cW + GAP), y = HDR + row * (cH + GAP);
-
         px(s, x + 0.07, y + 0.07, cW, cH, WL.d);
         px(s, x, y, cW, cH, BG2, WL.acc, 1.8);
         px(s, x, y, cW, 0.055, WL.acc);
         px(s, x, y + 0.055, cW, 0.26, BG3);
         hl(s, x, y + 0.315, cW, BORDER);
-
         px(s, x + 0.1, y + 0.075, 0.36, 0.2, WL.d, WL.acc, 1.2);
         s.addText(MNUM[idx], {x:x+0.1, y:y+0.075, w:0.36, h:0.2,
           fontSize:8, bold:true, color:WL.acc, align:'center', valign:'middle', fontFace:'Courier New'});
@@ -363,25 +385,21 @@ async function generate() {
           fontSize:10, bold:true, color:TEXT, fontFace:'Microsoft JhengHei'});
         s.addText(MICO[idx], {x:x+cW-0.42, y:y+0.08, w:0.34, h:0.2,
           fontSize:11, bold:true, color:WL.acc, align:'center', fontFace:'Courier New'});
-
         s.addText('QUEST LOG:', {x:x+0.1, y:y+0.34, w:cW-0.2, h:0.18,
           fontSize:7.5, bold:true, color:MUTED, fontFace:'Courier New'});
         s.addText('> 輸入本月任務', {x:x+0.1, y:y+0.52, w:cW-0.2, h:0.2,
           fontSize:9, color:BORDER2, fontFace:'Microsoft JhengHei'});
         s.addText('', {x:x+0.1, y:y+0.70, w:cW-0.2, h:cH-0.86,
           fontSize:9.5, color:TEXT, valign:'top', wrap:true, fontFace:'Microsoft JhengHei'});
-
         [0.70, 0.94, 1.18, 1.42].forEach(function(off) {
           if (off < cH - 0.22) hl(s, x + 0.1, y + off, cW - 0.2, BORDER);
         });
-
         px(s, x, y + cH - 0.24, cW, 0.24, WL.d);
         hl(s, x, y + cH - 0.24, cW, WL.acc, 0.022);
         s.addText('REWARD:', {x:x+0.1, y:y+cH-0.22, w:cW-0.2, h:0.2,
           fontSize:7, bold:true, color:WL.acc, fontFace:'Courier New'});
       });
-
-      // bottom bar
+      // Bottom bar
       px(s, 0, H - 0.26, W, 0.26, BG3);
       hl(s, 0, H - 0.26, W, WL.acc, 0.03);
       s.addText(WL.n + '  LV.' + (li+1) + '  AGE ' + age, {
@@ -390,19 +408,19 @@ async function generate() {
         x:W-2.5, y:H-0.22, w:2.3, h:0.18, fontSize:8, color:MUTED, align:'right', fontFace:'Courier New'});
     }
 
-    // ── WORLD MAP SUMMARY ──
+    // ══════════════ WORLD MAP SUMMARY ══════════════
     st.textContent = '// RENDERING FINAL MAP...'; await tick();
     {
       var s = pres.addSlide();
       bg(s); pixelGrid(s); starfield(s, 99);
-
+      // Tab bar
       px(s, 0, 0, W, 0.3, BG3);
       hl(s, 0, 0.3, W, BORDER2);
       px(s, 0.2, 0, 3, 0.3, BG4);
       px(s, 0.2, 0, 3, 0.035, GOLD);
       s.addText('WORLD_MAP.FINAL', {x:0.25, y:0.05, w:2.9, h:0.2, fontSize:9, color:GOLD, fontFace:'Courier New'});
       s.addText('ALL LEVELS UNLOCKED', {x:3.4, y:0.05, w:9.7, h:0.2, fontSize:9, color:MUTED, align:'right', fontFace:'Courier New'});
-
+      // Header
       px(s, 0, 0.3, W, 0.88, BG4);
       hl(s, 0, 1.18, W, GOLD, 0.04);
       px(s, 0, 0.3, 0.055, 0.88, GOLD);
@@ -411,80 +429,43 @@ async function generate() {
       s.addText('AGE 20 to 32  13 LEVELS  ALL WORLDS DOCUMENTED', {
         x:0.2, y:0.86, w:12, h:0.24, fontSize:9, color:MUTED, fontFace:'Courier New', charSpacing:1});
 
-      // map area
-      var MAPX = 0.18, MAPY = 1.26, MAPH = 2.64;
-      px(s, MAPX, MAPY, W - 0.36, MAPH, BG2, BORDER, 1.5);
+      // ── FIX 3: World map nodes section REMOVED ──
+      // ── FIX 4: Skill Tree enlarged — starts right after header ──
+      // Previously GY = ~4.02 (only 3.48" tall). Now GY = 1.28 (6.0" tall — 73% bigger).
+      var GY   = 1.28;
+      var LW   = 0.9;
+      var GX   = 0.22 + LW;
+      var GW   = W - 0.3 - LW;
+      var GH   = H - GY - 0.26;   // ≈ 5.96" vs old 3.20"
+      var NY   = 13;
+      var yW   = GW / NY;
+      var HDH  = 0.42;
+      var rH   = (GH - HDH) / 4;
 
-      var nW2 = 1.58, nH2 = 0.72, nStep2 = 1.7, nOX2 = 0.28;
-      var r1y2 = MAPY + 0.22, r2y2 = MAPY + MAPH - nH2 - 0.2;
-
-      // path row1
-      for (var i = 0; i < 6; i++) {
-        var cx = nOX2 + i * (nW2 + 0.06) + nW2;
-        var cy = r1y2 + nH2 / 2;
-        px(s, cx, cy - 0.04, (nW2 + 0.06) - nW2, 0.08, GOLD);
-      }
-      // vertical connector
-      var r1endX2 = nOX2 + 6 * (nW2 + 0.06) + nW2 / 2 - 0.04;
-      px(s, r1endX2, r1y2 + nH2, 0.08, r2y2 - (r1y2 + nH2), GOLD);
-      // path row2
-      for (var i = 0; i < 5; i++) {
-        var cx = nOX2 + (4 - i) * (nW2 + 0.06) + nW2;
-        var cy = r2y2 + nH2 / 2;
-        px(s, cx, cy - 0.04, (nW2 + 0.06) - nW2, 0.08, GOLD);
-      }
-
-      // level nodes
-      for (var i = 0; i < 13; i++) {
-        var wl = WORLDS[i];
-        var inRow1 = (i < 7);
-        var nx = inRow1 ? (nOX2 + i * (nW2 + 0.06)) : (nOX2 + (12 - i) * (nW2 + 0.06));
-        var ny = inRow1 ? r1y2 : r2y2;
-
-        s.addShape('ellipse', {x:nx-0.1, y:ny-0.1, w:nW2+0.2, h:nH2+0.2,
-          fill:{color:wl.acc+'18'}, line:{type:'none'}});
-        pixelBorder(s, nx, ny, nW2, nH2, wl.acc, wl.d);
-        px(s, nx, ny, nW2, 0.045, wl.acc);
-        s.addText('LV.' + (i+1), {x:nx+0.06, y:ny+0.06, w:0.6, h:0.24,
-          fontSize:9, bold:true, color:wl.acc, fontFace:'Courier New'});
-        s.addText((20+i) + '歲', {x:nx+0.06, y:ny+0.32, w:nW2-0.12, h:0.26,
-          fontSize:11, bold:true, color:TEXT, align:'center', fontFace:'Microsoft JhengHei'});
-        s.addText(wl.n, {x:nx+0.06, y:ny+0.54, w:nW2-0.12, h:0.18,
-          fontSize:8, color:TEXT2, align:'center', fontFace:'Microsoft JhengHei'});
-      }
-
-      // skill tree grid
-      var GY = MAPY + MAPH + 0.12;
-      var LW = 0.9, GX = 0.22 + LW, GW = W - 0.3 - LW;
-      var GH = H - GY - 0.28, NY = 13, yW = GW / NY;
-      var HDH = 0.38, rH = (GH - HDH) / 4;
-
-      s.addText('-- SKILL TREE --', {x:0.24, y:GY+0.02, w:7, h:0.26,
+      s.addText('-- SKILL TREE --', {x:0.24, y:GY+0.06, w:7, h:0.26,
         fontSize:9, bold:true, color:GOLD, fontFace:'Courier New', charSpacing:2});
-
+      // Year header row
       for (var i = 0; i < NY; i++) {
         var wl = WORLDS[i], x = GX + i * yW;
-        px(s, x+0.01, GY+0.3, yW-0.02, HDH, wl.d, wl.acc, 1.2);
-        px(s, x+0.01, GY+0.3, yW-0.02, 0.04, wl.acc);
-        s.addText(String(20+i), {x:x+0.01, y:GY+0.46, w:yW-0.02, h:0.2,
-          fontSize:8.5, bold:true, color:wl.acc, align:'center', fontFace:'Courier New'});
+        px(s, x+0.01, GY+0.34, yW-0.02, HDH, wl.d, wl.acc, 1.2);
+        px(s, x+0.01, GY+0.34, yW-0.02, 0.04, wl.acc);
+        s.addText(String(20+i), {x:x+0.01, y:GY+0.5, w:yW-0.02, h:0.22,
+          fontSize:9, bold:true, color:wl.acc, align:'center', fontFace:'Courier New'});
       }
-
+      // Category rows
       CATS.forEach(function(cat, ci) {
-        var ry = GY + 0.3 + HDH + ci * rH;
+        var ry = GY + 0.34 + HDH + ci * rH;
         pixelBorder(s, 0.22, ry+0.02, LW-0.06, rH-0.04, cat.acc, cat.d);
         px(s, 0.22, ry+0.02, 0.06, rH-0.04, cat.acc);
         s.addText(cat.k, {x:0.32, y:ry+0.02, w:LW-0.14, h:rH-0.04,
-          fontSize:9.5, bold:true, color:cat.acc, align:'center', valign:'middle', fontFace:'Microsoft JhengHei'});
-
+          fontSize:11, bold:true, color:cat.acc, align:'center', valign:'middle', fontFace:'Microsoft JhengHei'});
         for (var i = 0; i < NY; i++) {
           var x = GX + i * yW, even = (i % 2 === 0);
           px(s, x+0.01, ry+0.02, yW-0.02, rH-0.04, even ? cat.d : BG2, BORDER, 0.3);
           px(s, x+0.01, ry+0.02, yW-0.02, 0.03, even ? cat.acc : BORDER);
         }
       });
-
-      // bottom bar
+      // Bottom bar
       px(s, 0, H-0.26, W, 0.26, BG3);
       hl(s, 0, H-0.26, W, GOLD, 0.025);
       CATS.forEach(function(c, i) {
@@ -496,19 +477,18 @@ async function generate() {
         fontSize:8, color:MUTED, align:'right', fontFace:'Courier New'});
     }
 
-    // output
+    // Output
     st.textContent = '// SAVING GAME FILE...'; await tick();
     var blob = await pres.write({outputType: 'blob'});
     var url  = URL.createObjectURL(blob);
     var a    = document.createElement('a');
     a.href     = url;
-    a.download = '人生里程碑_遊戲通關版v2.pptx';
+    a.download = '人生里程碑_遊戲通關版.pptx';
     document.body.appendChild(a);
     a.click();
     setTimeout(function() { URL.revokeObjectURL(url); document.body.removeChild(a); }, 3000);
     st.textContent = 'GAME SAVED!  ->  人生里程碑_遊戲通關版v2.pptx';
     btn.disabled = false;
-
   } catch(e) {
     console.error(e);
     st.textContent = 'ERROR: ' + e.message;
