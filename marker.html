@@ -158,6 +158,7 @@
             display: block;
             max-width: 100%;
             height: auto;
+            touch-action: none; /* 💡 告訴手機瀏覽器不要擅自捲動畫面或縮放，交給 canvas 處理 */
         }
         
         .placeholder-text {
@@ -190,7 +191,7 @@
             border-bottom: 3px solid #cbd5e1;
         }
 
-        /* 📱 完美對齊你的草圖的手機版 RWD 樣式 📱 */
+        /* 📱 手機版 RWD 樣式 */
         @media (max-width: 768px) {
             body {
                 padding: 0;
@@ -199,29 +200,27 @@
                 padding: 10px;
                 border-radius: 0;
                 box-shadow: none;
-                /* 給頂部第一層與第二層控制區留空間 */
                 padding-top: 140px; 
-                padding-bottom: 120px; /* 給底部下載區留空間 */
+                padding-bottom: 120px; 
             }
             
             h1 {
                 font-size: 16px;
                 padding-right: 0;
-                margin: 5px 0 15px 50px; /* 留出左側工具列寬度 */
+                margin: 5px 0 15px 50px; 
                 text-align: left;
             }
 
-            /* 工具列在手機版化身為草圖的階層配置 */
             .toolbar {
-                display: block; /* 取消 flex */
+                display: block; 
                 background: transparent;
                 border: none;
                 padding: 0;
                 margin: 0;
             }
 
-            /* 【頂部第一層】：按鈕與語言選單 */
-            .tool-group:nth-child(6) { /* 歷史按鈕組 */
+            /* 【頂部第一層】：歷史回退與語言 */
+            .tool-group:nth-child(6) { 
                 position: fixed;
                 top: 0;
                 left: 0;
@@ -252,11 +251,11 @@
                 box-shadow: 0 2px 4px rgba(0,0,0,0.05);
             }
 
-            /* 【第二層上部】：屬性與顏色配置欄 */
+            /* 【第二層上部】：屬性控制欄 */
             .tool-group:nth-child(3), .tool-group:nth-child(4), .tool-group:nth-child(5) { 
                 position: fixed;
                 top: 50px;
-                left: 50px; /* 留給左側工具列 */
+                left: 50px; 
                 width: calc(100% - 50px);
                 background: #f9fafb;
                 z-index: 99;
@@ -268,13 +267,12 @@
                 display: flex !important;
                 gap: 8px;
             }
-            /* 合併屬性欄位顯示，避免重疊 */
             .tool-group:nth-child(4), .tool-group:nth-child(5) {
                 top: 90px;
                 border-bottom: 2px solid #cbd5e1;
             }
 
-            /* 【左側垂直工具列】：完全符合你的草圖紅色工具列設計 */
+            /* 【左側垂直工具列】 */
             .tool-group:nth-child(2) { 
                 position: fixed;
                 top: 50px;
@@ -283,16 +281,14 @@
                 height: calc(100vh - 50px);
                 background: #f1f5f9;
                 z-index: 98;
-                flex-direction: column !important; /* 垂直排列 */
+                flex-direction: column !important; 
                 overflow-y: auto;
                 padding: 10px 0 !important;
                 gap: 12px !important;
                 border-right: 2px solid #cbd5e1;
                 align-items: center;
             }
-            .tool-group:nth-child(2) label {
-                display: none; /* 隱藏「工具：」字樣 */
-            }
+            .tool-group:nth-child(2) label { display: none; }
             .mode-btn {
                 padding: 8px !important;
                 width: 38px;
@@ -300,12 +296,10 @@
                 justify-content: center;
                 border-radius: 50%;
             }
-            .mode-btn span {
-                display: none; /* 手機版只留 Icon 圖示，隱藏文字 */
-            }
+            .mode-btn span { display: none; }
 
-            /* 【底部第三層】：載入圖片與下載存檔 */
-            .tool-group:nth-child(1) { /* 載入圖片 */
+            /* 【底部第三層】：載入圖片與下載 */
+            .tool-group:nth-child(1) { 
                 position: fixed;
                 bottom: 60px;
                 left: 0;
@@ -317,7 +311,7 @@
                 box-sizing: border-box;
                 display: flex !important;
             }
-            .tool-group:last-child { /* 下載圖片與檔名 */
+            .tool-group:last-child { 
                 position: fixed;
                 bottom: 0;
                 left: 0;
@@ -331,20 +325,17 @@
             }
 
             .canvas-area {
-                margin-left: 45px; /* 避開左側工具列 */
+                margin-left: 45px; 
                 min-height: 300px;
                 padding: 5px;
             }
-            input[type="range"] {
-                width: 65px; /* 手機版縮短滑桿長度 */
-            }
+            input[type="range"] { width: 65px; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- 頂部右側：語言切換 -->
     <div class="lang-selector-container">
         🌐 <select id="langSelect" class="lang-select">
             <option value="zh-TW">繁體中文</option>
@@ -359,13 +350,11 @@
     <h1 id="titleText">🎯 PicMark 圖片快捷標記與標註大師</h1>
     
     <div class="toolbar">
-        <!-- 底部第三層：載入圖片 -->
         <div class="tool-group">
             <label id="lblLoad">1. 載入圖片：</label>
             <input type="file" id="imageLoader" accept="image/*">
         </div>
 
-        <!-- 左側垂直工具列 -->
         <div class="tool-group">
             <label id="lblTool">工具：</label>
             <button class="mode-btn active" id="btnToolSelect" data-mode="select">👆 <span id="txtToolSelect">選擇與移動</span></button>
@@ -378,13 +367,11 @@
             <button class="mode-btn" id="btnToolBlur" data-mode="blur">🌫️ <span id="txtToolBlur">馬賽克</span></button>
         </div>
 
-        <!-- 第二層：屬性欄 (新增：粗細雙向連動滑動條) -->
         <div class="tool-group">
             <label id="lblColor">顏色：</label>
             <input type="color" id="primaryColor" value="#cc0000">
             
             <label id="lblThickness">粗細/大小：</label>
-            <!-- 💡 新增粗細滑桿，並與旁邊的數字輸入框雙向連動 💡 -->
             <input type="range" id="brushSizeRange" min="2" max="100" value="30">
             <input type="number" id="brushSize" value="30" min="2" max="100">
 
@@ -399,7 +386,6 @@
             </select>
         </div>
 
-        <!-- 數字標記延伸面板 -->
         <div class="tool-group" id="numberParamsGroup" style="display: none;">
             <label id="lblStartNum">標記數字：</label>
             <input type="number" id="startNum" value="1" min="0">
@@ -407,20 +393,17 @@
             <input type="color" id="textColor" value="#ffffff">
         </div>
 
-        <!-- 文字標記延伸面板 -->
         <div class="tool-group" id="textParamsGroup" style="display: none;">
             <label id="lblTextInput">輸入文字：</label>
             <input type="text" id="textToDraw" value="Memo" placeholder="輸入文字...">
         </div>
 
-        <!-- 頂部第一層：控制按鈕 -->
         <div class="tool-group">
             <button id="undoBtn" class="secondary">↩️ <span id="btnUndo">上一步</span></button>
             <button id="redoBtn" class="secondary" disabled>↪️ <span id="btnRedo">下一步</span></button>
             <button id="clearBtn" class="danger">🧹 <span id="btnClear">全清除</span></button>
         </div>
 
-        <!-- 底部第三層：存檔與檔名 -->
         <div class="tool-group" style="margin-left: auto; border-right: none;">
             <label id="lblFileName">檔名：</label>
             <input type="text" id="fileNameInput" value="picmark_image" placeholder="請輸入自訂檔名">
@@ -698,7 +681,7 @@
     // 設定
     const startNumInput = document.getElementById('startNum');
     const brushSizeInput = document.getElementById('brushSize');
-    const brushSizeRange = document.getElementById('brushSizeRange'); // 💡 粗細滑桿 💡
+    const brushSizeRange = document.getElementById('brushSizeRange'); 
     const primaryColorInput = document.getElementById('primaryColor');
     const textColorInput = document.getElementById('textColor');
     const brushOpacityInput = document.getElementById('brushOpacity');
@@ -779,16 +762,16 @@
     langSelect.addEventListener('change', function() { updateLanguage(this.value); });
     updateLanguage(currentLang);
 
-    // --- 💡 粗細度滑桿與輸入框「雙向即時連動」系統 💡 ---
+    // 粗細度雙向連動
     brushSizeRange.addEventListener('input', function() {
-        brushSizeInput.value = this.value; // 滑桿改，同步改數字
+        brushSizeInput.value = this.value;
     });
     brushSizeInput.addEventListener('input', function() {
         let val = parseInt(this.value, 10);
         if (isNaN(val)) val = 2;
         if (val > 100) val = 100;
         if (val < 2) val = 2;
-        brushSizeRange.value = val; // 數字改，同步改滑桿
+        brushSizeRange.value = val;
     });
 
     brushOpacityInput.addEventListener('input', function() {
@@ -1117,29 +1100,25 @@
         return null;
     }
 
-    // --- 滑鼠與觸控核心事件整合 (支援跨平台操作) ---
-    function getMousePos(e) {
+    // --- 💡 終極升級：萬用 PointerEvents 核心 💡 ---
+    function getPointerPos(e) {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
-        
-        let clientX = e.clientX;
-        let clientY = e.clientY;
-        if (e.touches && e.touches.length > 0) {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-        }
         return {
-            x: (clientX - rect.left) * scaleX,
-            y: (clientY - rect.top) * scaleY
+            x: (e.clientX - rect.left) * scaleX,
+            y: (e.clientY - rect.top) * scaleY
         };
     }
 
     function onPointerDown(e) {
         if (!loadedImage) return;
-        if (e.touches && e.touches.length > 1) return; 
+        // 如果是多點觸控手勢（例如兩隻手指在縮放圖片），不觸發畫筆
+        if (!e.isPrimary) return; 
 
-        const pos = getMousePos(e);
+        canvas.setPointerCapture(e.pointerId); // 鎖定指標，防止滑出畫布失效
+
+        const pos = getPointerPos(e);
         dragStartX = pos.x;
         dragStartY = pos.y;
         isDrawing = true;
@@ -1207,12 +1186,9 @@
 
     function onPointerMove(e) {
         if (!isDrawing) return;
-        if (e.touches && e.touches.length > 1) return;
-        
-        // 防止手機網頁跟隨畫筆上下牽引滾動
-        if (e.cancelable) e.preventDefault();
+        if (!e.isPrimary) return;
 
-        const pos = getMousePos(e);
+        const pos = getPointerPos(e);
 
         if (currentMode === 'select' && isDraggingObject && selectedObject) {
             const dx = pos.x - dragStartX;
@@ -1236,7 +1212,7 @@
         }
     }
 
-    function onPointerUp() {
+    function onPointerUp(e) {
         if (!isDrawing) return;
         isDrawing = false;
         isDraggingObject = false;
@@ -1244,18 +1220,16 @@
         drawAll(); 
     }
 
-    canvas.addEventListener('mousedown', onPointerDown);
-    canvas.addEventListener('mousemove', onPointerMove);
-    window.addEventListener('mouseup', onPointerUp);
-
-    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
-    canvas.addEventListener('touchmove', onPointerMove, { passive: false });
-    canvas.addEventListener('touchend', onPointerUp);
+    // 💡 僅綁定 Pointer 萬用事件，徹底取代原本分開的 Mouse/Touch 監聽，消除衝突 💡
+    canvas.addEventListener('pointerdown', onPointerDown);
+    canvas.addEventListener('pointermove', onPointerMove);
+    canvas.addEventListener('pointerup', onPointerUp);
+    canvas.addEventListener('pointercancel', onPointerUp);
 
     // 雙擊編輯文字
     canvas.addEventListener('dblclick', function(e) {
         if (!loadedImage || currentMode !== 'select') return;
-        const pos = getMousePos(e);
+        const pos = getPointerPos(e);
         const target = findObjectAt(pos.x, pos.y);
         
         if (target && target.type === 'text') {
