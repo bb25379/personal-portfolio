@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PicMark 圖片快捷標記與標註大師</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+        }
+        
+        .lang-selector-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 10;
+        }
+        .lang-select {
+            padding: 4px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background-color: white;
+            font-size: 13px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #1f2937;
+            font-size: 24px;
+            text-align: center;
+            padding-right: 150px;
+        }
+
+        /* 工具列配置 */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            align-items: center;
+            border: 1px solid #e5e7eb;
+        }
+        .tool-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-right: 1px solid #e5e7eb;
+            padding-right: 12px;
+        }
+        .tool-group:last-child {
+            border-right: none;
+            padding-right: 0;
+        }
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+            white-space: nowrap;
+        }
+        input[type="text"], input[type="number"], input[type="color"], select {
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            outline: none;
+            background: white;
+        }
+        input[type="number"] { width: 55px; }
+        input[type="text"] { width: 130px; }
+        input[type="range"] { width: 80px; cursor: pointer; vertical-align: middle; }
+
+        /* 按鈕樣式 */
+        button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        button:hover:not(:disabled) { background-color: #2563eb; }
+        button:disabled {
+            background-color: #e5e7eb;
+            cursor: not-allowed;
+            color: #9ca3af;
+        }
+        button.secondary { background-color: #4b5563; }
+        button.secondary:hover:not(:disabled) { background-color: #374151; }
+        button.danger { background-color: #ef4444; }
+        button.danger:hover:not(:disabled) { background-color: #dc2626; }
+        
+        .mode-btn {
+            background-color: #f3f4f6;
+            color: #374151;
+            border: 1px solid #d1d5db;
+        }
+        .mode-btn:hover { background-color: #e5e7eb; }
+        .mode-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* 畫布區域 */
+        .canvas-area {
+            position: relative;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+            background-color: #fafafa;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .canvas-wrapper {
+            position: relative;
+            display: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .placeholder-text {
+            color: #9ca3af;
+            font-size: 16px;
+            text-align: center;
+            pointer-events: none;
+            line-height: 1.8;
+            width: 100%;
+            max-width: 650px;
+        }
+        .kbd-container {
+            font-size:13px; 
+            display:inline-block; 
+            margin-top:15px; 
+            background-color: #e2e8f0; 
+            padding: 12px 18px; 
+            border-radius: 8px;
+            color: #475569;
+            text-align: left;
+        }
+        .kbd {
+            background: #ffffff;
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-size: 12px;
+            font-family: monospace;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            border-bottom: 3px solid #cbd5e1;
+        }
+
+        /* 📱 完美對齊你的草圖的手機版 RWD 樣式 📱 */
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+            }
+            .container {
+                padding: 10px;
+                border-radius: 0;
+                box-shadow: none;
+                /* 給頂部第一層與第二層控制區留空間 */
+                padding-top: 140px; 
+                padding-bottom: 120px; /* 給底部下載區留空間 */
+            }
+            
+            h1 {
+                font-size: 16px;
+                padding-right: 0;
+                margin: 5px 0 15px 50px; /* 留出左側工具列寬度 */
+                text-align: left;
+            }
+
+            /* 工具列在手機版化身為草圖的階層配置 */
+            .toolbar {
+                display: block; /* 取消 flex */
+                background: transparent;
+                border: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            /* 【頂部第一層】：按鈕與語言選單 */
+            .tool-group:nth-child(6) { /* 歷史按鈕組 */
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: calc(100% - 110px);
+                height: 50px;
+                background: white;
+                box-sizing: border-box;
+                padding: 8px;
+                z-index: 100;
+                display: flex !important;
+                border: 1px solid #e5e7eb;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+            .lang-selector-container {
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 110px;
+                height: 50px;
+                background: white;
+                box-sizing: border-box;
+                padding: 10px 8px;
+                z-index: 100;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border: 1px solid #e5e7eb;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            }
+
+            /* 【第二層上部】：屬性與顏色配置欄 */
+            .tool-group:nth-child(3), .tool-group:nth-child(4), .tool-group:nth-child(5) { 
+                position: fixed;
+                top: 50px;
+                left: 50px; /* 留給左側工具列 */
+                width: calc(100% - 50px);
+                background: #f9fafb;
+                z-index: 99;
+                padding: 6px 10px !important;
+                border-bottom: 1px solid #e5e7eb;
+                box-sizing: border-box;
+                overflow-x: auto;
+                white-space: nowrap;
+                display: flex !important;
+                gap: 8px;
+            }
+            /* 合併屬性欄位顯示，避免重疊 */
+            .tool-group:nth-child(4), .tool-group:nth-child(5) {
+                top: 90px;
+                border-bottom: 2px solid #cbd5e1;
+            }
+
+            /* 【左側垂直工具列】：完全符合你的草圖紅色工具列設計 */
+            .tool-group:nth-child(2) { 
+                position: fixed;
+                top: 50px;
+                left: 0;
+                width: 50px;
+                height: calc(100vh - 50px);
+                background: #f1f5f9;
+                z-index: 98;
+                flex-direction: column !important; /* 垂直排列 */
+                overflow-y: auto;
+                padding: 10px 0 !important;
+                gap: 12px !important;
+                border-right: 2px solid #cbd5e1;
+                align-items: center;
+            }
+            .tool-group:nth-child(2) label {
+                display: none; /* 隱藏「工具：」字樣 */
+            }
+            .mode-btn {
+                padding: 8px !important;
+                width: 38px;
+                height: 38px;
+                justify-content: center;
+                border-radius: 50%;
+            }
+            .mode-btn span {
+                display: none; /* 手機版只留 Icon 圖示，隱藏文字 */
+            }
+
+            /* 【底部第三層】：載入圖片與下載存檔 */
+            .tool-group:nth-child(1) { /* 載入圖片 */
+                position: fixed;
+                bottom: 60px;
+                left: 0;
+                width: 100%;
+                background: white;
+                z-index: 100;
+                padding: 8px 15px !important;
+                border-top: 1px solid #e5e7eb;
+                box-sizing: border-box;
+                display: flex !important;
+            }
+            .tool-group:last-child { /* 下載圖片與檔名 */
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: white;
+                z-index: 100;
+                padding: 10px 15px !important;
+                border-top: 1px solid #cbd5e1;
+                box-sizing: border-box;
+                display: flex !important;
+            }
+
+            .canvas-area {
+                margin-left: 45px; /* 避開左側工具列 */
+                min-height: 300px;
+                padding: 5px;
+            }
+            input[type="range"] {
+                width: 65px; /* 手機版縮短滑桿長度 */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 頂部右側：語言切換 -->
+    <div class="lang-selector-container">
+        🌐 <select id="langSelect" class="lang-select">
+            <option value="zh-TW">繁體中文</option>
+            <option value="zh-CN">简体中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="es">Español</option>
+        </select>
+    </div>
+
+    <h1 id="titleText">🎯 PicMark 圖片快捷標記與標註大師</h1>
+    
+    <div class="toolbar">
+        <!-- 底部第三層：載入圖片 -->
+        <div class="tool-group">
+            <label id="lblLoad">1. 載入圖片：</label>
+            <input type="file" id="imageLoader" accept="image/*">
+        </div>
+
+        <!-- 左側垂直工具列 -->
+        <div class="tool-group">
+            <label id="lblTool">工具：</label>
+            <button class="mode-btn active" id="btnToolSelect" data-mode="select">👆 <span id="txtToolSelect">選擇與移動</span></button>
+            <button class="mode-btn" id="btnToolMarker" data-mode="marker">🎯 <span id="txtToolMarker">數字標記</span></button>
+            <button class="mode-btn" id="btnToolText" data-mode="text">🔤 <span id="txtToolText">文字標記</span></button>
+            <button class="mode-btn" id="btnToolRect" data-mode="rect">⬜ <span id="txtToolRect">矩形</span></button>
+            <button class="mode-btn" id="btnToolCircle" data-mode="circle">⭕ <span id="txtToolCircle">圓形</span></button>
+            <button class="mode-btn" id="btnToolArrow" data-mode="arrow">↗️ <span id="txtToolArrow">箭頭</span></button>
+            <button class="mode-btn" id="btnToolLine" data-mode="line">➖ <span id="txtToolLine">直線</span></button>
+            <button class="mode-btn" id="btnToolBlur" data-mode="blur">🌫️ <span id="txtToolBlur">馬賽克</span></button>
+        </div>
+
+        <!-- 第二層：屬性欄 (新增：粗細雙向連動滑動條) -->
+        <div class="tool-group">
+            <label id="lblColor">顏色：</label>
+            <input type="color" id="primaryColor" value="#cc0000">
+            
+            <label id="lblThickness">粗細/大小：</label>
+            <!-- 💡 新增粗細滑桿，並與旁邊的數字輸入框雙向連動 💡 -->
+            <input type="range" id="brushSizeRange" min="2" max="100" value="30">
+            <input type="number" id="brushSize" value="30" min="2" max="100">
+
+            <label id="lblOpacity">不透明度：</label>
+            <input type="range" id="brushOpacity" min="10" max="100" value="100">
+            <span id="opacityVal">100%</span>
+
+            <label id="lblFillStyle">樣式：</label>
+            <select id="fillStyleSelect">
+                <option value="stroke" id="optStroke">空心 (框線)</option>
+                <option value="fill" id="optFill">實心 (填滿)</option>
+            </select>
+        </div>
+
+        <!-- 數字標記延伸面板 -->
+        <div class="tool-group" id="numberParamsGroup" style="display: none;">
+            <label id="lblStartNum">標記數字：</label>
+            <input type="number" id="startNum" value="1" min="0">
+            <label id="lblTextColor">字色：</label>
+            <input type="color" id="textColor" value="#ffffff">
+        </div>
+
+        <!-- 文字標記延伸面板 -->
+        <div class="tool-group" id="textParamsGroup" style="display: none;">
+            <label id="lblTextInput">輸入文字：</label>
+            <input type="text" id="textToDraw" value="Memo" placeholder="輸入文字...">
+        </div>
+
+        <!-- 頂部第一層：控制按鈕 -->
+        <div class="tool-group">
+            <button id="undoBtn" class="secondary">↩️ <span id="btnUndo">上一步</span></button>
+            <button id="redoBtn" class="secondary" disabled>↪️ <span id="btnRedo">下一步</span></button>
+            <button id="clearBtn" class="danger">🧹 <span id="btnClear">全清除</span></button>
+        </div>
+
+        <!-- 底部第三層：存檔與檔名 -->
+        <div class="tool-group" style="margin-left: auto; border-right: none;">
+            <label id="lblFileName">檔名：</label>
+            <input type="text" id="fileNameInput" value="picmark_image" placeholder="請輸入自訂檔名">
+            <select id="exportFormat">
+                <option value="image/png">.png</option>
+                <option value="image/jpeg">.jpg</option>
+            </select>
+            <button id="downloadBtn" style="background-color: #10b981;">💾 <span id="btnDownload">下載圖片</span></button>
+        </div>
+    </div>
+
+    <!-- 畫布工作區 -->
+    <div class="canvas-area" id="dropZone">
+        <div class="canvas-wrapper" id="canvasWrapper">
+            <canvas id="imageCanvas"></canvas>
+        </div>
+        <div class="placeholder-text" id="placeholder"></div>
+    </div>
+</div>
+
+<script>
+    // --- 多國語言 ---
+    const i18n = {
+        "zh-TW": {
+            title: "🎯 PicMark 圖片快捷標記與標註大師",
+            lblLoad: "1. 載入圖片：",
+            lblTool: "工具：",
+            txtToolSelect: "選擇與移動",
+            txtToolMarker: "數字標記",
+            txtToolText: "文字標記",
+            txtToolRect: "矩形",
+            txtToolCircle: "圓形",
+            txtToolArrow: "箭頭",
+            txtToolLine: "直線",
+            txtToolBlur: "馬賽克",
+            lblColor: "顏色：",
+            lblThickness: "粗細/大小：",
+            lblOpacity: "不透明度：",
+            lblFillStyle: "樣式：",
+            optStroke: "空心 (框線)",
+            optFill: "實心 (填滿)",
+            lblStartNum: "標記數字：",
+            lblTextColor: "字色：",
+            lblTextInput: "輸入文字：",
+            btnUndo: "上一步",
+            btnRedo: "下一步",
+            btnClear: "全清除",
+            lblFileName: "檔名：",
+            btnDownload: "下載圖片",
+            fileNamePlaceholder: "請輸入自訂檔名",
+            noImageAlert: "請先載入圖片！",
+            textInputPlaceholder: "輸入文字...",
+            promptEditText: "請修改文字內容：",
+            placeholderHtml: `
+                請點擊上方選擇檔案、<br>或在此處<strong>拖曳圖片</strong>、或直接使用 <strong>Ctrl + V (Cmd + V)</strong> 貼上截圖。<br>
+                <div class="kbd-container">
+                    💡 操作小秘訣：<br>
+                    1. 點選 <span class="kbd">👆 選擇與移動</span> 可以拖曳任何已畫上去的物件！<br>
+                    2. 在選擇模式下，<strong>雙擊文字</strong>可以重新編輯文字內容。<br>
+                    3. 復原 (上一步)：<span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; 重做 (下一步)：<span class="kbd">Cmd/Ctrl + Shift + Z</span>
+                </div>
+            `
+        },
+        "zh-CN": {
+            title: "🎯 PicMark 图片快捷标记与标注大师",
+            lblLoad: "1. 载入图片：",
+            lblTool: "工具：",
+            txtToolSelect: "选择与移动",
+            txtToolMarker: "数字标记",
+            txtToolText: "文字标记",
+            txtToolRect: "矩形",
+            txtToolCircle: "圆形",
+            txtToolArrow: "箭头",
+            txtToolLine: "直线",
+            txtToolBlur: "马赛克",
+            lblColor: "颜色：",
+            lblThickness: "粗细/大小：",
+            lblOpacity: "不透明度：",
+            lblFillStyle: "样式：",
+            optStroke: "空心 (框线)",
+            optFill: "实心 (填充)",
+            lblStartNum: "标记数字：",
+            lblTextColor: "字色：",
+            lblTextInput: "输入文字：",
+            btnUndo: "上一步",
+            btnRedo: "下一步",
+            btnClear: "全清除",
+            lblFileName: "文件名：",
+            btnDownload: "下载图片",
+            fileNamePlaceholder: "请输入自定文件名",
+            noImageAlert: "请先载入图片！",
+            textInputPlaceholder: "输入文字...",
+            promptEditText: "请修改文字内容：",
+            placeholderHtml: `
+                请点击上方选择文件、<br>或在此处<strong>拖拽图片</strong>、或直接使用 <strong>Ctrl + V (Cmd + V)</strong> 粘贴截图。<br>
+                <div class="kbd-container">
+                    💡 操作小秘诀：<br>
+                    1. 点击 <span class="kbd">👆 选择与移动</span> 可以拖拽 any 已画上去的物件！<br>
+                    2. 在选择模式下，<strong>双击文字</strong>可以重新编辑文字内容。<br>
+                    3. 复原 (上一步)：<span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; 重做 (下一步)：<span class="kbd">Cmd/Ctrl + Shift + Z</span>
+                </div>
+            `
+        },
+        "en": {
+            title: "🎯 PicMark - Image Marker & Annotator Master",
+            lblLoad: "1. Load Image:",
+            lblTool: "Tools:",
+            txtToolSelect: "Select & Move",
+            txtToolMarker: "Number",
+            txtToolText: "Text",
+            txtToolRect: "Rectangle",
+            txtToolCircle: "Circle",
+            txtToolArrow: "Arrow",
+            txtToolLine: "Line",
+            txtToolBlur: "Blur/Mosaic",
+            lblColor: "Color:",
+            lblThickness: "Size/Thickness:",
+            lblOpacity: "Opacity:",
+            lblFillStyle: "Type:",
+            optStroke: "Stroke (Hollow)",
+            optFill: "Fill (Solid)",
+            lblStartNum: "Marker No.:",
+            lblTextColor: "Font Color:",
+            lblTextInput: "Text:",
+            btnUndo: "Undo",
+            btnRedo: "Redo",
+            btnClear: "Clear All",
+            lblFileName: "File Name:",
+            btnDownload: "Download",
+            fileNamePlaceholder: "Enter file name",
+            noImageAlert: "Please load an image first!",
+            textInputPlaceholder: "Enter text...",
+            promptEditText: "Edit text content:",
+            placeholderHtml: `
+                Click above to select a file, <br>or <strong>drag & drop an image</strong> here, or press <strong>Ctrl + V (Cmd + V)</strong> to paste a screenshot.<br>
+                <div class="kbd-container">
+                    💡 Tips:<br>
+                    1. Select <span class="kbd">👆 Select & Move</span> to drag and reposition any placed object on the screen!<br>
+                    2. Under Select mode, <strong>double-click any text</strong> to edit its content.<br>
+                    3. Undo: <span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; Redo: <span class="kbd">Cmd/Ctrl + Shift + Z</span>
+                </div>
+            `
+        },
+        "ja": {
+            title: "🎯 PicMark - 画像注釈＆マークマスター",
+            lblLoad: "1. 画像を選択:",
+            lblTool: "ツール:",
+            txtToolSelect: "選択と移動",
+            txtToolMarker: "数字",
+            txtToolText: "テキスト",
+            txtToolRect: "矩形",
+            txtToolCircle: "円形",
+            txtToolArrow: "矢印",
+            txtToolLine: "直線",
+            txtToolBlur: "モザイク",
+            lblColor: "カラー:",
+            lblThickness: "太さ/サイズ:",
+            lblOpacity: "不透明度:",
+            lblFillStyle: "スタイル:",
+            optStroke: "枠線のみ (空心)",
+            optFill: "塗りつぶし (実心)",
+            lblStartNum: "マーク番号:",
+            lblTextColor: "文字色:",
+            lblTextInput: "文字列:",
+            btnUndo: "元に戻す",
+            btnRedo: "やり直し",
+            btnClear: "すべてクリア",
+            lblFileName: "ファイル名:",
+            btnDownload: "ダウンロード",
+            fileNamePlaceholder: "ファイル名を入力",
+            noImageAlert: "先に画像を読み込んでください！",
+            textInputPlaceholder: "テキストを入力...",
+            promptEditText: "テキストを編集します：",
+            placeholderHtml: `
+                上のボタンからファイルを選択するか、<br>ここに<strong>画像をドラッグ＆ドロップ</strong>、または <strong>Ctrl + V (Cmd + V)</strong> で貼り付けてください。<br>
+                <div class="kbd-container">
+                    💡 操作のコツ:<br>
+                    1. <span class="kbd">👆 選択と移動</span> をクリックすると、配置したすべてのオブジェクトをドラッグして移動できます！<br>
+                    2. 選択モード中、<strong>テキストをダブルクリック</strong>すると内容を再編集できます。<br>
+                    3. 元に戻す: <span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; やり直し: <span class="kbd">Cmd/Ctrl + Shift + Z</span>
+                </div>
+            `
+        },
+        "ko": {
+            title: "🎯 PicMark - 이미지 빠른 숫자 및 마크 마스터",
+            lblLoad: "1. 이미지 불러오기:",
+            lblTool: "도구:",
+            txtToolSelect: "선택 및 이동",
+            txtToolMarker: "숫자 마크",
+            txtToolText: "텍스트",
+            txtToolRect: "사각형",
+            txtToolCircle: "원형",
+            txtToolArrow: "화살표",
+            txtToolLine: "직선",
+            txtToolBlur: "모자이크",
+            lblColor: "색상:",
+            lblThickness: "두께/크기:",
+            lblOpacity: "투명도:",
+            lblFillStyle: "스타일:",
+            optStroke: "테두리 (비움)",
+            optFill: "채우기 (채움)",
+            lblStartNum: "마크 번호:",
+            lblTextColor: "글자 색상:",
+            lblTextInput: "텍스트 입력:",
+            btnUndo: "실행 취소",
+            btnRedo: "다시 실행",
+            btnClear: "모두 지우기",
+            lblFileName: "파일 이름:",
+            btnDownload: "다운로드",
+            fileNamePlaceholder: "파일 이름 입력",
+            noImageAlert: "먼저 이미지를 로드해주세요!",
+            textInputPlaceholder: "텍스트 입력...",
+            promptEditText: "텍스트 수정:",
+            placeholderHtml: `
+                위의 파일 선택을 클릭하거나, <br>여기에 <strong>이미지를 드래그 앤 드롭</strong>하거나, <strong>Ctrl + V (Cmd + V)</strong>를 눌러 스크린샷을 붙여넣으세요.<br>
+                <div class="kbd-container">
+                    💡 조작 팁:<br>
+                    1. <span class="kbd">👆 선택 및 이동</span>을 선택해 화면에 배치된 개체를 드래그하여 이동할 수 있습니다!<br>
+                    2. 선택 모드에서 <strong>텍스트를 더블 클릭</strong>하면 내용을 다시 편집할 수 있습니다.<br>
+                    3. 실행 취소: <span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; 다시 실행: <span class="kbd">Cmd/Ctrl + Shift + Z</span>
+                </div>
+            `
+        },
+        "es": {
+            title: "🎯 PicMark - Marcador y Anotador Pro",
+            lblLoad: "1. Cargar imagen:",
+            lblTool: "Herramienta:",
+            txtToolSelect: "Seleccionar y mover",
+            txtToolMarker: "Número",
+            txtToolText: "Texto",
+            txtToolRect: "Rectángulo",
+            txtToolCircle: "Círculo",
+            txtToolArrow: "Flecha",
+            txtToolLine: "Línea",
+            txtToolBlur: "Mosaico",
+            lblColor: "Color:",
+            lblThickness: "Grosor/Tamaño:",
+            lblOpacity: "Opacidad:",
+            lblFillStyle: "Estilo:",
+            optStroke: "Contorno (Vacío)",
+            optFill: "Relleno (Sólido)",
+            lblStartNum: "No. Marcador:",
+            lblTextColor: "Color de fuente:",
+            lblTextInput: "Texto:",
+            btnUndo: "Deshacer",
+            btnRedo: "Rehacer",
+            btnClear: "Borrar todo",
+            lblFileName: "Nombre:",
+            btnDownload: "Descargar",
+            fileNamePlaceholder: "Nombre de archivo",
+            noImageAlert: "¡Por favor, cargue una imagen primero!",
+            textInputPlaceholder: "Ingrese texto...",
+            promptEditText: "Modificar texto:",
+            placeholderHtml: `
+                Haga clic arriba para seleccionar un archivo, <br>o <strong>arrastre y suelte una imagen</strong> aquí, o presione <strong>Ctrl + V (Cmd + V)</strong> para pegar una captura de pantalla.<br>
+                <div class="kbd-container">
+                    💡 Consejos de uso:<br>
+                    1. ¡Seleccione <span class="kbd">👆 Seleccionar y mover</span> para arrastrar y reposicionar cualquier objeto dibujado!<br>
+                    2. En el modo de selección, haga <strong>doble clic en un texto</strong> para editar su contenido.<br>
+                    3. Deshacer: <span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; Rehacer: <span class="kbd">Cmd/Ctrl + Shift + Z</span>
+                </div>
+            `
+        }
+    };
+
+    // --- 元件初始化 ---
+    const langSelect = document.getElementById('langSelect');
+    const imageLoader = document.getElementById('imageLoader');
+    const canvas = document.getElementById('imageCanvas');
+    const ctx = canvas.getContext('2d');
+    const canvasWrapper = document.getElementById('canvasWrapper');
+    const placeholder = document.getElementById('placeholder');
+    const dropZone = document.getElementById('dropZone');
+    
+    // 設定
+    const startNumInput = document.getElementById('startNum');
+    const brushSizeInput = document.getElementById('brushSize');
+    const brushSizeRange = document.getElementById('brushSizeRange'); // 💡 粗細滑桿 💡
+    const primaryColorInput = document.getElementById('primaryColor');
+    const textColorInput = document.getElementById('textColor');
+    const brushOpacityInput = document.getElementById('brushOpacity');
+    const opacityVal = document.getElementById('opacityVal');
+    const fillStyleSelect = document.getElementById('fillStyleSelect');
+    const textToDrawInput = document.getElementById('textToDraw');
+    const fileNameInput = document.getElementById('fileNameInput');
+
+    const numberParamsGroup = document.getElementById('numberParamsGroup');
+    const textParamsGroup = document.getElementById('textParamsGroup');
+    
+    // 按鈕
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const exportFormat = document.getElementById('exportFormat');
+
+    // --- 物件導向系統變數 ---
+    let loadedImage = null;
+    let objects = [];       
+    let redoStack = [];     
+    let history = [];       
+    
+    let currentMode = 'select'; 
+    let isDrawing = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+
+    // 選取互動變數
+    let selectedObject = null;
+    let isDraggingObject = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    let baseStartNumber = 1;
+
+    // --- 多國語言設定 ---
+    let currentLang = 'zh-TW';
+    function updateLanguage(langCode) {
+        currentLang = langCode;
+        const dict = i18n[langCode];
+        if (!dict) return;
+
+        document.getElementById('titleText').innerText = dict.title;
+        document.getElementById('lblLoad').innerText = dict.lblLoad;
+        document.getElementById('lblTool').innerText = dict.lblTool;
+        document.getElementById('txtToolSelect').innerText = dict.txtToolSelect;
+        document.getElementById('txtToolMarker').innerText = dict.txtToolMarker;
+        document.getElementById('txtToolText').innerText = dict.txtToolText;
+        document.getElementById('txtToolRect').innerText = dict.txtToolRect;
+        document.getElementById('txtToolCircle').innerText = dict.txtToolCircle;
+        document.getElementById('txtToolArrow').innerText = dict.txtToolArrow;
+        document.getElementById('txtToolLine').innerText = dict.txtToolLine;
+        document.getElementById('txtToolBlur').innerText = dict.txtToolBlur;
+        document.getElementById('lblColor').innerText = dict.lblColor;
+        document.getElementById('lblThickness').innerText = dict.lblThickness;
+        document.getElementById('lblOpacity').innerText = dict.lblOpacity;
+        document.getElementById('lblFillStyle').innerText = dict.lblFillStyle;
+        document.getElementById('optStroke').innerText = dict.optStroke;
+        document.getElementById('optFill').innerText = dict.optFill;
+        document.getElementById('lblStartNum').innerText = dict.lblStartNum;
+        document.getElementById('lblTextColor').innerText = dict.lblTextColor;
+        document.getElementById('lblTextInput').innerText = dict.lblTextInput;
+        document.getElementById('btnUndo').innerText = dict.btnUndo;
+        document.getElementById('btnRedo').innerText = dict.btnRedo;
+        document.getElementById('btnClear').innerText = dict.btnClear;
+        document.getElementById('lblFileName').innerText = dict.lblFileName;
+        document.getElementById('btnDownload').innerText = dict.btnDownload;
+        fileNameInput.placeholder = dict.fileNamePlaceholder;
+        textToDrawInput.placeholder = dict.textInputPlaceholder;
+        
+        if (!loadedImage) {
+            placeholder.innerHTML = dict.placeholderHtml;
+        }
+    }
+
+    langSelect.addEventListener('change', function() { updateLanguage(this.value); });
+    updateLanguage(currentLang);
+
+    // --- 💡 粗細度滑桿與輸入框「雙向即時連動」系統 💡 ---
+    brushSizeRange.addEventListener('input', function() {
+        brushSizeInput.value = this.value; // 滑桿改，同步改數字
+    });
+    brushSizeInput.addEventListener('input', function() {
+        let val = parseInt(this.value, 10);
+        if (isNaN(val)) val = 2;
+        if (val > 100) val = 100;
+        if (val < 2) val = 2;
+        brushSizeRange.value = val; // 數字改，同步改滑桿
+    });
+
+    brushOpacityInput.addEventListener('input', function() {
+        opacityVal.innerText = this.value + '%';
+    });
+
+    // --- 工具切換 ---
+    const modeButtons = document.querySelectorAll('.mode-btn');
+    modeButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            modeButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentMode = this.getAttribute('data-mode');
+
+            numberParamsGroup.style.display = (currentMode === 'marker') ? 'flex' : 'none';
+            textParamsGroup.style.display = (currentMode === 'text') ? 'flex' : 'none';
+            
+            if (currentMode === 'arrow' || currentMode === 'line' || currentMode === 'blur') {
+                fillStyleSelect.disabled = true;
+            } else {
+                fillStyleSelect.disabled = false;
+            }
+            selectedObject = null;
+            drawAll();
+        });
+    });
+
+    // --- 圖片載入 ---
+    function handleImage(img) {
+        loadedImage = img;
+        placeholder.style.display = 'none';
+        canvasWrapper.style.display = 'inline-block';
+        
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        
+        objects = [];
+        redoStack = [];
+        baseStartNumber = 1;
+        startNumInput.value = 1;
+        saveHistory();
+        drawAll();
+    }
+
+    imageLoader.addEventListener('change', function(e) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() { handleImage(img); };
+            img.src = event.target.result;
+        };
+        if(e.target.files[0]) {
+            const fullFileName = e.target.files[0].name;
+            fileNameInput.value = fullFileName.substring(0, fullFileName.lastIndexOf('.')) + '_marked';
+            reader.readAsDataURL(e.target.files[0]);
+        }
+    });
+
+    window.addEventListener('paste', function(e) {
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const blob = items[i].getAsFile();
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() { handleImage(img); };
+                    img.src = event.target.result;
+                };
+                fileNameInput.value = "picmark_" + new Date().toISOString().slice(0,10);
+                reader.readAsDataURL(blob);
+            }
+        }
+    });
+
+    dropZone.addEventListener('dragover', (e) => e.preventDefault());
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() { handleImage(img); };
+                img.src = event.target.result;
+            };
+            const fullFileName = files[0].name;
+            fileNameInput.value = fullFileName.substring(0, fullFileName.lastIndexOf('.')) + '_marked';
+            reader.readAsDataURL(files[0]);
+        }
+    });
+
+    // --- 向量重繪系統核心 ---
+    function drawAll() {
+        if (!loadedImage) return;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(loadedImage, 0, 0);
+
+        objects.forEach(obj => {
+            ctx.save();
+            ctx.strokeStyle = obj.color;
+            ctx.fillStyle = obj.color;
+            ctx.lineWidth = obj.size;
+            ctx.globalAlpha = obj.opacity;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            const isFill = obj.fillStyle === 'fill';
+
+            if (obj.type === 'rect') {
+                if (isFill) {
+                    ctx.fillRect(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1);
+                } else {
+                    ctx.strokeRect(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1);
+                }
+            } 
+            else if (obj.type === 'circle') {
+                const radiusX = Math.abs(obj.x2 - obj.x1) / 2;
+                const radiusY = Math.abs(obj.y2 - obj.y1) / 2;
+                const r = Math.max(radiusX, radiusY); 
+                
+                const centerX = obj.x1 + (obj.x2 > obj.x1 ? r : -r);
+                const centerY = obj.y1 + (obj.y2 > obj.y1 ? r : -r);
+
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
+                if (isFill) ctx.fill(); else ctx.stroke();
+            } 
+            else if (obj.type === 'line') {
+                ctx.beginPath();
+                ctx.moveTo(obj.x1, obj.y1);
+                ctx.lineTo(obj.x2, obj.y2);
+                ctx.stroke();
+            } 
+            else if (obj.type === 'arrow') {
+                drawArrowHead(obj.x1, obj.y1, obj.x2, obj.y2, obj.size);
+            }
+            else if (obj.type === 'blur') {
+                drawMosaicPixel(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1, obj.size, obj.opacity);
+            }
+            else if (obj.type === 'marker') {
+                const radius = obj.size / 2;
+                ctx.beginPath();
+                ctx.arc(obj.x1, obj.y1, radius, 0, 2 * Math.PI);
+                ctx.fill();
+
+                ctx.fillStyle = obj.textColor;
+                ctx.font = `bold ${radius}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(obj.text, obj.x1, obj.y1 + (radius * 0.05));
+            }
+            else if (obj.type === 'text') {
+                ctx.font = `bold ${obj.size}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                ctx.fillText(obj.text, obj.x1, obj.y1);
+            }
+
+            if (currentMode === 'select' && selectedObject === obj) {
+                ctx.globalAlpha = 1.0;
+                ctx.strokeStyle = '#3b82f6';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([6, 4]);
+                
+                if (obj.type === 'marker') {
+                    ctx.beginPath();
+                    ctx.arc(obj.x1, obj.y1, obj.size / 2 + 4, 0, 2 * Math.PI);
+                    ctx.stroke();
+                } else if (obj.type === 'text') {
+                    ctx.font = `bold ${obj.size}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
+                    const metrics = ctx.measureText(obj.text);
+                    const w = metrics.width;
+                    const h = obj.size;
+                    ctx.strokeRect(obj.x1 - 4, obj.y1 - 4, w + 8, h + 8);
+                } else if (obj.type === 'circle') {
+                    const radiusX = Math.abs(obj.x2 - obj.x1) / 2;
+                    const radiusY = Math.abs(obj.y2 - obj.y1) / 2;
+                    const r = Math.max(radiusX, radiusY);
+                    const centerX = obj.x1 + (obj.x2 > obj.x1 ? r : -r);
+                    const centerY = obj.y1 + (obj.y2 > obj.y1 ? r : -r);
+                    ctx.strokeRect(centerX - r - 4, centerY - r - 4, (r * 2) + 8, (r * 2) + 8);
+                } else {
+                    const minX = Math.min(obj.x1, obj.x2);
+                    const minY = Math.min(obj.y1, obj.y2);
+                    const maxX = Math.max(obj.x1, obj.x2);
+                    const maxY = Math.max(obj.y1, obj.y2);
+                    ctx.strokeRect(minX - 6, minY - 6, (maxX - minX) + 12, (maxY - minY) + 12);
+                }
+            }
+            ctx.restore();
+        });
+    }
+
+    function saveHistory() {
+        history.push(JSON.stringify(objects));
+        redoStack = [];
+        updateButtons();
+    }
+
+    function updateButtons() {
+        undoBtn.disabled = history.length <= 1;
+        redoBtn.disabled = redoStack.length === 0;
+    }
+
+    function syncStartNumber() {
+        const markerCount = objects.filter(obj => obj.type === 'marker').length;
+        let currentIdx = 0;
+        objects.forEach(obj => {
+            if (obj.type === 'marker') {
+                obj.text = baseStartNumber + currentIdx;
+                currentIdx++;
+            }
+        });
+        startNumInput.value = baseStartNumber + markerCount;
+    }
+
+    function handleUndo() {
+        if (history.length > 1) {
+            history.pop();
+            objects = JSON.parse(history[history.length - 1]);
+            selectedObject = null;
+            syncStartNumber(); 
+            updateButtons();
+            drawAll();
+        }
+    }
+
+    function handleRedo() {
+        if (redoStack.length > 0) {
+            const next = redoStack.pop();
+            history.push(next);
+            objects = JSON.parse(next);
+            selectedObject = null;
+            syncStartNumber(); 
+            updateButtons();
+            drawAll();
+        }
+    }
+
+    undoBtn.addEventListener('click', handleUndo);
+    redoBtn.addEventListener('click', handleRedo);
+    clearBtn.addEventListener('click', function() {
+        if (!loadedImage) return;
+        objects = [];
+        selectedObject = null;
+        baseStartNumber = 1;
+        startNumInput.value = 1;
+        saveHistory();
+        drawAll();
+    });
+
+    startNumInput.addEventListener('input', function() {
+        const markerCount = objects.filter(obj => obj.type === 'marker').length;
+        const inputVal = parseInt(startNumInput.value, 10);
+        baseStartNumber = isNaN(inputVal) ? 1 : Math.max(0, inputVal - markerCount);
+        syncStartNumber();
+        drawAll();
+    });
+
+    window.addEventListener('keydown', function(e) {
+        const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+        if (isCmdOrCtrl) {
+            if (e.key.toLowerCase() === 'z') {
+                e.preventDefault();
+                if (e.shiftKey) { handleRedo(); } else { handleUndo(); }
+            }
+            if (e.key.toLowerCase() === 'y') { e.preventDefault(); handleRedo(); }
+        }
+        if ((e.key === 'Delete' || e.key === 'Backspace') && currentMode === 'select' && selectedObject) {
+            e.preventDefault();
+            objects = objects.filter(o => o !== selectedObject);
+            selectedObject = null;
+            syncStartNumber(); 
+            saveHistory();
+            drawAll();
+        }
+    });
+
+    // --- 物件碰撞偵測 ---
+    function findObjectAt(x, y) {
+        for (let i = objects.length - 1; i >= 0; i--) {
+            const obj = objects[i];
+            
+            if (obj.type === 'marker') {
+                const dist = Math.sqrt(Math.pow(x - obj.x1, 2) + Math.pow(y - obj.y1, 2));
+                if (dist <= obj.size / 2) return obj;
+            } 
+            else if (obj.type === 'circle') {
+                const radiusX = Math.abs(obj.x2 - obj.x1) / 2;
+                const radiusY = Math.abs(obj.y2 - obj.y1) / 2;
+                const r = Math.max(radiusX, radiusY);
+                const centerX = obj.x1 + (obj.x2 > obj.x1 ? r : -r);
+                const centerY = obj.y1 + (obj.y2 > obj.y1 ? r : -r);
+
+                const distToCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+                
+                if (obj.fillStyle === 'fill') {
+                    if (distToCenter <= r) return obj;
+                } else {
+                    if (Math.abs(distToCenter - r) <= Math.max(15, obj.size)) return obj;
+                }
+            }
+            else if (obj.type === 'text') {
+                ctx.save();
+                ctx.font = `bold ${obj.size}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
+                const metrics = ctx.measureText(obj.text);
+                const w = metrics.width;
+                const h = obj.size;
+                ctx.restore();
+                if (x >= obj.x1 && x <= obj.x1 + w && y >= obj.y1 && y <= obj.y1 + h) {
+                    return obj;
+                }
+            } 
+            else {
+                const minX = Math.min(obj.x1, obj.x2) - 10;
+                const minY = Math.min(obj.y1, obj.y2) - 10;
+                const maxX = Math.max(obj.x1, obj.x2) + 10;
+                const maxY = Math.max(obj.y1, obj.y2) + 10;
+                if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+                    return obj;
+                }
+            }
+        }
+        return null;
+    }
+
+    // --- 滑鼠與觸控核心事件整合 (支援跨平台操作) ---
+    function getMousePos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        
+        let clientX = e.clientX;
+        let clientY = e.clientY;
+        if (e.touches && e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        }
+        return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+        };
+    }
+
+    function onPointerDown(e) {
+        if (!loadedImage) return;
+        if (e.touches && e.touches.length > 1) return; 
+
+        const pos = getMousePos(e);
+        dragStartX = pos.x;
+        dragStartY = pos.y;
+        isDrawing = true;
+
+        if (currentMode === 'select') {
+            const target = findObjectAt(pos.x, pos.y);
+            if (target) {
+                selectedObject = target;
+                isDraggingObject = true;
+                dragOffsetX = pos.x - target.x1;
+                dragOffsetY = pos.y - target.y1;
+            } else {
+                selectedObject = null;
+                isDraggingObject = false;
+            }
+            drawAll();
+        } else if (currentMode === 'marker') {
+            const num = parseInt(startNumInput.value, 10);
+            objects.push({
+                type: 'marker',
+                x1: pos.x,
+                y1: pos.y,
+                x2: pos.x,
+                y2: pos.y,
+                color: primaryColorInput.value,
+                size: parseInt(brushSizeInput.value, 10) || 30,
+                opacity: (parseInt(brushOpacityInput.value, 10) || 100) / 100,
+                text: num,
+                textColor: textColorInput.value
+            });
+            syncStartNumber(); 
+            isDrawing = false;
+            saveHistory();
+            drawAll(); 
+        } else if (currentMode === 'text') {
+            objects.push({
+                type: 'text',
+                x1: pos.x,
+                y1: pos.y,
+                x2: pos.x,
+                y2: pos.y,
+                color: primaryColorInput.value,
+                size: parseInt(brushSizeInput.value, 10) || 20,
+                opacity: (parseInt(brushOpacityInput.value, 10) || 100) / 100,
+                text: textToDrawInput.value || "Text"
+            });
+            isDrawing = false;
+            saveHistory();
+            drawAll(); 
+        } else {
+            objects.push({
+                type: currentMode,
+                x1: pos.x,
+                y1: pos.y,
+                x2: pos.x,
+                y2: pos.y,
+                color: primaryColorInput.value,
+                size: parseInt(brushSizeInput.value, 10) || 5,
+                opacity: (parseInt(brushOpacityInput.value, 10) || 100) / 100,
+                fillStyle: fillStyleSelect.value
+            });
+            drawAll();
+        }
+    }
+
+    function onPointerMove(e) {
+        if (!isDrawing) return;
+        if (e.touches && e.touches.length > 1) return;
+        
+        // 防止手機網頁跟隨畫筆上下牽引滾動
+        if (e.cancelable) e.preventDefault();
+
+        const pos = getMousePos(e);
+
+        if (currentMode === 'select' && isDraggingObject && selectedObject) {
+            const dx = pos.x - dragStartX;
+            const dy = pos.y - dragStartY;
+            
+            selectedObject.x1 = pos.x - dragOffsetX;
+            selectedObject.y1 = pos.y - dragOffsetY;
+            
+            selectedObject.x2 += dx;
+            selectedObject.y2 += dy;
+            
+            dragStartX = pos.x;
+            dragStartY = pos.y;
+            drawAll();
+        } 
+        else if (currentMode !== 'select' && currentMode !== 'marker' && currentMode !== 'text') {
+            const currentObj = objects[objects.length - 1];
+            currentObj.x2 = pos.x;
+            currentObj.y2 = pos.y;
+            drawAll(); 
+        }
+    }
+
+    function onPointerUp() {
+        if (!isDrawing) return;
+        isDrawing = false;
+        isDraggingObject = false;
+        saveHistory();
+        drawAll(); 
+    }
+
+    canvas.addEventListener('mousedown', onPointerDown);
+    canvas.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+    canvas.addEventListener('touchmove', onPointerMove, { passive: false });
+    canvas.addEventListener('touchend', onPointerUp);
+
+    // 雙擊編輯文字
+    canvas.addEventListener('dblclick', function(e) {
+        if (!loadedImage || currentMode !== 'select') return;
+        const pos = getMousePos(e);
+        const target = findObjectAt(pos.x, pos.y);
+        
+        if (target && target.type === 'text') {
+            const newText = prompt(i18n[currentLang].promptEditText, target.text);
+            if (newText !== null && newText.trim() !== "") {
+                target.text = newText;
+                saveHistory();
+                drawAll();
+            }
+        }
+    });
+
+    // --- 形狀與特製物件渲染細節 ---
+    function drawArrowHead(x1, y1, x2, y2, thickness) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance < 5) return;
+
+        const headLength = thickness * 2.5 + 12; 
+        const angle = Math.atan2(dy, dx);
+
+        const shrinkLength = Math.min(distance * 0.5, headLength * 0.7);
+        const lineEndX = x2 - shrinkLength * Math.cos(angle);
+        const lineEndY = y2 - shrinkLength * Math.sin(angle);
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(lineEndX, lineEndY);
+        ctx.stroke();
+
+        ctx.save();
+        ctx.lineJoin = 'miter'; 
+        ctx.miterLimit = 4;
+        
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        const leftX = x2 - headLength * Math.cos(angle - Math.PI / 6);
+        const leftY = y2 - headLength * Math.sin(angle - Math.PI / 6);
+        const rightX = x2 - headLength * Math.cos(angle + Math.PI / 6);
+        const rightY = y2 - headLength * Math.sin(angle + Math.PI / 6);
+        
+        ctx.lineTo(leftX, leftY);
+        ctx.lineTo(rightX, rightY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function drawMosaicPixel(sx, sy, w, h, size, opacity) {
+        if (w === 0 || h === 0) return;
+        const x = w < 0 ? sx + w : sx;
+        const y = h < 0 ? sy + h : sy;
+        const absW = Math.abs(w);
+        const absH = Math.abs(h);
+
+        const tempCanvas = document.createElement('canvas');
+        const tempCtx = tempCanvas.getContext('2d');
+        const grainSize = Math.max(5, size / 2);
+        
+        tempCanvas.width = Math.max(1, absW / grainSize);
+        tempCanvas.height = Math.max(1, absH / grainSize);
+        
+        tempCtx.drawImage(canvas, x, y, absW, absH, 0, 0, tempCanvas.width, tempCanvas.height);
+        
+        ctx.save();
+        ctx.imageSmoothingEnabled = false;
+        ctx.globalAlpha = opacity;
+        ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, x, y, absW, absH);
+        ctx.restore();
+    }
+
+    downloadBtn.addEventListener('click', function() {
+        if (!loadedImage) {
+            alert(i18n[currentLang].noImageAlert);
+            return;
+        }
+
+        const format = exportFormat.value;
+        const fileExt = format === 'image/jpeg' ? 'jpg' : 'png';
+        
+        let customName = fileNameInput.value.trim();
+        if (!customName) {
+            customName = `picmark_export_${Date.now()}`;
+        }
+
+        const tempSelected = selectedObject;
+        selectedObject = null;
+        drawAll();
+
+        const link = document.createElement('a');
+        link.download = `${customName}.${fileExt}`;
+        link.href = canvas.toDataURL(format, 0.9);
+        link.click();
+
+        selectedObject = tempSelected;
+        drawAll();
+    });
+</script>
+
+</body>
+</html>
