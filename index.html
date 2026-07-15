@@ -51,6 +51,27 @@ nav{display:flex;flex-direction:column;gap:2px;}
 .social-link:hover{color:var(--gold);}
 .social-icon{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
 
+/* ── MOBILE NAV (hamburger + overlay) ── */
+.menu-toggle{
+  display:none;position:fixed;top:14px;left:14px;z-index:60;
+  width:44px;height:44px;border-radius:10px;
+  background:var(--surface);border:1px solid var(--border);
+  align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.menu-toggle svg{width:22px;height:22px;stroke:var(--ink);}
+.sidebar-overlay{
+  display:none;position:fixed;inset:0;z-index:40;
+  background:rgba(28,25,23,.42);opacity:0;transition:opacity .25s;
+}
+.sidebar-overlay.show{display:block;opacity:1;}
+.sidebar-close{
+  display:none;position:absolute;top:14px;right:14px;
+  width:34px;height:34px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);cursor:pointer;align-items:center;justify-content:center;
+}
+.sidebar-close svg{width:16px;height:16px;stroke:var(--ink2);}
+
 /* ── MAIN ── */
 .main{flex:1;overflow-y:auto;min-width:0;}
 
@@ -188,17 +209,86 @@ nav{display:flex;flex-direction:column;gap:2px;}
 }
 .page-footer p{font-size:12.5px;color:var(--ink3);}
 .page-footer a{color:var(--gold);text-decoration:none;}
+
+/* ══════════ RESPONSIVE / 手機版切版 ══════════ */
+
+/* 平板：作品/關於改單欄，內距縮小 */
+@media (max-width:1024px){
+  .hero{padding:3rem 2.4rem 2.4rem;gap:2rem;}
+  .section{padding:2.6rem 2.4rem;}
+  .page-footer{padding:1.6rem 2.4rem;}
+  .grid{grid-template-columns:1fr;gap:1.4rem;}
+  .about-grid{grid-template-columns:1fr;}
+  .about-block.row-span2{grid-row:auto;}
+}
+
+/* 手機：側欄收合成漢堡選單 */
+@media (max-width:768px){
+  body{flex-direction:column;}
+  .menu-toggle{display:flex;}
+
+  .sidebar{
+    position:fixed;top:0;left:0;z-index:50;
+    width:250px;max-width:82vw;height:100%;
+    transform:translateX(-100%);
+    transition:transform .28s ease;
+    box-shadow:2px 0 22px rgba(0,0,0,.14);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-close{display:flex;}
+
+  .main{width:100%;}
+
+  /* HERO 手機直排 */
+  .hero{
+    flex-direction:column;align-items:center;text-align:center;
+    padding:4.5rem 1.4rem 2rem;gap:1.4rem;
+  }
+  .hero-bio{margin-left:auto;margin-right:auto;}
+  .hero-tags{justify-content:center;}
+  .hero-name{font-size:34px;}
+
+  /* 證照卡片手機直排 */
+  .cert-bar{flex-direction:column;align-items:stretch;padding:.9rem 1rem;gap:8px;}
+  .cert-item{white-space:normal;justify-content:flex-start;}
+
+  /* SECTION 內距 */
+  .section{padding:2.2rem 1.4rem;}
+  .section-title{font-size:24px;}
+  .section-header{gap:12px;}
+
+  /* FOOTER 直排 */
+  .page-footer{flex-direction:column;gap:10px;text-align:center;padding:1.6rem 1.4rem;}
+}
+
+/* 小型手機微調 */
+@media (max-width:400px){
+  .hero-name{font-size:30px;}
+  .card-body{padding:1.1rem 1.2rem 1.3rem;}
+  .card-footer{flex-direction:column;align-items:flex-start;gap:12px;}
+  .card-link{width:100%;justify-content:center;}
+}
 </style>
 </head>
 <body>
 
+<!-- ══ 手機漢堡按鈕 ══ -->
+<button class="menu-toggle" id="menuToggle" aria-label="開啟選單">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+</button>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
 <!-- ══ SIDEBAR ══ -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
+  <button class="sidebar-close" id="sidebarClose" aria-label="關閉選單">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
   <div class="logo">D<span>.</span></div>
   <div class="logo-sub">Ducky Huang</div>
   <nav>
     <a class="nav-link active" href="#home">首頁</a>
     <a class="nav-link" href="#projects">我的作品</a>
+    <a class="nav-link" href="#tools">開發工具</a>
     <a class="nav-link" href="#about">關於我</a>
   </nav>
   <div class="sidebar-footer">
@@ -423,6 +513,50 @@ nav{display:flex;flex-direction:column;gap:2px;}
     </div>
   </section>
 
+  <!-- ══ 開發工具 TOOLS ══ -->
+  <section class="section" id="tools">
+    <div class="section-header">
+      <h2 class="section-title">開發工具</h2>
+      <div class="section-line"></div>
+      <span class="section-count">1 Tool</span>
+    </div>
+    <div class="grid">
+
+      <!-- TOOL 1: PicMark -->
+      <div class="card">
+        <div class="card-thumb">
+          <!--
+            可替換成截圖：<img src="picmark-cover.jpg" alt="PicMark">
+            存成 picmark-cover.jpg 放在同一資料夾即可自動顯示。
+          -->
+          <img
+            src="picmark-cover.jpg"
+            alt="PicMark 圖片標記工具"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-placeholder" style="display:none;">
+            <div class="thumb-icon">🎯</div>
+            <div class="thumb-label">PicMark 圖片標記工具</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-badge">實用工具</span>
+          <h3 class="card-title">PicMark 圖片快捷標記</h3>
+          <p class="card-desc">純瀏覽器的圖片標記與標註工具，支援數字標記與文字標註，適合製作教學截圖、操作步驟說明或問題回報。免安裝、開啟即用，支援多國語言。</p>
+          <div class="card-footer">
+            <span class="card-meta">Web Tool · 標記 / 標註</span>
+            <a class="card-link" href="marker.html" target="_blank">
+              去使用
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 未來新工具：複製上方 card 區塊即可新增 -->
+
+    </div>
+  </section>
+
   <!-- ABOUT -->
   <section class="section" id="about">
     <div class="section-header">
@@ -541,8 +675,23 @@ function scaleSSL(){
 scaleSSL();
 window.addEventListener('resize', scaleSSL);
 
+/* 手機漢堡選單開關 */
+var sidebar = document.getElementById('sidebar');
+var overlay = document.getElementById('sidebarOverlay');
+var menuBtn = document.getElementById('menuToggle');
+var closeBtn = document.getElementById('sidebarClose');
+function openMenu(){sidebar.classList.add('open');overlay.classList.add('show');}
+function closeMenu(){sidebar.classList.remove('open');overlay.classList.remove('show');}
+if(menuBtn) menuBtn.addEventListener('click', openMenu);
+if(closeBtn) closeBtn.addEventListener('click', closeMenu);
+if(overlay) overlay.addEventListener('click', closeMenu);
+/* 點導覽連結後自動關閉選單 */
+document.querySelectorAll('.nav-link').forEach(function(l){
+  l.addEventListener('click', closeMenu);
+});
+
 /* 滾動時更新側欄 active */
-var sections = ['home','projects','about'];
+var sections = ['home','projects','tools','about'];
 var links = document.querySelectorAll('.nav-link');
 var obs = new IntersectionObserver(function(entries){
   entries.forEach(function(e){
