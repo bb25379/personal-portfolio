@@ -1420,7 +1420,7 @@ function loadAllLocalImages() {
     for (const entry of IMAGE_MAP) {
       const keyword = entry[0];
       const filename = entry[1];
-      if (titleText.indexOf(keyword) !== -1) {
+      if (titleText.toLowerCase().indexOf(keyword.toLowerCase()) !== -1) {
         loadLocalImage(event, filename);
         break;
       }
