@@ -360,6 +360,92 @@ footer {
   .event.starred::before { left: -24px; }
   main { padding: 0 12px; margin: 20px auto; }
 }
+
+
+
+
+/* === Photo on right (side-by-side layout) === */
+.event.has-photo {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  align-items: stretch;
+}
+
+.event.has-photo > .event-photo {
+  width: 280px;
+  min-height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--matcha-light), var(--sakura));
+  position: relative;
+  margin: -8px 0;
+}
+
+.event.has-photo > .event-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+  opacity: 0;
+  animation: fadeInPhoto 0.5s ease forwards;
+}
+
+@keyframes fadeInPhoto {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.event.has-photo:hover > .event-photo img {
+  transform: scale(1.03);
+}
+
+/* Move event content to first column */
+.event.has-photo > .event-header,
+.event.has-photo > .event-desc,
+.event.has-photo > .event-desc-en,
+.event.has-photo > .event-meta {
+  grid-column: 1;
+}
+
+/* Photo goes to second column */
+.event.has-photo > .event-photo {
+  grid-column: 2;
+  grid-row: 1 / -1;
+}
+
+/* Starred badge on photo */
+.event.has-photo.starred > .event-photo::after {
+  content: "⭐";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.55);
+  color: var(--gold);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.95em;
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 640px) {
+  .event.has-photo {
+    grid-template-columns: 1fr;
+  }
+  .event.has-photo > .event-photo {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    height: 180px;
+    margin: -16px -16px 12px -16px;
+    width: calc(100% + 32px);
+    border-radius: 12px 12px 0 0;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1251,6 +1337,103 @@ footer {
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+
+
+
+
+// === Local Image Loader (v4) ===
+// Loads images from trip-1-images/ folder based on title keywords
+// Falls back gracefully if image not found
+
+const IMAGE_BASE = 'trip-1-images/';
+
+// Mapping: title keyword → local image filename
+const IMAGE_MAP = [
+  // Day 1
+  ['大阪城',       'd1-01-osaka-castle.jpg'],
+  ['心齋橋',       'd1-02-shinsaibashi.jpg'],
+  ['道頓堀',       'd1-03-dotonbori.jpg'],
+  ['梅田藍天',     'd1-04-umeda-sky.jpg'],
+  // Day 2
+  ['海遊館',       'd2-01-kaiyukan.jpg'],
+  ['寶可夢中心 大阪', 'd2-02-pokemon-osaka.jpg'],
+  ['奈良公園',     'd2-03-nara-park.jpg'],
+  ['東大寺',       'd2-04-todaiji.jpg'],
+  ['春日大社',     'd2-05-kasuga-taisha.jpg'],
+  ['奈良燈花會',   'd2-06-nara-tokae.jpg'],
+  // Day 3
+  ['平等院',       'd3-01-byodoin.jpg'],
+  ['宇治抹茶',     'd3-02-uji-matcha.jpg'],
+  ['任天堂博物館', 'd3-03-nintendo-museum.jpg'],
+  ['Hatena Burger', 'd3-04-hatena-burger.jpg'],
+  ['廣隆寺',       'd3-05-koryuji.jpg'],
+  ['太秦映画村',   'd3-06-uzumasa-eigamura.jpg'],
+  ['妖怪與百鬼夜行', 'd3-07-yokai-bon-dance.jpg'],
+  ['清水寺',       'd3-08-kiyomizu-dera.jpg'],
+  ['Wagyu Burger', 'd3-09-wagyu-burger.jpg'],
+  // Day 4
+  ['伏見稻荷',     'd4-01-fushimi-inari.jpg'],
+  ['平安神宮',     'd4-02-heian-jingu.jpg'],
+  ['京都市動物園', 'd4-03-kyoto-zoo.jpg'],
+  ['二條城',       'd4-04-nijo-castle.jpg'],
+  ['京都寶可夢中心', 'd4-05-pokemon-kyoto.jpg'],
+  ['東寺',         'd4-06-toji.jpg'],
+  ['京都塔',       'd4-07-kyoto-tower.jpg'],
+  ['五山送火',     'd4-08-gozan-okuribi.jpg'],
+  ['京都御苑',     'd4-09-imperial-park.jpg'],
+  // Day 5
+  ['神戶動物王國', 'd5-01-kobe-animal-kingdom.jpg'],
+  ['神戶牛',       'd5-02-kobe-beef-gokan.jpg'],
+  ['北野異人館',   'd5-03-kitano-ijinkan.jpg'],
+  ['Bay Shuttle',  'd5-04-bay-shuttle.jpg'],
+];
+
+function loadLocalImage(event, filename) {
+  const url = IMAGE_BASE + filename;
+  const testImg = new Image();
+  testImg.onload = function() {
+    if (event.classList.contains('has-photo')) return;
+    const photoDiv = document.createElement('div');
+    photoDiv.className = 'event-photo';
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = filename;
+    img.loading = 'lazy';
+    photoDiv.appendChild(img);
+    event.appendChild(photoDiv);
+    event.classList.add('has-photo');
+  };
+  testImg.onerror = function() {
+    // Image not found - silently keep emoji card
+  };
+  testImg.src = url;
+}
+
+function loadAllLocalImages() {
+  const events = document.querySelectorAll('.event.attraction, .event.food, .event.travel');
+  events.forEach(function(event) {
+    const titleEl = event.querySelector('.event-title');
+    if (!titleEl) return;
+    const titleText = titleEl.textContent;
+    
+    for (const entry of IMAGE_MAP) {
+      const keyword = entry[0];
+      const filename = entry[1];
+      if (titleText.indexOf(keyword) !== -1) {
+        loadLocalImage(event, filename);
+        break;
+      }
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadAllLocalImages);
+} else {
+  loadAllLocalImages();
+}
+
 </script>
 
 </body>
