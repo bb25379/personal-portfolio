@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>関西5日旅行手冊 · Kansai 5-Day Travel Guide</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --sakura: #FFE5EC;
+  --matcha: #7A9E6F;
+  --matcha-light: #D9E7CE;
+  --sumi: #2D3436;
+  --cream: #FFF8F0;
+  --gold: #D4A574;
+  --sky: #A8DADC;
+  --coral: #F4A261;
+  --lavender: #C7B8EA;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-hover: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+body {
+  font-family: 'Noto Sans TC', 'Noto Sans JP', -apple-system, sans-serif;
+  background: linear-gradient(135deg, var(--cream) 0%, #F5F0E8 100%);
+  color: var(--sumi);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Header */
+header {
+  background: linear-gradient(135deg, #FFB6C1 0%, #FFE5EC 50%, #E6E6FA 100%);
+  padding: 40px 20px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+header h1 {
+  font-size: 2.4em;
+  font-weight: 300;
+  letter-spacing: 4px;
+  color: var(--sumi);
+  margin-bottom: 8px;
+}
+header .subtitle {
+  font-size: 1.1em;
+  color: #666;
+  letter-spacing: 2px;
+  font-weight: 300;
+}
+header .dates {
+  margin-top: 16px;
+  font-size: 0.95em;
+  color: #888;
+}
+header .decoration {
+  font-size: 1.8em;
+  margin: 12px 0;
+  letter-spacing: 8px;
+}
+
+/* Navigation */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 248, 240, 0.98);
+  backdrop-filter: blur(10px);
+  padding: 12px 20px;
+  border-bottom: 2px solid var(--matcha-light);
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+.nav-container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.day-tab {
+  padding: 10px 22px;
+  border: 2px solid transparent;
+  border-radius: 24px;
+  background: white;
+  cursor: pointer;
+  font-size: 0.95em;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  color: var(--sumi);
+  box-shadow: var(--shadow);
+}
+.day-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+.day-tab.active {
+  background: var(--matcha);
+  color: white;
+  border-color: var(--matcha);
+}
+.day-tab .en {
+  font-size: 0.8em;
+  opacity: 0.7;
+  display: block;
+  margin-top: 2px;
+}
+
+/* Main content */
+main {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.day {
+  display: none;
+  animation: fadeIn 0.5s ease;
+}
+.day.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.day-header {
+  background: white;
+  padding: 24px 28px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  border-left: 6px solid var(--matcha);
+}
+.day-header h2 {
+  font-size: 1.8em;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+.day-header .en-title {
+  color: #888;
+  font-size: 1em;
+  margin-bottom: 12px;
+  font-weight: 300;
+}
+.day-header .day-date {
+  color: var(--matcha);
+  font-weight: 500;
+  font-size: 0.95em;
+  margin-bottom: 12px;
+}
+.outfit-card {
+  background: linear-gradient(135deg, var(--sakura) 0%, #FFF0F5 100%);
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin-top: 12px;
+  font-size: 0.92em;
+  border-left: 3px solid #FFB6C1;
+}
+.outfit-card::before {
+  content: "👗 ";
+  font-size: 1.2em;
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  padding-left: 40px;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 20px;
+  bottom: 20px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--matcha) 0%, var(--sakura) 50%, var(--gold) 100%);
+  border-radius: 2px;
+}
+
+.event {
+  position: relative;
+  background: white;
+  padding: 20px 24px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+.event:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-hover);
+}
+.event::before {
+  content: "";
+  position: absolute;
+  left: -34px;
+  top: 24px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--matcha);
+  z-index: 2;
+}
+
+/* Event type styles */
+.event.attraction::before { border-color: var(--matcha); }
+.event.food::before { border-color: var(--coral); }
+.event.travel::before { border-color: var(--sky); }
+.event.hotel::before { border-color: var(--lavender); }
+.event.starred { border-left: 4px solid var(--gold); }
+.event.starred::before {
+  background: var(--gold);
+  border-color: var(--gold);
+  width: 18px;
+  height: 18px;
+  left: -36px;
+}
+
+.event-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+.event-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2em;
+  flex-shrink: 0;
+}
+.event.attraction .event-icon { background: var(--matcha-light); }
+.event.food .event-icon { background: #FFE4C4; }
+.event.travel .event-icon { background: #E0F7FA; }
+.event.hotel .event-icon { background: #E6E6FA; }
+
+.event-time-title {
+  flex: 1;
+}
+.event-time {
+  color: var(--matcha);
+  font-weight: 600;
+  font-size: 0.92em;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+.event-title {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--sumi);
+  margin-bottom: 2px;
+}
+.event-title-en {
+  font-size: 0.88em;
+  color: #888;
+  font-weight: 400;
+  font-style: italic;
+}
+.event-desc {
+  margin-top: 10px;
+  font-size: 0.9em;
+  color: #555;
+  line-height: 1.7;
+}
+.event-desc-en {
+  margin-top: 6px;
+  font-size: 0.82em;
+  color: #999;
+  font-style: italic;
+  line-height: 1.6;
+}
+.event-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 0.82em;
+  color: #666;
+}
+.event-meta span {
+  background: #F5F5F0;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+.event-meta .cost { color: var(--coral); font-weight: 600; }
+.event-meta .booked { color: var(--matcha); font-weight: 600; background: var(--matcha-light); }
+
+.badge {
+  display: inline-block;
+  background: var(--gold);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 0.75em;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* Highlights section */
+.highlights {
+  background: linear-gradient(135deg, #FFF9E6 0%, #FFF5D4 100%);
+  padding: 20px 24px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--gold);
+}
+.highlights h3 {
+  color: var(--sumi);
+  margin-bottom: 12px;
+  font-size: 1.1em;
+}
+.highlights ul {
+  list-style: none;
+  padding-left: 0;
+}
+.highlights li {
+  padding: 6px 0;
+  font-size: 0.92em;
+  color: #555;
+  line-height: 1.5;
+}
+.highlights li::before {
+  content: "✨ ";
+  margin-right: 6px;
+}
+.highlights li .en {
+  display: block;
+  margin-top: 2px;
+  margin-left: 20px;
+  font-size: 0.85em;
+  color: #999;
+  font-style: italic;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+  font-size: 0.85em;
+  border-top: 1px solid #e8e0d0;
+  margin-top: 40px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  header h1 { font-size: 1.8em; letter-spacing: 2px; }
+  .day-header { padding: 20px; }
+  .event { padding: 16px; }
+  .event-icon { width: 50px; height: 50px; font-size: 1.6em; }
+  .timeline { padding-left: 28px; }
+  .event::before { left: -22px; }
+  .event.starred::before { left: -24px; }
+  main { padding: 0 12px; margin: 20px auto; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="decoration">🌸 🎋 ⛩️ 🗾 🌊</div>
+  <h1>関西 5 日旅行手冊</h1>
+  <div class="subtitle">Kansai 5-Day Travel Guide</div>
+  <div class="dates">2026/08/13 (Thu) — 2026/08/17 (Mon) · Osaka · Nara · Kyoto · Kobe</div>
+</header>
+
+<nav>
+  <div class="nav-container">
+    <button class="day-tab active" onclick="showDay(1)">Day 1 <span class="en">大阪抵達</span></button>
+    <button class="day-tab" onclick="showDay(2)">Day 2 <span class="en">奈良祭典</span></button>
+    <button class="day-tab" onclick="showDay(3)">Day 3 <span class="en">任天堂+ 太秦</span></button>
+    <button class="day-tab" onclick="showDay(4)">Day 4 <span class="en">五山送火</span></button>
+    <button class="day-tab" onclick="showDay(5)">Day 5 <span class="en">神戶+ 返台</span></button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ DAY 1 ============ -->
+<section class="day day-1 active">
+  <div class="day-header">
+    <h2>Day 1 · 大阪抵達日</h2>
+    <div class="en-title">Osaka Arrival · Umeda Sky Night View</div>
+    <div class="day-date">2026/08/13 (週四 Thursday)</div>
+    <div class="outfit-card">
+      <strong>穿搭</strong>：皮卡丘 oversize 襯衫（外套）+ 白上衣 + 黑短褲 + 白金 Nike
+      <br><em style="font-size:0.85em;">Pikachu oversize shirt as jacket + white top + black shorts + white/gold Nike</em>
+    </div>
+  </div>
+
+  <div class="highlights">
+    <h3>✨ 今日重點 Today's Highlights</h3>
+    <ul>
+      <li>抵達關西機場 KIX · Vietjet VZ566 早班
+        <span class="en">Arrive at Kansai Airport (KIX) · Early Vietjet VZ566 flight</span></li>
+      <li>大阪城 UNESCO · 豐臣秀吉 1583 年建造
+        <span class="en">Osaka Castle · Built 1583 by Toyotomi Hideyoshi · One of Japan's 3 Great Castles</span></li>
+      <li>心齋橋+ 道頓堀 · 大阪美食夜逛
+        <span class="en">Shinsaibashi + Dotonbori · Osaka's iconic food street night walk</span></li>
+      <li>梅田藍天大廈 · 173m 空中庭園夜景
+        <span class="en">Umeda Sky Building · 173m Floating Garden with panoramic night view</span></li>
+    </ul>
+  </div>
+
+  <div class="timeline">
+    <div class="event travel">
+      <div class="event-header">
+        <div class="event-icon">✈️</div>
+        <div class="event-time-title">
+          <div class="event-time">07:25 — 11:05</div>
+          <div class="event-title">Vietjet VZ566 · 台北 → 關西機場</div>
+          <div class="event-title-en">Taipei TPE → Kansai KIX</div>
+        </div>
+      </div>
+      <div class="event-desc">泰國越捷營運（廉航），飛行時間 3h 40min。抵達 KIX T1。</div>
+      <div class="event-desc-en">Operated by Thai Vietjet (LCC). Flight time 3h 40min. Arrive at KIX Terminal 1.</div>
+      <div class="event-meta">
+        <span class="booked">已訂 Booked</span>
+      </div>
+    </div>
+
+    <div class="event travel">
+      <div class="event-header">
+        <div class="event-icon">🚄</div>
+        <div class="event-time-title">
+          <div class="event-time">12:15 — 13:15</div>
+          <div class="event-title">JR HARUKA 特急 · 關西 → 大阪駅</div>
+          <div class="event-title-en">HARUKA Express · KIX → Osaka Station</div>
+        </div>
+      </div>
+      <div class="event-desc">直達 50 分。外國旅客 ICOCA+HARUKA 套票 3,200 円划算。</div>
+      <div class="event-desc-en">Direct 50 min. Foreign tourist ICOCA+HARUKA combo ¥3,200 recommended.</div>
+      <div class="event-meta">
+        <span class="cost">¥1,800/人</span>
+      </div>
+    </div>
+
+    <div class="event hotel starred">
+      <div class="event-header">
+        <div class="event-icon">🏨</div>
+        <div class="event-time-title">
+          <div class="event-time">13:45 — 14:00</div>
+          <div class="event-title">Del Style 大阪新梅田 寄行李<span class="badge">HOTEL</span></div>
+          <div class="event-title-en">Del Style Osaka Shin Umeda by Daiwa Roynet</div>
+        </div>
+      </div>
+      <div class="event-desc">6-16-1 Fukushima, 大阪福島區。電話 +81-6-4797-6186。距梅田藍天大廈走路 15 分。</div>
+      <div class="event-desc-en">6-16-1 Fukushima, Osaka. Phone: +81-6-4797-6186. 15 min walk to Umeda Sky Building.</div>
+      <div class="event-meta">
+        <span class="booked">已訂 Booked</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🏯</div>
+        <div class="event-time-title">
+          <div class="event-time">15:30 — 17:30</div>
+          <div class="event-title">大阪城 Osaka Castle</div>
+          <div class="event-title-en">Osaka Castle · Toyotomi Hideyoshi's Fortress</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 豐臣秀吉 1583 年建，日本三大名城之一。天守閣 8 樓觀景+ 護城河+ 大阪城公園。</div>
+      <div class="event-desc-en">⭐ Built 1583 by Toyotomi Hideyoshi. One of Japan's 3 Great Castles. 8F observation + moat + Osaka Castle Park.</div>
+      <div class="event-meta">
+        <span class="cost">¥600</span>
+        <span>09:00-17:00 · 最後入場 16:30</span>
+      </div>
+    </div>
+
+    <div class="event attraction">
+      <div class="event-header">
+        <div class="event-icon">🛍️</div>
+        <div class="event-time-title">
+          <div class="event-time">18:00 — 19:30</div>
+          <div class="event-title">心齋橋筋商店街</div>
+          <div class="event-title-en">Shinsaibashi Shopping Street</div>
+        </div>
+      </div>
+      <div class="event-desc">580m 有頂商店街，藥妝+ 服飾+ 電器。松本清+ 大國藥妝比價買。</div>
+      <div class="event-desc-en">580m covered arcade. Drugstores + apparel + electronics. Compare Matsumoto Kiyoshi vs Daikoku for savings.</div>
+    </div>
+
+    <div class="event food starred">
+      <div class="event-header">
+        <div class="event-icon">🍜</div>
+        <div class="event-time-title">
+          <div class="event-time">19:30 — 21:30</div>
+          <div class="event-title">道頓堀 晚餐</div>
+          <div class="event-title-en">Dotonbori · Osaka's Iconic Food Street</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 固力果跑者+ 章魚燒（元祖+ たこ家）+ 蟹道樂+ 一蘭拉麵+ 大阪燒。</div>
+      <div class="event-desc-en">⭐ Glico Running Man + Takoyaki + Kani Doraku + Ichiran Ramen + Okonomiyaki.</div>
+      <div class="event-meta">
+        <span class="cost">¥3,000~5,000/人</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🌆</div>
+        <div class="event-time-title">
+          <div class="event-time">22:00 — 22:30</div>
+          <div class="event-title">梅田藍天大廈 空中庭園</div>
+          <div class="event-title-en">Umeda Sky Building · Kuchu Teien Floating Garden</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 173m 空中庭園，情侶必訪！40F 觀景，被英國時報選為世界 20 大建築。**KKday 已購票**。</div>
+      <div class="event-desc-en">⭐ 173m Floating Garden. Selected as one of world's Top 20 buildings by The Times. Ticket already purchased via KKday.</div>
+      <div class="event-meta">
+        <span class="booked">已訂 Booked (KKday)</span>
+        <span>至 22:30 · 最後入場 22:00</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ DAY 2 ============ -->
+<section class="day day-2">
+  <div class="day-header">
+    <h2>Day 2 · 大阪指定景點+ 奈良祭典</h2>
+    <div class="en-title">Osaka Musts + Nara Festival Night</div>
+    <div class="day-date">2026/08/14 (週五 Friday)</div>
+    <div class="outfit-card">
+      <strong>穿搭</strong>：白連身裙（膝上修身）+ 內搭運動短褲 + 白金 Nike。⚠️ 鹿會啃衣角
+      <br><em style="font-size:0.85em;">White fitted knee-length dress + running shorts underneath + white/gold Nike. Warning: deer nibble loose fabrics!</em>
+    </div>
+  </div>
+
+  <div class="highlights">
+    <h3>✨ 今日重點 Today's Highlights</h3>
+    <ul>
+      <li>海遊館 · 世界最大水族館之一 · 鯨鯊+ 巨型太平洋水槽
+        <span class="en">Kaiyukan Aquarium · One of world's largest · Whale sharks + Pacific Ocean tank</span></li>
+      <li>寶可夢中心大阪 · 關西最大分店（大丸梅田 13F）
+        <span class="en">Pokemon Center Osaka · Kansai's largest branch (Daimaru Umeda 13F)</span></li>
+      <li>奈良公園餵鹿+ 東大寺（8/14 萬燈供養一年唯二機會）
+        <span class="en">Nara Park deer feeding + Todai-ji · 8/14 Manto Kuyo lantern ceremony (only twice a year)</span></li>
+      <li>春日大社中元萬燈籠+ 燈花會最後一晚 · 20,000 燭光
+        <span class="en">Kasuga Taisha Chugen Mantoro + Nara Tokae last night · 20,000 candles</span></li>
+    </ul>
+  </div>
+
+  <div class="timeline">
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🐋</div>
+        <div class="event-time-title">
+          <div class="event-time">10:00 — 13:00</div>
+          <div class="event-title">海遊館 Kaiyukan</div>
+          <div class="event-title-en">Osaka Aquarium Kaiyukan</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 世界最大水族館之一！鯨鯊+ 太平洋巨型水槽+ 620 種海洋生物，8 樓層螺旋動線。</div>
+      <div class="event-desc-en">⭐ One of world's largest aquariums! Whale sharks + Pacific Ocean tank + 620 marine species. 8-floor spiral layout.</div>
+      <div class="event-meta">
+        <span class="cost">¥2,700</span>
+        <span>10:00-20:00</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🎮</div>
+        <div class="event-time-title">
+          <div class="event-time">14:30 — 16:00</div>
+          <div class="event-title">寶可夢中心 大阪</div>
+          <div class="event-title-en">Pokemon Center Osaka (Daimaru Umeda 13F)</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 關西最大寶可夢中心！限定商品+ 巨大皮卡丘等身像。JR 大阪駅 3F 天橋直通。</div>
+      <div class="event-desc-en">⭐ Kansai's largest Pokemon Center! Exclusive items + giant Pikachu statue. Direct 3F skywalk from JR Osaka Station.</div>
+      <div class="event-meta">
+        <span>免費 Free</span>
+      </div>
+    </div>
+
+    <div class="event travel">
+      <div class="event-header">
+        <div class="event-icon">🚄</div>
+        <div class="event-time-title">
+          <div class="event-time">16:00 — 17:00</div>
+          <div class="event-title">JR 大阪 → 奈良</div>
+          <div class="event-title-en">JR Yamatoji Line · Osaka → Nara</div>
+        </div>
+      </div>
+      <div class="event-desc">大和路線快速約 50 分。</div>
+      <div class="event-meta"><span class="cost">¥820/人</span></div>
+    </div>
+
+    <div class="event attraction">
+      <div class="event-header">
+        <div class="event-icon">🦌</div>
+        <div class="event-time-title">
+          <div class="event-time">17:00 — 17:30</div>
+          <div class="event-title">奈良公園 餵鹿</div>
+          <div class="event-title-en">Nara Park · Feeding the Deer</div>
+        </div>
+      </div>
+      <div class="event-desc">1,200+ 隻梅花鹿自由漫步！鹿餅乾 200 円/袋，先跟鹿鞠躬牠會回禮。</div>
+      <div class="event-desc-en">1,200+ sika deer roaming freely! Deer crackers ¥200/pack. Bow to a deer and it will bow back!</div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🕉️</div>
+        <div class="event-time-title">
+          <div class="event-time">17:30 — 19:00</div>
+          <div class="event-title">東大寺 · 8/14 萬燈供養</div>
+          <div class="event-title-en">Todai-ji · Manto Kuyo Lantern Offering</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐ 世界最大木造建築+ 14.7m 大佛！**8/14 夜間萬燈供養**大佛殿正面窗戶大開，一年唯二機會！</div>
+      <div class="event-desc-en">⭐⭐ World's largest wooden building + 14.7m Great Buddha! **On 8/14, the front window opens revealing the Buddha in candlelight — one of only 2 chances per year.**</div>
+      <div class="event-meta">
+        <span class="cost">夜間免費 Night Free</span>
+        <span>8/14 19:00-22:00</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🕯️</div>
+        <div class="event-time-title">
+          <div class="event-time">19:00 — 20:30</div>
+          <div class="event-title">春日大社 中元萬燈籠</div>
+          <div class="event-title-en">Kasuga Taisha Chugen Mantoro</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 一年僅兩次！3,000 座石燈籠+ 銅燈籠全部點亮，另一次是 2 月節分。</div>
+      <div class="event-desc-en">⭐ Held only twice a year! All 3,000 stone + bronze lanterns lit. The other time is at Setsubun in February.</div>
+      <div class="event-meta">
+        <span class="cost">¥500</span>
+        <span>8/14-15 19:00-21:30</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">✨</div>
+        <div class="event-time-title">
+          <div class="event-time">20:30 — 21:20</div>
+          <div class="event-title">奈良燈花會 最後一晚</div>
+          <div class="event-title-en">Nara Tokae Illumination · Last Night</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 20,000 盞燭光遍布奈良公園+ 東大寺+ 春日大社周邊。**8/14 是最後一晚！**</div>
+      <div class="event-desc-en">⭐ 20,000 candles across Nara Park + Todai-ji + Kasuga Taisha. **8/14 is the last night!**</div>
+      <div class="event-meta">
+        <span>免費 Free</span>
+        <span>8/5-14 19:00-21:45</span>
+      </div>
+    </div>
+
+    <div class="event travel">
+      <div class="event-header">
+        <div class="event-icon">🚄</div>
+        <div class="event-time-title">
+          <div class="event-time">21:35 — 22:35</div>
+          <div class="event-title">JR 奈良 → 大阪（21:35 快速避末班）</div>
+          <div class="event-title-en">JR Nara → Osaka (21:35 Rapid, avoid last train)</div>
+        </div>
+      </div>
+      <div class="event-desc">搭 21:35 快速，比末班 22:30 早，有 55 分緩衝+ 避免擁擠。</div>
+      <div class="event-desc-en">Take 21:35 Rapid instead of last train at 22:30. 55 min buffer to avoid crowds.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ DAY 3 ============ -->
+<section class="day day-3">
+  <div class="day-header">
+    <h2>Day 3 · 平等院+ 任天堂+ 太秦夜祭+ 清水寺千日詣</h2>
+    <div class="en-title">Byodo-in + Nintendo Museum + Uzumasa Summer Festival + Kiyomizu-dera Sennichi Mairi</div>
+    <div class="day-date">2026/08/15 (週六 Saturday) · 大移動+ 超級行程日</div>
+    <div class="outfit-card">
+      <strong>穿搭</strong>：白色小可愛 + 黑短褲 + 薄罩衫（清水寺遮肩）+ 白金 Nike
+      <br><em style="font-size:0.85em;">White camisole + black shorts + light overshirt (for Kiyomizu-dera) + white/gold Nike. Camisole doubles as yukata base layer.</em>
+    </div>
+  </div>
+
+  <div class="highlights">
+    <h3>✨ 今日重點 Today's Highlights</h3>
+    <ul>
+      <li>平等院鳳凰堂 UNESCO · 10 円硬幣上那個
+        <span class="en">Byodo-in Phoenix Hall UNESCO · The building on the 10-yen coin</span></li>
+      <li>任天堂博物館 · 已預約 11:00-11:30 入場
+        <span class="en">Nintendo Museum · 11:00-11:30 entry booked</span></li>
+      <li>廣隆寺 · 京都最古老寺廟 · 日本國寶第一號 彌勒菩薩
+        <span class="en">Koryu-ji · Kyoto's oldest temple · Home of Japan's National Treasure #1 (Miroku Bosatsu statue)</span></li>
+      <li>東映太秦映画村+ 夏夜祭 · 妖怪盆舞+ 忍者秀+ 浴衣體驗
+        <span class="en">Toei Uzumasa Kyoto Village + Summer Festival · Yokai Bon Dance + ninja show + yukata experience</span></li>
+      <li>清水寺 千日詣 · 一年一度 UNESCO 內內陣觀音青光
+        <span class="en">Kiyomizu-dera Sennichi Mairi · Once-yearly UNESCO inner sanctuary + Kannon's blue-light illumination</span></li>
+    </ul>
+  </div>
+
+  <div class="timeline">
+    <div class="event travel">
+      <div class="event-header">
+        <div class="event-icon">🚄</div>
+        <div class="event-time-title">
+          <div class="event-time">07:15 — 07:43</div>
+          <div class="event-title">JR 新快速 大阪 → 京都</div>
+          <div class="event-title-en">JR Special Rapid · Osaka → Kyoto</div>
+        </div>
+      </div>
+      <div class="event-desc">新快速直達 28 分，早班車有位子坐。</div>
+      <div class="event-meta"><span class="cost">¥580/人</span></div>
+    </div>
+
+    <div class="event hotel starred">
+      <div class="event-header">
+        <div class="event-icon">🏨</div>
+        <div class="event-time-title">
+          <div class="event-time">07:45 — 08:00</div>
+          <div class="event-title">京都八条 都 Hotel 寄行李<span class="badge">HOTEL</span></div>
+          <div class="event-title-en">Miyako Hotel Kyoto Hachijo · Drop Luggage</div>
+        </div>
+      </div>
+      <div class="event-desc">17 Nishikujo Inmachi, 京都南區。電話 +81-75-661-7111。走出京都駅八条口過馬路即到。</div>
+      <div class="event-desc-en">17 Nishikujo Inmachi, Kyoto. Phone: +81-75-661-7111. Right across from Kyoto Station South Exit (Hachijo).</div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🏯</div>
+        <div class="event-time-title">
+          <div class="event-time">09:00 — 10:00</div>
+          <div class="event-title">平等院鳳凰堂 UNESCO</div>
+          <div class="event-title-en">Byodo-in Phoenix Hall · UNESCO World Heritage</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐ **10 円硬幣上那個！**世界文化遺產 1052 年建，藤原賴通建，日本佛教淨土宗代表。</div>
+      <div class="event-desc-en">⭐⭐ **The building on the 10 yen coin!** UNESCO World Heritage, built 1052 by Fujiwara no Yorimichi. Iconic Pure Land Buddhism architecture.</div>
+      <div class="event-meta">
+        <span class="cost">¥600</span>
+        <span>08:30-17:30</span>
+      </div>
+    </div>
+
+    <div class="event food">
+      <div class="event-header">
+        <div class="event-icon">🍵</div>
+        <div class="event-time-title">
+          <div class="event-time">10:00 — 10:20</div>
+          <div class="event-title">宇治抹茶（辻利霜淇淋）</div>
+          <div class="event-title-en">Uji Matcha · Tsujiri Soft Serve</div>
+        </div>
+      </div>
+      <div class="event-desc">宇治是抹茶發源地。辻利霜淇淋 5 分吃完最省時。</div>
+      <div class="event-desc-en">Uji is the birthplace of matcha. Tsujiri soft serve — quickest option to try authentic matcha.</div>
+      <div class="event-meta"><span class="cost">¥500</span></div>
+    </div>
+
+    <div class="event travel">
+      <div class="event-header">
+        <div class="event-icon">🚄</div>
+        <div class="event-time-title">
+          <div class="event-time">10:35 — 10:50</div>
+          <div class="event-title">JR 奈良線 宇治 → JR 小倉</div>
+          <div class="event-title-en">JR Nara Line · Uji → JR Ogura Station</div>
+        </div>
+      </div>
+      <div class="event-desc">JR 奈良線南下 2 站，15 分抵達。走路 8-10 分到任天堂博物館。</div>
+      <div class="event-desc-en">JR Nara Line southbound 2 stops (15 min). 8-10 min walk to Nintendo Museum.</div>
+      <div class="event-meta"><span class="cost">¥190/人</span></div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🎮</div>
+        <div class="event-time-title">
+          <div class="event-time">11:00 — 13:00</div>
+          <div class="event-title">任天堂博物館<span class="badge">已購票</span></div>
+          <div class="event-title-en">Nintendo Museum</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐⭐ 2024/10 開幕的官方博物館。您預約 11:00-11:30 入場！玩體驗遊戲+ 看歷代主機+ 買限定伴手禮。</div>
+      <div class="event-desc-en">⭐⭐⭐ Official museum opened Oct 2024. Your 11:00-11:30 entry booked! Interactive games + console history + exclusive merchandise.</div>
+      <div class="event-meta">
+        <span class="booked">已訂 Booked ¥6,600 (2 ppl)</span>
+        <span>10:00-18:00</span>
+      </div>
+    </div>
+
+    <div class="event food">
+      <div class="event-header">
+        <div class="event-icon">🍔</div>
+        <div class="event-time-title">
+          <div class="event-time">13:00 — 13:15</div>
+          <div class="event-title">Hatena Burger 快速午餐</div>
+          <div class="event-title-en">Hatena Burger · Quick Lunch (Museum Cafe)</div>
+        </div>
+      </div>
+      <div class="event-desc">博物館內主題餐廳，可外帶。</div>
+      <div class="event-meta"><span class="cost">¥1,500</span></div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🏛️</div>
+        <div class="event-time-title">
+          <div class="event-time">14:45 — 15:30</div>
+          <div class="event-title">廣隆寺 · 國寶第一號</div>
+          <div class="event-title-en">Koryu-ji · Japan's National Treasure #1</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐ **京都最古老寺廟 603 年建**！鎮寺之寶「彌勒菩薩半跏思惟像」是**日本國寶第一號**。靈寶殿禁止拍照。</div>
+      <div class="event-desc-en">⭐⭐ **Kyoto's oldest temple (built 603 AD)!** Houses "Miroku Bosatsu" — Japan's National Treasure #1. No photos in Reihoden Hall.</div>
+      <div class="event-meta">
+        <span class="cost">¥800</span>
+        <span>09:00-17:00</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🎬</div>
+        <div class="event-time-title">
+          <div class="event-time">15:40 — 19:20</div>
+          <div class="event-title">東映太秦映画村+ 夏夜祭<span class="badge">已購票</span></div>
+          <div class="event-title-en">Toei Uzumasa Kyoto Village + Summer Bon Dance Festival</div>
+        </div>
+      </div>
+      <div class="event-desc">
+        ⭐⭐⭐ 日本現役時代劇拍片場！<br>
+        <strong>15:40-16:00</strong> 入園+ 看忍者秀 timetable<br>
+        <strong>16:00-16:15</strong> 👘 浴衣租借（兩人一起）<br>
+        <strong>16:15-17:00</strong> 江戶大街拍浴衣照+ 忍者屋敷<br>
+        <strong>17:00-17:30</strong> 街頭潑水祭（辻々の打ち水）夏日限定<br>
+        <strong>17:30-18:30</strong> 江戶夜市屋台晚餐<br>
+        <strong>18:30-18:45</strong> 提早換回原服<br>
+        <strong>19:00-19:20</strong> 🎭 妖怪與百鬼夜行盆舞（開場 20 分最精華）
+      </div>
+      <div class="event-desc-en">⭐⭐⭐ Historic movie set park! Yukata rental + ninja show + street water festival + food stalls + Yokai (spirits) Bon Dance from 19:00 with DJ mix of City Pop + traditional Japanese songs.</div>
+      <div class="event-meta">
+        <span class="booked">已訂 Booked NT$1,075 (2 ppl)</span>
+        <span class="cost">浴衣 ¥5,000 (2)</span>
+        <span>夜祭營業至 21:00</span>
+      </div>
+    </div>
+
+    <div class="event travel">
+      <div class="event-header">
+        <div class="event-icon">🚇</div>
+        <div class="event-time-title">
+          <div class="event-time">19:35 — 19:52</div>
+          <div class="event-title">地鐵東西線 太秦天神川 → 東山</div>
+          <div class="event-title-en">Tozai Subway · Uzumasa Tenjingawa → Higashiyama</div>
+        </div>
+      </div>
+      <div class="event-desc">避開清水寺晚上塞車，改搭地鐵+ 快走。</div>
+      <div class="event-meta"><span class="cost">¥260/人</span></div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">⛩️</div>
+        <div class="event-time-title">
+          <div class="event-time">20:30 — 21:30</div>
+          <div class="event-title">清水寺 千日詣 夏季夜間特別參拜</div>
+          <div class="event-title-en">Kiyomizu-dera · Sennichi Mairi Summer Night Special</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐⭐ **UNESCO + 千日詣**！8/9-16 期間 1 次等於平常 1,000 天功德。**8/14-16 三天有夜間開放+ 本堂內內陣點亮觀音慈悲青光**。**內內陣禁止拍照**。</div>
+      <div class="event-desc-en">⭐⭐⭐ UNESCO + Sennichi Mairi! A visit during 8/9-16 counts as 1,000 days of worship. 8/14-16 evenings feature special interior viewing with blue-light illumination symbolizing Kannon's mercy. No photos inside inner sanctuary.</div>
+      <div class="event-meta">
+        <span class="cost">¥500</span>
+        <span>8/14-16 18:30-21:30</span>
+        <span>21:00 停售票</span>
+      </div>
+    </div>
+
+    <div class="event food starred">
+      <div class="event-header">
+        <div class="event-icon">🍔</div>
+        <div class="event-time-title">
+          <div class="event-time">22:15 — 23:00</div>
+          <div class="event-title">Wagyu Burger Kyoto Issen 宵夜</div>
+          <div class="event-title-en">Wagyu Burger &amp; Dessert Kyoto Issen · Late Night Snack</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 4.9★ 高評分！和牛漢堡+ 招牌法式吐司（可分著吃）。京都駅正對面走路 3 分。</div>
+      <div class="event-desc-en">⭐ 4.9-star rated wagyu burger + signature French toast. 3 min walk from Kyoto Station Karasuma Exit.</div>
+      <div class="event-meta">
+        <span class="cost">¥2,000</span>
+        <span>08:30-23:00</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ DAY 4 ============ -->
+<section class="day day-4">
+  <div class="day-header">
+    <h2>Day 4 · 京都經典大巡禮+ 五山送火</h2>
+    <div class="en-title">Kyoto Classic Grand Tour + Gozan no Okuribi</div>
+    <div class="day-date">2026/08/16 (週日 Sunday) · 06:00 起床超級行程日</div>
+    <div class="outfit-card">
+      <strong>穿搭</strong>：白短針織外套 + 黑長裙 + 內搭褲（伏見稻荷+ 御苑坐地防蚊）+ 白金 Nike
+      <br><em style="font-size:0.85em;">White short knit jacket + black long skirt + inner leggings + white/gold Nike. Bring clean socks for Nijo Castle (shoes off).</em>
+    </div>
+  </div>
+
+  <div class="highlights">
+    <h3>✨ 今日重點 Today's Highlights</h3>
+    <ul>
+      <li>伏見稻荷大社 · 10,000 座朱紅千本鳥居
+        <span class="en">Fushimi Inari Taisha · 10,000 vermilion torii gates trail</span></li>
+      <li>平安神宮 · 24m 高日本最大級朱紅大鳥居
+        <span class="en">Heian Jingu Shrine · 24m tall — one of Japan's largest vermilion torii gates</span></li>
+      <li>京都市動物園 · 日本第二古老（1903 年）
+        <span class="en">Kyoto City Zoo · Japan's second oldest zoo (established 1903)</span></li>
+      <li>二條城 UNESCO · 鶯聲地板+ 德川將軍居所
+        <span class="en">Nijo Castle UNESCO · Nightingale floors + Tokugawa Shogun residence</span></li>
+      <li>京都寶可夢中心 · 京都限定商品（浴衣皮卡丘）
+        <span class="en">Pokemon Center Kyoto · Kyoto-exclusive merchandise (Pikachu in yukata)</span></li>
+      <li>東寺 UNESCO · 55m 日本最高木塔
+        <span class="en">To-ji Temple UNESCO · Japan's tallest wooden pagoda (55m)</span></li>
+      <li>京都塔 · 100m 展望台 · 夕陽落日
+        <span class="en">Kyoto Tower · 100m observation deck · Sunset views</span></li>
+      <li>五山送火 · 京都夏季壓軸 · 御苑看 4 個字
+        <span class="en">Gozan no Okuribi · Kyoto's summer grand finale · 4 fire characters visible from Imperial Park</span></li>
+    </ul>
+  </div>
+
+  <div class="timeline">
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">⛩️</div>
+        <div class="event-time-title">
+          <div class="event-time">07:00 — 08:30</div>
+          <div class="event-title">伏見稻荷大社</div>
+          <div class="event-title-en">Fushimi Inari Taisha · 10,000 Torii Gates</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐ 全國稻荷神社總本山，10,000+ 座朱紅千本鳥居。**07:00 早晨無人潮**，可走到中間四辻頂端拍到絕美空景。</div>
+      <div class="event-desc-en">⭐⭐ Head shrine of all Inari shrines. 10,000+ vermilion torii gates. Arrive at 07:00 for crowd-free photos to the Yotsutsuji summit lookout.</div>
+      <div class="event-meta">
+        <span>24/7 免費 Free</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">⛩️</div>
+        <div class="event-time-title">
+          <div class="event-time">09:15 — 09:45</div>
+          <div class="event-title">平安神宮 本殿</div>
+          <div class="event-title-en">Heian Jingu Shrine · Main Hall</div>
+        </div>
+      </div>
+      <div class="event-desc">1895 年建。**24m 高朱紅巨大鳥居**（日本最大級）+ 白虎+ 蒼龍朱雀應天門。</div>
+      <div class="event-desc-en">Built 1895. Massive vermilion torii gate (24m tall — one of Japan's largest) + Ohtenmon Gate with Byakko + Suzaku dragons.</div>
+      <div class="event-meta">
+        <span>免費 Free (本殿)</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🦁</div>
+        <div class="event-time-title">
+          <div class="event-time">10:00 — 12:00</div>
+          <div class="event-title">京都市動物園</div>
+          <div class="event-title-en">Kyoto City Zoo · Japan's 2nd Oldest Zoo</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 1903 年開園，**日本第二古老動物園**！大象+ 獅子+ 企鵝+ 猴子+ 長頸鹿。8/15-8/16 有夏季夜間開園延長到 20:00。</div>
+      <div class="event-desc-en">⭐ Opened 1903. Japan's 2nd oldest zoo! Elephants + lions + penguins + monkeys + giraffes. Extended hours to 20:00 on 8/15-8/16.</div>
+      <div class="event-meta">
+        <span class="cost">¥750</span>
+        <span>9:00-20:00 (夏)</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🏯</div>
+        <div class="event-time-title">
+          <div class="event-time">12:30 — 14:30</div>
+          <div class="event-title">元離宮二條城 UNESCO</div>
+          <div class="event-title-en">Nijo Castle · UNESCO World Heritage</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐ UNESCO！德川家康 1603 年建。**鶯聲地板必體驗**（走廊會發出鳥叫防刺客）+ 狩野派障壁畫+ 二の丸庭園。進二の丸御殿要脫鞋（帶乾淨襪）。</div>
+      <div class="event-desc-en">⭐⭐ UNESCO! Built 1603 by Tokugawa Ieyasu. Experience the "nightingale floors" that chirp under footsteps (anti-assassination) + Kano school wall paintings + Ninomaru Garden. Bring clean socks (shoes off in Ninomaru Palace).</div>
+      <div class="event-meta">
+        <span class="cost">¥1,300</span>
+        <span>08:45-16:00 (最後入場)</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🎌</div>
+        <div class="event-time-title">
+          <div class="event-time">14:50 — 15:50</div>
+          <div class="event-title">京都寶可夢中心（SUINA 室町 2F）</div>
+          <div class="event-title-en">Pokemon Center Kyoto · Kyoto-Exclusive Merch</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ **京都限定商品！**穿浴衣皮卡丘+ 朱雀神獸主題+ 巨大 Ho-Oh 藝伎裝置。距地鐵四条駅 2 分。</div>
+      <div class="event-desc-en">⭐ **Kyoto-exclusive merchandise!** Yukata Pikachu + Ho-Oh geisha themed display + traditional Kyoto motifs. 2 min from Karasuma Subway Line Shijo Station.</div>
+      <div class="event-meta">
+        <span>免費入場 Free entry</span>
+        <span>10:00-20:00</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🗼</div>
+        <div class="event-time-title">
+          <div class="event-time">16:30 — 17:00</div>
+          <div class="event-title">東寺 UNESCO 五重塔</div>
+          <div class="event-title-en">To-ji Temple · Japan's Tallest Wooden Pagoda</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐ **UNESCO 日本最高木塔 55m**！**16:30 剛好卡進最後入場**。看講堂+ 金堂+ 五重塔外觀。</div>
+      <div class="event-desc-en">⭐⭐ UNESCO — Japan's tallest wooden pagoda (55m)! Last entry 16:30. Kondo Main Hall + Kodo Lecture Hall + exterior of 5-story pagoda.</div>
+      <div class="event-meta">
+        <span class="cost">¥500</span>
+        <span>08:00-17:00</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🗼</div>
+        <div class="event-time-title">
+          <div class="event-time">17:15 — 18:30</div>
+          <div class="event-title">京都塔 展望台</div>
+          <div class="event-title-en">Kyoto Tower · Sunset Observation Deck</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐ **100m 展望台，夕陽轉夜景超美**！8 月日落約 18:45。京都駅正對面。</div>
+      <div class="event-desc-en">⭐⭐ 100m observation deck. Perfect sunset-to-nightview transition. August sunset ~18:45. Directly across from Kyoto Station.</div>
+      <div class="event-meta">
+        <span class="cost">¥900</span>
+        <span>10:00-21:00 (最終入場 20:30)</span>
+      </div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🔥</div>
+        <div class="event-time-title">
+          <div class="event-time">20:00 — 20:45</div>
+          <div class="event-title">五山送火 · 京都御苑（看 4 個字）</div>
+          <div class="event-title-en">Gozan no Okuribi · Kyoto Imperial Park (4 Fires Visible)</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐⭐⭐ 京都夏季壓軸！5 個字按順序點燃：<br>
+        <strong>20:00</strong> 大（東山如意ヶ嶽）<br>
+        <strong>20:05</strong> 妙・法（松ヶ崎北山）<br>
+        <strong>20:10</strong> 船形（西賀茂船山）<br>
+        <strong>20:15</strong> 左大文字（西山）<br>
+        <strong>20:20</strong> 鳥居形（嵯峨鳥居本）<br>
+        京都御苑可看到 4 個字！
+      </div>
+      <div class="event-desc-en">⭐⭐⭐ Kyoto's summer grand finale! 5 giant characters lit sequentially on 5 mountains. Kyoto Imperial Park sees 4 of them.</div>
+      <div class="event-meta">
+        <span>免費 Free</span>
+        <span>8/16 20:00 only</span>
+      </div>
+    </div>
+
+    <div class="event attraction">
+      <div class="event-header">
+        <div class="event-icon">📸</div>
+        <div class="event-time-title">
+          <div class="event-time">21:15 — 21:30</div>
+          <div class="event-title">京都塔 夜景外拍</div>
+          <div class="event-title-en">Kyoto Tower · Night Photo Op</div>
+        </div>
+      </div>
+      <div class="event-desc">**京都塔晚上亮燈超美**！走過外拍即可（20:30 後無法入場）。</div>
+      <div class="event-desc-en">Kyoto Tower is beautifully lit at night — perfect for exterior photos on the way back.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ DAY 5 ============ -->
+<section class="day day-5">
+  <div class="day-header">
+    <h2>Day 5 · 神戶動物王國+ 神戶牛+ 返台</h2>
+    <div class="en-title">Kobe Animal Kingdom + Kobe Beef + Departure</div>
+    <div class="day-date">2026/08/17 (週一 Monday)</div>
+    <div class="outfit-card">
+      <strong>穿搭</strong>：藏藍短 T + 黑短裙 + 薄外套（飛機冷氣強）+ 白金 Nike / 娃娃鞋（五間換上）
+      <br><em style="font-size:0.85em;">Navy short tee + black short skirt + light jacket (for plane) + white/gold Nike or ballet flats for Kobe Beef restaurant.</em>
+    </div>
+  </div>
+
+  <div class="highlights">
+    <h3>✨ 今日重點 Today's Highlights</h3>
+    <ul>
+      <li>神戶動物王國 · 全天候型 · 企鵝餵食秀+ 水豚+ 袋鼠+ 羊駝
+        <span class="en">Kobe Animal Kingdom · All-weather park · Penguin feeding + capybara + kangaroo + alpaca</span></li>
+      <li>神戶牛 五間 · 已訂位 13:30
+        <span class="en">Kobe Beef Gokan · Reserved for 13:30</span></li>
+      <li>KOBE-KANSAI BAY SHUTTLE · 30 分海上航行
+        <span class="en">Kobe-Kansai Bay Shuttle · 30-min scenic sea crossing to KIX</span></li>
+      <li>AirAsia D7379 返台 20:55
+        <span class="en">AirAsia D7379 · Return flight to Taipei at 20:55</span></li>
+    </ul>
+  </div>
+
+  <div class="timeline">
+    <div class="event travel">
+      <div class="event-header">
+        <div class="event-icon">🚄</div>
+        <div class="event-time-title">
+          <div class="event-time">07:30 — 08:25</div>
+          <div class="event-title">JR 京都 → 三宮</div>
+          <div class="event-title-en">JR Special Rapid · Kyoto → Sannomiya</div>
+        </div>
+      </div>
+      <div class="event-meta"><span class="cost">¥1,110/人</span></div>
+    </div>
+
+    <div class="event travel">
+      <div class="event-header">
+        <div class="event-icon">🚆</div>
+        <div class="event-time-title">
+          <div class="event-time">09:00 — 09:20</div>
+          <div class="event-title">Port Liner 三宮 → 計算科學中心駅</div>
+          <div class="event-title-en">Port Liner · Sannomiya → Keisan Kagaku Center Station</div>
+        </div>
+      </div>
+      <div class="event-desc">無人駕駛輕軌約 18 分，出站就是動物王國入口。</div>
+      <div class="event-desc-en">Automated light rail (18 min). Station right at animal kingdom entrance.</div>
+      <div class="event-meta"><span class="cost">¥290/人</span></div>
+    </div>
+
+    <div class="event attraction starred">
+      <div class="event-header">
+        <div class="event-icon">🐧</div>
+        <div class="event-time-title">
+          <div class="event-time">10:00 — 13:00</div>
+          <div class="event-title">神戶動物王國</div>
+          <div class="event-title-en">Kobe Animal Kingdom</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ **10:00 準時進場！**全天候型動物園，800+ 動物室內外互動。必看：企鵝餵食秀（11:00 常有）、水豚水池、袋鼠自由漫步、羊駝觸摸。**13:00 準時離開**趕神戶牛。</div>
+      <div class="event-desc-en">⭐ All-weather animal park with 800+ animals + hands-on interactions. Must-see: penguin feeding (usually 11:00), capybara pool, kangaroo free-roam, alpaca petting. Leave by 13:00 sharp for lunch reservation.</div>
+      <div class="event-meta">
+        <span class="cost">¥1,800</span>
+        <span>10:00-17:00</span>
+      </div>
+    </div>
+
+    <div class="event food starred">
+      <div class="event-header">
+        <div class="event-icon">🥩</div>
+        <div class="event-time-title">
+          <div class="event-time">13:30 — 15:30</div>
+          <div class="event-title">神戶牛 五間（黒 北野坂本店）<span class="badge">已訂位</span></div>
+          <div class="event-title-en">Kobe Beef Gokan (Kuro Kitanozaka Main Store)</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ **您已訂 13:30 入場！**位於 Kitano 異人館區 北野坂上。半正式鐵板燒餐廳。</div>
+      <div class="event-desc-en">⭐ Reserved for 13:30! Located on Kitanozaka slope in Kobe's Kitano Ijinkan (foreign residences) district. Semi-formal teppanyaki.</div>
+      <div class="event-meta">
+        <span class="cost">¥6,000-15,000/人</span>
+        <span class="booked">已訂 Booked</span>
+      </div>
+    </div>
+
+    <div class="event attraction">
+      <div class="event-header">
+        <div class="event-icon">🌸</div>
+        <div class="event-time-title">
+          <div class="event-time">15:30 — 16:15</div>
+          <div class="event-title">北野異人館 外圍散步</div>
+          <div class="event-title-en">Kitano Ijinkan-cho · Foreign Residence Walk</div>
+        </div>
+      </div>
+      <div class="event-desc">明治時期歐風洋館街區。餐後散步消化+ 拍照。</div>
+      <div class="event-desc-en">Meiji-era European-style residences. Post-lunch walk + photo ops.</div>
+    </div>
+
+    <div class="event travel starred">
+      <div class="event-header">
+        <div class="event-icon">🚢</div>
+        <div class="event-time-title">
+          <div class="event-time">17:20 — 17:50</div>
+          <div class="event-title">KOBE-KANSAI BAY SHUTTLE</div>
+          <div class="event-title-en">Kobe-Kansai Bay Shuttle Boat</div>
+        </div>
+      </div>
+      <div class="event-desc">⭐ 30 分海上航行！比繞陸快，觀景無敵。**憑護照享外國旅客優惠 ¥950**。</div>
+      <div class="event-desc-en">⭐ 30 min sea crossing! Faster than by land, spectacular views. **Show passport for foreign visitor discount ¥950 (regular ¥1,880).**</div>
+      <div class="event-meta">
+        <span class="cost">¥950/人（優惠）</span>
+        <span class="booked">已訂 Booked</span>
+      </div>
+    </div>
+
+    <div class="event travel starred">
+      <div class="event-header">
+        <div class="event-icon">✈️</div>
+        <div class="event-time-title">
+          <div class="event-time">20:55 — 23:05</div>
+          <div class="event-title">AirAsia X D7379 · KIX → 台北</div>
+          <div class="event-title-en">AirAsia X D7379 · KIX → Taipei TPE</div>
+        </div>
+      </div>
+      <div class="event-desc">飛行時間 2h 10min。廉航無餐點，先在機場吃飽。抵達桃園 T1 已是深夜 23:05。</div>
+      <div class="event-desc-en">Flight time 2h 10min. LCC — no meal service, eat at airport first. Arrive Taoyuan T1 at 23:05.</div>
+      <div class="event-meta">
+        <span class="booked">已訂 Booked</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div>🌸 2026/08/13 — 08/17 · 5 天 4 夜關西之旅 🌸</div>
+  <div style="margin-top: 8px;">大阪 Osaka · 奈良 Nara · 京都 Kyoto · 神戶 Kobe</div>
+  <div style="margin-top: 12px; font-size: 0.8em;">Have a wonderful trip! · 楽しい旅を！</div>
+</footer>
+
+<script>
+  function showDay(dayNum) {
+    // Hide all days
+    document.querySelectorAll('.day').forEach(d => d.classList.remove('active'));
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    
+    // Show selected day
+    document.querySelector('.day-' + dayNum).classList.add('active');
+    document.querySelectorAll('.day-tab')[dayNum - 1].classList.add('active');
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
