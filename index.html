@@ -326,6 +326,7 @@ nav{display:flex;flex-direction:column;gap:2px;}
     <a class="nav-link active" href="#home" data-i18n="nav_home">首頁</a>
     <a class="nav-link" href="#projects" data-i18n="nav_projects">我的作品</a>
     <a class="nav-link" href="#tools" data-i18n="nav_tools">開發工具</a>
+    <a class="nav-link" href="#travel" data-i18n="nav_travel">旅遊分享</a>
     <a class="nav-link" href="#about" data-i18n="nav_about">關於我</a>
   </nav>
   <div class="sidebar-footer">
@@ -570,6 +571,44 @@ nav{display:flex;flex-direction:column;gap:2px;}
     </div>
   </section>
 
+  <!-- ══ 旅遊分享 TRAVEL ══ -->
+  <section class="section" id="travel">
+    <div class="section-header">
+      <h2 class="section-title" data-i18n="travel_title">旅遊分享</h2>
+      <div class="section-line"></div>
+      <span class="section-count" data-i18n="travel_count">1 Post</span>
+    </div>
+    <div class="grid">
+
+      <!-- TRAVEL 1: Trip 1 -->
+      <div class="card">
+        <div class="card-thumb">
+          <img
+            src="trip-1-cover.jpg"
+            alt="旅遊分享"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-placeholder" style="display:none;">
+            <div class="thumb-icon">✈️</div>
+            <div class="thumb-label">Travel</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-badge" data-i18n="badge_travel">旅行足跡</span>
+          <h3 class="card-title" data-i18n="trip1_title">旅遊分享 - 大阪&京都&奈良&神戶 5日</h3>
+          <p class="card-desc" data-i18n="trip1_desc">旅程規劃分享，第一次去京都跟奈良，並且是盂蘭盆節期間呢～</p>
+          <div class="card-footer">
+            <span class="card-meta" data-i18n="trip1_meta">Travel Log · 景點紀錄</span>
+            <a class="card-link" href="trip-1.html" target="_blank">
+              <span data-i18n="link_read">去閱讀</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- ABOUT -->
   <section class="section" id="about">
     <div class="section-header">
@@ -679,7 +718,7 @@ nav{display:flex;flex-direction:column;gap:2px;}
 var I18N = {
   "zh-TW":{
     lang_label:"語言",
-    nav_home:"首頁", nav_projects:"我的作品", nav_tools:"開發工具", nav_about:"關於我",
+    nav_home:"首頁", nav_projects:"我的作品", nav_tools:"開發工具", nav_travel:"旅遊分享", nav_about:"關於我",
     social_ithome:"iThome 鐵人賽",
     hero_title:"雲端架構 & 專案管理 · 台灣",
     hero_bio:"熱愛技術與分享的雲端工程師/專案經理，專注於 Cloud、DevOps、專案管理等，對世界充滿好奇心，喜歡把複雜的概念轉化成有趣、實用的作品與工具。",
@@ -699,6 +738,10 @@ var I18N = {
     badge_tool:"實用工具", picmark_title:"PicMark 圖片快捷標記",
     picmark_desc:"純瀏覽器的圖片標記與標註工具，支援數字標記與文字標註，適合製作教學截圖、操作步驟說明或問題回報。免安裝、開啟即用，支援多國語言。",
     picmark_meta:"Web Tool · 標記 / 標註", link_use:"去使用",
+    travel_title:"旅遊分享", travel_count:"1 篇分享",
+    badge_travel:"旅行足跡", trip1_title:"旅遊分享 01",
+    trip1_desc:"記錄旅途中的風景與心得，探索不同城市的文化與生活點滴。",
+    trip1_meta:"Travel Log · 景點紀錄", link_read:"去閱讀",
     about_title:"關於我",
     about_tech:"技術專長 Technical Expertise", about_exp:"工作經歷 Professional Experience",
     about_multi:"跨領域技能與興趣 Multidisciplinary Skills & Interests",
@@ -713,7 +756,7 @@ var I18N = {
   },
   "zh-CN":{
     lang_label:"语言",
-    nav_home:"首页", nav_projects:"我的作品", nav_tools:"开发工具", nav_about:"关于我",
+    nav_home:"首页", nav_projects:"我的作品", nav_tools:"开发工具", nav_travel:"旅游分享", nav_about:"關於我",
     social_ithome:"iThome 铁人赛",
     hero_title:"云端架构 & 项目管理 · 台湾",
     hero_bio:"热爱技术与分享的云端工程师/项目经理，专注于 Cloud、DevOps、项目管理等，对世界充满好奇心，喜欢把复杂的概念转化成有趣、实用的作品与工具。",
@@ -733,6 +776,10 @@ var I18N = {
     badge_tool:"实用工具", picmark_title:"PicMark 图片快捷标记",
     picmark_desc:"纯浏览器的图片标记与标注工具，支持数字标记与文字标注，适合制作教学截图、操作步骤说明或问题反馈。免安装、打开即用，支持多国语言。",
     picmark_meta:"Web Tool · 标记 / 标注", link_use:"去使用",
+    travel_title:"旅游分享", travel_count:"1 篇分享",
+    badge_travel:"旅行足迹", trip1_title:"旅游分享 01",
+    trip1_desc:"记录旅途中的风景与心得，探索不同城市的文化与生活点滴。",
+    trip1_meta:"Travel Log · 景点纪录", link_read:"去阅读",
     about_title:"关于我",
     about_tech:"技术专长 Technical Expertise", about_exp:"工作经历 Professional Experience",
     about_multi:"跨领域技能与兴趣 Multidisciplinary Skills & Interests",
@@ -747,7 +794,7 @@ var I18N = {
   },
   "en":{
     lang_label:"Language",
-    nav_home:"Home", nav_projects:"Projects", nav_tools:"Tools", nav_about:"About",
+    nav_home:"Home", nav_projects:"Projects", nav_tools:"Tools", nav_travel:"Travel", nav_about:"About",
     social_ithome:"iThome Ironman",
     hero_title:"Cloud Architecture & Project Management · Taiwan",
     hero_bio:"A cloud engineer / project manager who loves technology and sharing knowledge, focusing on Cloud, DevOps and project management. Endlessly curious about the world, I enjoy turning complex concepts into fun, practical works and tools.",
@@ -767,6 +814,10 @@ var I18N = {
     badge_tool:"Utility", picmark_title:"PicMark Image Annotator",
     picmark_desc:"A browser-based image marking and annotation tool supporting numbered markers and text labels. Great for tutorial screenshots, step-by-step guides or bug reports. No install needed, ready to use and multilingual.",
     picmark_meta:"Web Tool · Mark / Annotate", link_use:"Open",
+    travel_title:"Travel Sharing", travel_count:"1 Post",
+    badge_travel:"Footprints", trip1_title:"Travel Log 01",
+    trip1_desc:"Documenting landscapes, reflections, and exploring diverse cultures and daily lives.",
+    trip1_meta:"Travel Log · Memories", link_read:"Read",
     about_title:"About Me",
     about_tech:"Technical Expertise", about_exp:"Professional Experience",
     about_multi:"Multidisciplinary Skills & Interests",
@@ -781,7 +832,7 @@ var I18N = {
   },
   "ja":{
     lang_label:"言語",
-    nav_home:"ホーム", nav_projects:"作品", nav_tools:"ツール", nav_about:"私について",
+    nav_home:"ホーム", nav_projects:"作品", nav_tools:"ツール", nav_travel:"旅行記", nav_about:"私について",
     social_ithome:"iThome アイアンマン",
     hero_title:"クラウドアーキテクチャ & プロジェクト管理 · 台湾",
     hero_bio:"テクノロジーと知識の共有を愛するクラウドエンジニア／プロジェクトマネージャー。Cloud、DevOps、プロジェクト管理などを専門とし、世界への好奇心にあふれ、複雑な概念を楽しく実用的な作品やツールに変えることが好きです。",
@@ -801,6 +852,10 @@ var I18N = {
     badge_tool:"便利ツール", picmark_title:"PicMark 画像マーキング",
     picmark_desc:"ブラウザだけで使える画像マーキング＆注釈ツール。番号マーカーとテキスト注釈に対応し、チュートリアル用スクリーンショットや操作手順の説明、バグ報告に最適です。インストール不要、開いてすぐ使え、多言語対応。",
     picmark_meta:"Web Tool · マーク / 注釈", link_use:"使ってみる",
+    travel_title:"旅行記", travel_count:"1 記事",
+    badge_travel:"旅行記", trip1_title:"旅行記 01",
+    trip1_desc:"旅先の風景や感想を記録し、さまざまな都市の文化や日常を探索します。",
+    trip1_meta:"Travel Log · スポット記録", link_read:"読む",
     about_title:"私について",
     about_tech:"技術スキル Technical Expertise", about_exp:"職務経歴 Professional Experience",
     about_multi:"分野横断スキル・興味 Multidisciplinary Skills & Interests",
@@ -815,7 +870,7 @@ var I18N = {
   },
   "ko":{
     lang_label:"언어",
-    nav_home:"홈", nav_projects:"작품", nav_tools:"도구", nav_about:"소개",
+    nav_home:"홈", nav_projects:"작품", nav_tools:"도구", nav_travel:"여행 공유", nav_about:"소개",
     social_ithome:"iThome 철인대회",
     hero_title:"클라우드 아키텍처 & 프로젝트 관리 · 대만",
     hero_bio:"기술과 지식 공유를 사랑하는 클라우드 엔지니어/프로젝트 매니저입니다. Cloud, DevOps, 프로젝트 관리 등에 집중하며, 세상에 대한 호기심이 가득하고 복잡한 개념을 재미있고 실용적인 작품과 도구로 만드는 것을 좋아합니다.",
@@ -835,6 +890,10 @@ var I18N = {
     badge_tool:"유용한 도구", picmark_title:"PicMark 이미지 마킹",
     picmark_desc:"브라우저만으로 사용하는 이미지 마킹·주석 도구로, 숫자 마커와 텍스트 주석을 지원합니다. 튜토리얼 스크린샷, 조작 단계 설명, 버그 리포트에 적합합니다. 설치 없이 바로 사용 가능하며 다국어를 지원합니다.",
     picmark_meta:"Web Tool · 마킹 / 주석", link_use:"사용하기",
+    travel_title:"여행 공유", travel_count:"글 1개",
+    badge_travel:"여행 발자취", trip1_title:"여행 공유 01",
+    trip1_desc:"여행의 풍경과 소감을 기록하고, 다양한 도시의 문화와 일상을 탐험합니다.",
+    trip1_meta:"Travel Log · 명소 기록", link_read:"읽기",
     about_title:"저를 소개합니다",
     about_tech:"기술 전문성 Technical Expertise", about_exp:"경력 Professional Experience",
     about_multi:"다분야 역량 & 관심사 Multidisciplinary Skills & Interests",
@@ -849,7 +908,7 @@ var I18N = {
   },
   "es":{
     lang_label:"Idioma",
-    nav_home:"Inicio", nav_projects:"Proyectos", nav_tools:"Herramientas", nav_about:"Sobre mí",
+    nav_home:"Inicio", nav_projects:"Proyectos", nav_tools:"Herramientas", nav_travel:"Viajes", nav_about:"Sobre mí",
     social_ithome:"iThome Ironman",
     hero_title:"Arquitectura Cloud y Gestión de Proyectos · Taiwán",
     hero_bio:"Ingeniero cloud y gestor de proyectos apasionado por la tecnología y por compartir conocimiento, centrado en Cloud, DevOps y gestión de proyectos. Con gran curiosidad por el mundo, me gusta convertir conceptos complejos en obras y herramientas divertidas y prácticas.",
@@ -869,6 +928,10 @@ var I18N = {
     badge_tool:"Utilidad", picmark_title:"PicMark Anotador de Imágenes",
     picmark_desc:"Herramienta de marcado y anotación de imágenes basada en el navegador, con marcadores numerados y etiquetas de texto. Ideal para capturas de tutoriales, guías paso a paso o informes de errores. Sin instalación, lista para usar y multilingüe.",
     picmark_meta:"Web Tool · Marcar / Anotar", link_use:"Usar",
+    travel_title:"Viajes", travel_count:"1 Publicación",
+    badge_travel:"Huellas", trip1_title:"Diarios de Viaje 01",
+    trip1_desc:"Documentando paisajes, reflexiones y explorando diversas culturas y vidas cotidianas.",
+    trip1_meta:"Travel Log · Recuerdos", link_read:"Leer",
     about_title:"Sobre mí",
     about_tech:"Experiencia Técnica", about_exp:"Experiencia Profesional",
     about_multi:"Habilidades e Intereses Multidisciplinares",
@@ -947,7 +1010,7 @@ document.querySelectorAll('.nav-link').forEach(function(l){
 });
 
 /* 滾動時更新側欄 active */
-var sections = ['home','projects','tools','about'];
+var sections = ['home','projects','tools','travel','about'];
 var links = document.querySelectorAll('.nav-link');
 var obs = new IntersectionObserver(function(entries){
   entries.forEach(function(e){
