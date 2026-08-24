@@ -208,7 +208,7 @@ input:focus, select:focus {
 .grid-header { font-size: 11px; font-weight: 600; text-align: center; color: var(--text-sub); padding: 4px 0; }
 .grid-time { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; }
 .cell {
-  height: 28px; background: var(--no); border-radius: 3px;
+  height: 26px; background: var(--no); border-radius: 3px;
   cursor: pointer; transition: background 0.05s;
   min-width: 48px;
   display: flex; align-items: center; justify-content: center;
@@ -219,7 +219,7 @@ input:focus, select:focus {
 .cell.st-1 { background: var(--maybe) !important; }
 .cell.st-0 { background: var(--no) !important; }
 
-/* Heatmap States (Graduated green) */
+/* Heatmap States */
 .cell.h-1 { background: var(--heat-1); color: #A7F3D0; }
 .cell.h-2 { background: var(--heat-2); color: #FFFFFF; }
 .cell.h-3 { background: var(--heat-3); color: #FFFFFF; }
@@ -353,7 +353,7 @@ input:focus, select:focus {
         <button class="btn btn-primary" onclick="loadPollFromInput()" data-i18n="btn_load">載入會議</button>
         <button class="btn btn-secondary" onclick="copyCode()" data-i18n="btn_copy">複製代碼</button>
         <button class="btn btn-secondary" onclick="copyOnlyUrl()" data-i18n="btn_copy_url">複製 URL 網址</button>
-        <button class="btn btn-secondary" onclick="copyFullMeetingInfo()" data-i18n="btn_copy_info">一鍵複製完整資訊</button>
+        <button class="btn btn-secondary" onclick="copyFullMeetingInfo()" data-i18n="btn_copy_info">一鍵複製會議資訊</button>
       </div>
     </div>
 
@@ -372,7 +372,7 @@ input:focus, select:focus {
         <div class="user-info-row">
           <div class="field">
             <label data-i18n="lbl_your_name">您的姓名：</label>
-            <input type="text" id="user-name" placeholder="輸入姓名" oninput="loadUserHistory()">
+            <input type="text" id="user-name" placeholder="輸入姓名" oninput="onNameInput()">
           </div>
           <div class="field">
             <label data-i18n="lbl_your_pin">密碼 (修改憑證)：</label>
@@ -502,11 +502,19 @@ input:focus, select:focus {
       </div>
     </div>
 
-    <div class="form-group" style="margin-bottom: 1.5rem;">
+    <div class="form-group" style="margin-bottom: 1rem;">
       <label>8 碼管理員金鑰 (僅供您登入後台使用)：</label>
       <div class="code-box-row">
         <div class="code-display" id="modal-display-key" style="color:var(--maybe);">--</div>
         <button class="btn btn-secondary btn-sm" onclick="copyTextFromElem('modal-display-key', '管理員金鑰')" data-i18n="btn_copy_key">複製金鑰</button>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label>專屬預約連結 (URL)：</label>
+      <div class="code-box-row">
+        <div class="code-display" id="modal-display-url" style="color:#818CF8;">--</div>
+        <button class="btn btn-secondary btn-sm" onclick="copyTextFromElem('modal-display-url', '預約網址')" data-i18n="btn_copy_url">複製連結</button>
       </div>
     </div>
 
@@ -518,7 +526,7 @@ input:focus, select:focus {
 </div>
 
 <script>
-// ⚙️ Cloudflare Worker 網址
+// ⚙️ 【Cloudflare Worker 網址】
 const WORKER_URL = 'https://meeting-proxy.bb25379.workers.dev'; 
 
 const I18N = {
@@ -769,8 +777,10 @@ async function handleCreatePoll(e) {
 }
 
 function openCreatedModal(code, adminKey) {
+  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
   document.getElementById('modal-display-code').textContent = code;
   document.getElementById('modal-display-key').textContent = adminKey;
+  document.getElementById('modal-display-url').textContent = fullUrl;
   document.getElementById('created-modal').classList.add('show');
 }
 function closeCreatedModal() {
@@ -785,7 +795,6 @@ function copyTextFromElem(elemId, labelName) {
   });
 }
 
-/* 🌟 單獨複製預約 URL */
 function copyOnlyUrl() {
   let code = document.getElementById('input-code').value.trim();
   if (!code && currentPoll) code = currentPoll.code;
@@ -799,7 +808,7 @@ function copyOnlyUrl() {
   });
 }
 
-/* 🌟 一鍵複製包含 8 碼 Admin Key 的完整資訊 */
+/* 🌟 一鍵複製包含完整 8 碼 Admin Key 與 URL 的資訊 */
 function copyFullMeetingInfo() {
   let title = "會議預約調查";
   let organizer = "";
@@ -1011,7 +1020,6 @@ function renderMyGrid() {
   });
 }
 
-/* 🌟 重複點選相同狀態時自動清除 (Toggle) */
 function applyCellMode(slotId, cell) {
   if (myDraft[slotId] === currentMode || currentMode === 0) {
     delete myDraft[slotId];
@@ -1022,7 +1030,7 @@ function applyCellMode(slotId, cell) {
   }
 }
 
-/* 🌟 When2meet 風格熱力圖：即時計算並在格子上標示人數與星號 */
+/* 🌟 When2meet 風格熱力圖：顯示人數與全滿星號 (★) */
 function renderHeatGrid() {
   const container = document.getElementById('heat-grid');
   container.innerHTML = '';
@@ -1071,13 +1079,11 @@ function renderHeatGrid() {
 
       const yesCount = yesList.length;
 
-      // 1. 格子上直接顯示出席人數 (若全員出席則加上 ★)
       if (yesCount > 0) {
         const isAll = (total > 0 && yesCount === total);
         cell.textContent = isAll ? `${yesCount}★` : `${yesCount}`;
       }
 
-      // 2. 熱力圖漸層色彩
       if (total > 0 && yesCount > 0) {
         const ratio = yesCount / total;
         if (ratio === 1) cell.classList.add('h-4');
@@ -1098,17 +1104,27 @@ function renderHeatGrid() {
   });
 }
 
-function loadUserHistory() {
+/* 🌟 輸入不同名字時防覆蓋修復：輸入新名字且密碼不合時清空選取網格 */
+function onNameInput() {
   const name = document.getElementById('user-name').value.trim();
   const pin = document.getElementById('user-pin').value.trim();
 
-  if (name && pin && currentPoll.responses[name]) {
+  if (currentPoll && currentPoll.responses[name]) {
     const userRecord = currentPoll.responses[name];
     if (userRecord.pin === pin) {
       myDraft = { ...userRecord.slots };
       renderMyGrid();
+      return;
     }
   }
+  
+  // 若為新名字或密碼尚未填寫正確，清空 draft 避免覆蓋上一人的選擇
+  myDraft = {};
+  renderMyGrid();
+}
+
+function loadUserHistory() {
+  onNameInput();
 }
 
 async function saveResponse() {
@@ -1150,6 +1166,7 @@ async function verifyAdminAuth() {
   renderAdminUserList();
 }
 
+/* 🌟 管理員歷史清單，新增「✕」關閉按鈕控制 */
 function renderMyCreatedPolls() {
   const listBody = document.getElementById('my-created-polls-list');
   listBody.innerHTML = '';
@@ -1172,10 +1189,15 @@ function renderMyCreatedPolls() {
       <td>${p.endDate}</td>
       <td>
         <button class="btn btn-primary btn-sm" onclick="quickAdminLogin('${p.code}', '${p.adminKey}')">管理</button>
+        <button class="btn btn-secondary btn-sm" style="margin-left:4px;" onclick="closeAdminManager()">✕</button>
       </td>
     `;
     listBody.appendChild(tr);
   });
+}
+
+function closeAdminManager() {
+  document.getElementById('admin-user-manager').style.display = 'none';
 }
 
 function quickAdminLogin(code, key) {
