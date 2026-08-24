@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>回覆會議時段</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/ui.css">
+</head>
+<body>
+
+<div class="rail">
+  <span class="nm" id="brand">會議預約系統</span>
+  <span class="grow"></span>
+  <span class="meta" id="railmeta"></span>
+  <a class="home" href="index.html">← 回首頁</a>
+</div>
+
+<div id="view"></div>
+<div id="dock"></div>
+<div class="toast" id="toast"></div>
+
+<script src="assets/config.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/core.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var view = $('view'), dock = $('dock');
+
+  var M = null;            // meeting
+  var CODE = '';
+  var me = null;           // 我是名單上的哪一位
+  var draft = {};
+  var mode = 2;
+  var responded = 0, total = 0;
+  var RESP = [];           // 所有人的回覆，用來畫「大家的時段」熱區
+  var T = null;            // 交集統計
+
+  $('brand').textContent = Core.brandTitle();
+  document.title = '回覆會議時段｜' + Core.brandTitle();
+  Core.mountBack();
+
+  /* ================= 畫面一：輸入代碼 ================= */
+  function screenCode(msg) {
+    dock.innerHTML = '';
+    $('railmeta').textContent = '';
+    view.innerHTML =
+      '<div class="page tight" style="padding-top:60px">' +
+      '<p class="eyebrow">回覆會議時段</p>' +
+      '<h1>輸入會議代碼</h1>' +
+      '<p class="lede">主辦人給你的 32 碼代碼，貼上就能進入。</p>' +
+      (msg ? '<div class="note bad" style="margin:16px 0">' + Core.esc(msg) + '</div>' : '') +
+      '<div class="panel" style="margin-top:20px"><div class="stack">' +
+      '<div><label class="lb" for="i_code">會議代碼</label>' +
+      '<input type="text" id="i_code" class="code" maxlength="64" autocomplete="off" ' +
+      'spellcheck="false" placeholder="貼上 32 碼代碼"></div>' +
+      '<button id="b_go">進入會議</button>' +
+      '</div></div>' +
+      (Store.isDemo && Core.demoCode()
+        ? '<div class="demo-note" style="margin-top:18px;text-align:left">' +
+          '<b>展示版：</b>不用去要代碼，按一下就填好範例調查的代碼。' +
+          '<div style="margin-top:10px"><button class="q sm" id="b_fill">填入範例代碼</button></div></div>'
+        : '') +
+      '<p class="xs" style="margin-top:18px">沒有代碼？請向會議主辦人索取。' +
+      '要開一場新的調查請到<a href="create.html">創建會議</a>。</p>' +
+      '</div>';
+
+    var pre = Core.q('code');
+    if (pre) $('i_code').value = pre;
+    var fill = $('b_fill');
+    if (fill) fill.onclick = function () { $('i_code').value = Core.demoCode(); enter(); };
+    $('b_go').onclick = enter;
+    $('i_code').onkeydown = function (e) { if (e.key === 'Enter') enter(); };
+    $('i_code').focus();
+  }
+
+  function enter() {
+    var code = $('i_code').value.trim();
+    if (!Core.validCode(code)) { Core.toast('代碼格式不對，應該是 32 位英數字', true); return; }
+    var btn = $('b_go');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> 查詢中…';
+    load(code).catch(function (err) {
+      btn.disabled = false;
+      btn.textContent = '進入會議';
+      if (err.code === 'not_found') screenCode('找不到這組代碼。請確認有沒有多餘的空白或漏字。');
+      else screenCode(err.message);
+    });
+  }
+
+  function load(code) {
+    return Store.readJson(Core.meetingPath(code)).then(function (res) {
+      if (!res) { var e = new Error('not found'); e.code = 'not_found'; throw e; }
+      M = res.data; CODE = code;
+      total = (M.people || []).length;
+      return loadResponses().then(function () { screenWho(); });
+    });
+  }
+
+  /* 把所有人的回覆讀進來（畫「大家的時段」用） */
+  function loadResponses() {
+    return Store.listDir(Core.pollDir(CODE) + '/responses').then(function (files) {
+      var jobs = files.filter(function (f) { return /\.json$/.test(f.name); })
+        .map(function (f) {
+          return Store.readJson(Core.pollDir(CODE) + '/responses/' + f.name)
+            .then(function (r) { return r ? r.data : null; })
+            .catch(function () { return null; });
+        });
+      return Promise.all(jobs).then(function (list) {
+        RESP = list.filter(Boolean);
+        responded = RESP.length;
+        T = Core.tally(M, RESP);
+      });
+    });
+  }
+
+  /* ================= 畫面二：你是誰 ================= */
+  function railInfo() {
+    $('railmeta').textContent = responded + ' / ' + total + ' 已填　·　截止 ' + Core.fmtDeadline(M);
+  }
+
+  function screenWho(msg) {
+    railInfo();
+    dock.innerHTML = '';
+    var shut = Core.isShut(M);
+    view.innerHTML =
+      '<div class="page slim">' +
+      '<p class="eyebrow">' + (shut ? '已結束' : '請確認身分') + '</p>' +
+      '<h1>' + Core.esc(M.title) + '</h1>' +
+      '<p class="sub">主辦人 ' + Core.esc(M.organizer.name) + '　·　會議長度 ' + M.lengthMin + ' 分鐘' +
+      (M.location ? '　·　' + Core.esc(M.location) : '') + '</p>' +
+      (M.desc ? '<div class="panel flat" style="margin-top:16px"><p style="margin:0">' +
+        Core.esc(M.desc).replace(/\n/g, '<br>') + '</p></div>' : '') +
+      (shut ? '<div class="note bad" style="margin-top:18px">這場調查已經結束回填（截止 ' +
+        Core.fmtDeadline(M) + '）。如需補填請聯絡主辦人。</div>' : '') +
+      (msg ? '<div class="note bad" style="margin-top:18px">' + Core.esc(msg) + '</div>' : '') +
+
+      '<section class="blk"><div class="panel"><div class="stack">' +
+      '<div><label class="lb" for="i_who">你是名單上的哪一位</label>' +
+      '<select id="i_who"><option value="">— 請選擇 —</option>' +
+      (M.people || []).map(function (p) {
+        return '<option value="' + p.id + '">' + Core.esc(p.name) +
+          (p.email ? '（' + Core.esc(p.email) + '）' : '') + '</option>';
+      }).join('') + '</select></div>' +
+      (M.verifyEmail
+        ? '<div style="max-width:220px"><label class="lb" for="i_pin">Email 收到的 6 碼驗證碼</label>' +
+          '<input type="text" id="i_pin" class="code" maxlength="6" inputmode="numeric" ' +
+          'autocomplete="off" placeholder="······"></div>'
+        : '') +
+      '<div><button id="b_who"' + (shut ? '' : '') + '>' + (shut ? '看我填過的' : '開始填寫') + '</button></div>' +
+      '</div></div></section>' +
+
+      '<p class="xs" style="margin-top:16px">名單上沒有你？請主辦人把你加進名單，或請他把你的部分代填。</p>' +
+      '</div>';
+
+    $('b_who').onclick = function () {
+      var pid = $('i_who').value;
+      if (!pid) { Core.toast('請先選擇你的名字', true); return; }
+      var person = M.people.filter(function (p) { return p.id === pid; })[0];
+      if (!person) { Core.toast('找不到這個人', true); return; }
+      if (M.verifyEmail) {
+        var pin = ($('i_pin').value || '').trim();
+        if (!pin) { Core.toast('請輸入 Email 收到的 6 碼驗證碼', true); return; }
+        if (pin !== String(person.pin)) { screenWho('驗證碼不對。請看主辦人系統寄給你的那封信。'); return; }
+      }
+      me = person;
+      openGrid();
+    };
+  }
+
+  /* ================= 畫面三：點選時段 ================= */
+  function openGrid() {
+    var btn = $('b_who');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> 載入中…';
+    Store.readJson(Core.responsePath(CODE, me.id)).then(function (res) {
+      draft = res && res.data && res.data.slots ? res.data.slots : {};
+      screenGrid(res ? res.sha : null);
+    }).catch(function (err) {
+      btn.disabled = false;
+      btn.textContent = '開始填寫';
+      Core.toast(err.message, true);
+    });
+  }
+
+  function screenGrid(sha, savedNote) {
+    var shut = Core.isShut(M);
+    var mine = RESP.some(function (r) { return r.pid === me.id; });
+    railInfo();
+
+    view.innerHTML =
+      '<div class="page">' +
+      '<p class="eyebrow">' + Core.esc(me.name) + ' 的回覆</p>' +
+      '<h1>' + Core.esc(M.title) + '</h1>' +
+      '<p class="sub">左邊點你<b>有空</b>的時段，右邊同時看得到目前大家的交集。' +
+      '斜線格是主辦人沒有開放的時段。</p>' +
+
+      (savedNote ? '<div class="note good" style="margin-top:16px">' + savedNote + '</div>' : '') +
+
+      (shut ? '<div class="note bad" style="margin-top:16px">已經結束回填，現在只能看。</div>'
+            : '<div class="panel flat" style="margin-top:16px"><div class="hrow">' +
+              '<div class="modes">' +
+              '<button class="mode" data-m="2" aria-pressed="' + (mode === 2) + '"><i class="sw" style="background:var(--yes)"></i>可以</button>' +
+              '<button class="mode" data-m="1" aria-pressed="' + (mode === 1) + '"><i class="sw" style="background:var(--maybe)"></i>勉強</button>' +
+              '<button class="mode" data-m="0" aria-pressed="' + (mode === 0) + '"><i class="sw" style="background:var(--empty);border:1px solid var(--empty-line)"></i>清掉</button>' +
+              '</div>' +
+              '<span class="grow" style="flex:1 1 auto"></span>' +
+              '<button class="q sm" id="b_all">整張都可以</button>' +
+              '<button class="q sm" id="b_none">全部清掉</button>' +
+              '</div></div>') +
+
+      '<div class="duo" style="margin-top:14px">' +
+
+      '<div class="panel">' +
+      '<h3>我的時段 <span class="cnt" id="mycnt"></span></h3>' +
+      '<p class="xs hintline">點一下切換。按住拖過去連選：從空格開始拖是「選」，' +
+      '從已選的格子開始拖是「取消」。點日期選整天、點時間選整列。</p>' +
+      '<div id="gridbox"></div>' +
+      '<div class="legend" style="margin-top:12px">' +
+      '<span><i class="sw" style="background:var(--yes)"></i>可以</span>' +
+      '<span><i class="sw" style="background:var(--maybe)"></i>勉強</span>' +
+      '<span><i class="sw" style="background:var(--empty);border:1px solid var(--empty-line)"></i>不行</span>' +
+      '<span><i class="sw hatch"></i>未開放</span>' +
+      '</div></div>' +
+
+      '<div class="panel">' +
+      '<h3>大家的時段 <span class="cnt">' + T.done.length + ' / ' + T.total + ' 人已填</span></h3>' +
+      '<p class="xs hintline">數字＝可以出席的人數，★ 代表已填的人全部都行。' +
+      '<b>滑過格子</b>就會在下面列出是誰。</p>' +
+      '<div id="heatbox"></div>' +
+      '<div class="scale" style="margin-top:12px">少' +
+      '<i style="background:var(--empty)"></i>' +
+      '<i style="background:color-mix(in srgb, var(--yes) 40%, var(--surface))"></i>' +
+      '<i style="background:color-mix(in srgb, var(--yes) 70%, var(--surface))"></i>' +
+      '<i style="background:var(--yes)"></i>多</div>' +
+      '<div class="who" id="who"></div>' +
+      '</div>' +
+
+      '</div></div>';
+
+    var picker = Core.mountPicker($('gridbox'), M, draft, {
+      readonly: shut,
+      getMode: function () { return mode; },
+      onChange: count
+    });
+
+    Core.mountHeat($('heatbox'), M, T, {
+      onHover: showWho,
+      onLeave: function () { showWho(null); }
+    });
+    showWho(null);
+
+    if (!shut) {
+      Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (b) {
+        b.onclick = function () {
+          mode = +b.getAttribute('data-m');
+          Array.prototype.forEach.call(document.querySelectorAll('.mode'), function (x) {
+            x.setAttribute('aria-pressed', String(x === b));
+          });
+        };
+      });
+      $('b_all').onclick = picker.all;
+      $('b_none').onclick = picker.none;
+
+      dock.innerHTML = '<div class="dock"><span class="sub" id="cnt"></span>' +
+        '<div class="hrow"><button class="q sm" id="b_back">換人</button>' +
+        '<button id="b_save">' + (mine ? '更新我的時段' : '送出我的時段') + '</button></div></div>';
+      $('b_back').onclick = function () { me = null; draft = {}; screenWho(); };
+      $('b_save').onclick = function () { save(sha, mine); };
+      count();
+    } else {
+      dock.innerHTML = '';
+    }
+    if (!savedNote) window.scrollTo(0, 0);
+  }
+
+  /* 滑過熱區格子 → 列出誰可以、誰不行 */
+  function showWho(k, cell) {
+    var box = $('who');
+    if (!box) return;
+    if (!k || !cell) {
+      box.innerHTML = T.done.length
+        ? '<span class="hint">把滑鼠移到右邊任一格，這裡會列出那個時段誰可以、誰不行。</span>'
+        : '<span class="hint">還沒有人回填，你是第一個。</span>';
+      return;
+    }
+    function grp(cls, lab, ids) {
+      if (!ids.length) return '';
+      return '<div class="grp"><span class="lab ' + cls + '">' + lab + '</span>' +
+        '<span class="val">' + Core.esc(Core.namesOf(M, ids)) + '</span></div>';
+    }
+    var a = k.split(' ');
+    box.innerHTML = '<span class="k">' + Core.md(a[0]) + '（' + Core.wdOf(a[0]) + '）' + a[1] + '</span>' +
+      grp('y', '可以', cell.yi) + grp('m', '勉強', cell.mi) + grp('n', '不行', cell.ni) +
+      (cell.y + cell.m + cell.n === 0 ? '<div class="grp"><span class="hint">還沒有人回填</span></div>' : '');
+  }
+
+  function count() {
+    var y = 0, m = 0;
+    Object.keys(draft).forEach(function (k) { if (+draft[k] === 2) y++; else if (+draft[k] === 1) m++; });
+    var txt = '已選 <b class="num">' + y + '</b> 格可以' + (m ? '、<b class="num">' + m + '</b> 格勉強' : '');
+    var el = $('cnt'); if (el) el.innerHTML = txt;
+    var el2 = $('mycnt');
+    if (el2) el2.textContent = y + ' 格可以' + (m ? '、' + m + ' 格勉強' : '');
+  }
+
+  function save(sha, wasSaved) {
+    if (!Object.keys(draft).length &&
+        !confirm('你一格都沒選，代表「所有時段都不行」。要這樣送出嗎？')) return;
+
+    var btn = $('b_save');
+    var label = btn.textContent;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> 送出中…';
+
+    // 只留下合法且已開放的格子
+    var off = Core.offSet(M);
+    var g = Core.slots(M);
+    var ok = Object.create(null);
+    g.dates.forEach(function (d) {
+      g.times.forEach(function (t) { var k = Core.key(d, t); if (!off[k]) ok[k] = 1; });
+    });
+    var clean = {};
+    Object.keys(draft).forEach(function (k) {
+      var v = +draft[k];
+      if (ok[k] && (v === 1 || v === 2)) clean[k] = v;
+    });
+
+    var payload = { pid: me.id, name: me.name, email: me.email || '', slots: clean, at: new Date().toISOString() };
+
+    var n = Object.keys(clean).length;
+    Store.writeJson(Core.responsePath(CODE, me.id), payload,
+      'response ' + CODE + ' / ' + me.name, sha)
+      .then(function () {
+        // 重讀所有人的回覆，右邊的「大家的時段」就會把你剛填的算進去
+        return loadResponses().then(function () {
+          return Store.readJson(Core.responsePath(CODE, me.id));
+        }).then(function (res) {
+          Core.toast(wasSaved ? '已更新' : '已送出，謝謝！');
+          screenGrid(res ? res.sha : null,
+            '<b>' + (wasSaved ? '已更新' : '已收到，謝謝 ' + Core.esc(me.name) + '！') + '</b>　' +
+            '你選了 ' + n + ' 格。在 ' + Core.fmtDeadline(M) + ' 之前都還可以改，' +
+            '改完再按一次「更新我的時段」就好。');
+        });
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = label;
+        if (err.code === 'conflict') Core.toast('你在別的視窗剛剛也存過，請重新載入頁面再改一次', true);
+        else Core.toast('送出失敗：' + err.message, true);
+      });
+  }
+
+  /* ================= 啟動 ================= */
+  if (!Store.configured()) {
+    view.innerHTML = '<div class="page tight" style="padding-top:60px"><div class="note bad">' +
+      '<b>還沒設定完成。</b>請先編輯 <span class="mono">assets/config.js</span>（步驟見 DEPLOY.md）。</div></div>';
+  } else {
+    screenCode('');
+    if (Core.q('code')) enter();
+  }
+})();
+</script>
+</body>
+</html>

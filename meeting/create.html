@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>創建會議</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/ui.css">
+</head>
+<body>
+
+<div class="rail">
+  <span class="nm" id="brand">會議預約系統</span>
+  <span class="grow"></span>
+  <a class="home" href="index.html">← 回首頁</a>
+  <a class="home" href="admin.html">我發起的調查</a>
+</div>
+
+<div class="page slim" id="form">
+
+  <p class="eyebrow">創建會議</p>
+  <h1>開一場時段調查</h1>
+  <p class="lede">建立後會產生一組 32 碼會議代碼，把代碼給參與者，他們就能進來點選有空的時段。</p>
+
+  <section class="blk">
+    <p class="eyebrow">1 · 會議基本資料</p>
+    <div class="panel"><div class="stack">
+      <div class="hrow">
+        <div class="fl" style="flex:2 1 260px">
+          <label class="lb" for="f_title">會議名稱 <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="f_title" placeholder="Q4 產品規劃跨部門會議">
+        </div>
+        <div class="fl" style="flex:0 1 130px">
+          <label class="lb" for="f_len">會議長度</label>
+          <select id="f_len">
+            <option value="30">30 分鐘</option>
+            <option value="60" selected>60 分鐘</option>
+            <option value="90">90 分鐘</option>
+            <option value="120">120 分鐘</option>
+          </select>
+        </div>
+        <div class="fl">
+          <label class="lb" for="f_loc">地點 / 會議連結</label>
+          <input type="text" id="f_loc" placeholder="3F 會議室 A">
+        </div>
+      </div>
+      <div class="hrow">
+        <div class="fl">
+          <label class="lb" for="f_oname">主辦人姓名 <span style="color:var(--danger)">*</span></label>
+          <input type="text" id="f_oname" placeholder="黃小鴨">
+        </div>
+        <div class="fl">
+          <label class="lb" for="f_omail">主辦人 Email <span style="color:var(--danger)">*</span></label>
+          <input type="email" id="f_omail" placeholder="you@example.com">
+        </div>
+      </div>
+      <div>
+        <label class="lb" for="f_desc">給參與者的說明（選填）</label>
+        <textarea id="f_desc" placeholder="會議目的、需要事先準備什麼"></textarea>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="blk">
+    <p class="eyebrow">2 · 選日期與時段</p>
+    <div class="panel"><div class="stack">
+      <div class="hrow">
+        <div class="fl" style="flex:0 1 165px"><label class="lb" for="f_from">從</label><input type="date" id="f_from"></div>
+        <div class="fl" style="flex:0 1 165px"><label class="lb" for="f_to">到</label><input type="date" id="f_to"></div>
+        <div class="fl" style="flex:0 0 auto"><label class="chk" style="padding-bottom:9px">
+          <input type="checkbox" id="f_wk" checked> 只要平日</label></div>
+        <div class="fl" style="flex:0 0 auto"><button class="q" id="b_gen" style="margin-bottom:1px">產生日期</button></div>
+      </div>
+
+      <div>
+        <label class="lb" id="dlab">候選日期</label>
+        <div class="chips" id="dchips"></div>
+        <div class="hrow" style="margin-top:10px">
+          <div class="fl" style="flex:0 1 165px"><input type="date" id="f_add" aria-label="另外加一天"></div>
+          <div class="fl" style="flex:0 0 auto"><button class="q sm" id="b_add" style="margin-bottom:2px">加入這一天</button></div>
+        </div>
+      </div>
+
+      <div class="hrow">
+        <div class="fl" style="flex:0 1 130px"><label class="lb" for="f_ts">每日從</label><input type="time" id="f_ts" value="09:00" step="1800"></div>
+        <div class="fl" style="flex:0 1 130px"><label class="lb" for="f_te">到</label><input type="time" id="f_te" value="18:00" step="1800"></div>
+        <div class="fl" style="flex:0 1 140px"><label class="lb" for="f_step">每格</label>
+          <select id="f_step"><option value="15">15 分鐘</option><option value="30" selected>30 分鐘</option><option value="60">60 分鐘</option></select>
+        </div>
+      </div>
+      <div class="hrow">
+        <div class="fl" style="flex:0 0 auto"><label class="chk"><input type="checkbox" id="f_bk" checked> 挖掉午休</label></div>
+        <div class="fl" style="flex:0 1 118px"><input type="time" id="f_bs" value="12:00" step="1800" aria-label="午休開始"></div>
+        <div class="fl sub" style="flex:0 0 auto;padding-bottom:9px">–</div>
+        <div class="fl" style="flex:0 1 118px"><input type="time" id="f_be" value="13:00" step="1800" aria-label="午休結束"></div>
+        <div class="fl" style="flex:0 0 auto"><button class="q sm" id="b_grid" style="margin-bottom:2px">重畫時段表</button></div>
+      </div>
+
+      <div class="note">綠色＝要放進調查的候選時段。<b>點格子可以關掉</b>不想開放的時段（例如週五下午），
+        也可以點日期標題整天關掉、點左側時間整列關掉。</div>
+      <div id="gridbox"></div>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--yes)"></i>候選時段</span>
+        <span><i class="sw hatch"></i>不開放</span>
+        <span id="gcount" class="mono"></span>
+      </div>
+    </div></div>
+  </section>
+
+  <section class="blk">
+    <p class="eyebrow">3 · 參與者</p>
+    <div class="panel"><div class="stack">
+      <div>
+        <label class="lb" for="f_people">Email 名單（一行一位，格式 <span class="mono">姓名 &lt;email&gt;</span>，或只貼 Email）</label>
+        <textarea id="f_people" style="min-height:140px;font-family:var(--mono);font-size:13px"
+          placeholder="陳雅婷 &lt;alice@gaiatechs.com&gt;&#10;林建宏 &lt;bob@gaiatechs.com&gt;&#10;carol@gaiatechs.com"></textarea>
+      </div>
+      <div class="hrow">
+        <button class="q sm" id="b_check">驗證名單</button>
+        <label class="chk"><input type="checkbox" id="f_verify"> 要求 Email 驗證碼才能填寫</label>
+        <label class="chk"><input type="checkbox" id="f_autoinv" checked> 由系統自動寄個人化邀請信</label>
+      </div>
+      <div id="pcheck"></div>
+      <p class="xs" id="verify_hint">
+        <b>Email 驗證：</b>勾選後每位參與者會收到帶 6 碼驗證碼的專屬邀請信，填寫時要輸入代碼＋驗證碼；
+        不勾則只要有 32 碼會議代碼就能填。<br>
+        <b>自動邀請信：</b>由 GitHub Actions 定時寄出（需先設好 SMTP）。若你想自己用 Outlook／Gmail 寄，
+        取消勾選，建立完成後會給你一個「寫邀請信給全部人」的按鈕。</p>
+    </div></div>
+  </section>
+
+  <section class="blk">
+    <p class="eyebrow">4 · 截止時間與提醒</p>
+    <div class="panel"><div class="stack">
+      <div class="hrow">
+        <div class="fl" style="flex:0 1 240px"><label class="lb" for="f_dl">回填截止時間 <span style="color:var(--danger)">*</span></label>
+          <input type="datetime-local" id="f_dl"></div>
+      </div>
+      <div>
+        <label class="lb">自動提醒時間點（只寄給尚未填寫的人，可多選）</label>
+        <div class="chips" id="rchips"></div>
+      </div>
+      <p class="xs">提醒與邀請信由 GitHub Actions 定時寄出（預設每 30 分鐘檢查一次）。
+        若還沒設定 SMTP，這裡選的提醒點會先存起來不作用，你仍可在後台用「催填」按鈕手動寄信。</p>
+    </div></div>
+  </section>
+
+  <section class="blk">
+    <div class="split">
+      <p class="sub" style="margin:0">建立後會立刻拿到會議代碼與填寫連結。</p>
+      <button id="b_create">建立時段調查</button>
+    </div>
+  </section>
+</div>
+
+<div class="page slim" id="done" style="display:none"></div>
+<div class="toast" id="toast"></div>
+
+<script src="assets/config.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/core.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var dates = [];
+  var draft = {};                                  // key -> 2 表示「開放」
+  var picker = null;
+  var REM = [[168, '7 天前'], [72, '3 天前'], [48, '2 天前'], [24, '1 天前'], [6, '6 小時前'], [3, '3 小時前'], [1, '1 小時前']];
+  var rem = [72, 24, 3];
+
+  $('brand').textContent = Core.brandTitle();
+  document.title = '創建會議｜' + Core.brandTitle();
+  Core.mountBack();
+
+  if (!Store.configured()) {
+    Core.toast('assets/config.js 還沒設定完成，建立會失敗', true);
+  }
+
+  /* ---- 預設日期 ---- */
+  var now = new Date();
+  $('f_from').value = Core.isoDay(new Date(now.getTime() + 2 * 86400000));
+  $('f_to').value = Core.isoDay(new Date(now.getTime() + 8 * 86400000));
+  $('f_dl').value = Core.isoDay(new Date(now.getTime() + 86400000)) + 'T18:00';
+  $('f_omail').value = Core.meEmail();
+
+  function genDates() {
+    var a = $('f_from').value, b = $('f_to').value;
+    if (!a || !b) { Core.toast('請先填起訖日', true); return; }
+    var only = $('f_wk').checked, out = [], guard = 0;
+    var cur = new Date(a + 'T00:00:00'), end = new Date(b + 'T00:00:00');
+    while (cur <= end && guard++ < 90) {
+      var w = cur.getDay();
+      if (!only || (w >= 1 && w <= 5)) out.push(Core.isoDay(cur));
+      cur = new Date(cur.getTime() + 86400000);
+    }
+    if (!out.length) { Core.toast('這個範圍沒有符合的日期', true); return; }
+    dates = out;
+    drawChips();
+    drawGrid(true);
+  }
+
+  function drawChips() {
+    $('dlab').textContent = '候選日期（已選 ' + dates.length + ' 天，點一下移除）';
+    $('dchips').innerHTML = dates.length
+      ? dates.map(function (d) {
+          return '<button class="chip pick on" data-d="' + d + '"><span class="dt">' + Core.md(d) +
+            '</span>週' + Core.wdOf(d) + '<span class="x">✕</span></button>';
+        }).join('')
+      : '<span class="sub">還沒有日期</span>';
+    Array.prototype.forEach.call($('dchips').querySelectorAll('button[data-d]'), function (b) {
+      b.onclick = function () {
+        dates = dates.filter(function (x) { return x !== b.getAttribute('data-d'); });
+        drawChips(); drawGrid(true);
+      };
+    });
+  }
+
+  function shape() {
+    return {
+      dates: dates,
+      startMin: Core.toMin($('f_ts').value),
+      endMin: Core.toMin($('f_te').value),
+      stepMin: +$('f_step').value,
+      brkOn: $('f_bk').checked,
+      brkStart: Core.toMin($('f_bs').value),
+      brkEnd: Core.toMin($('f_be').value),
+      lengthMin: +$('f_len').value
+    };
+  }
+
+  function drawGrid(reset) {
+    var m = shape();
+    if (!dates.length || m.endMin <= m.startMin) { $('gridbox').innerHTML = ''; count(); return; }
+    var g = Core.slots(m);
+    if (reset) {
+      draft = {};
+      g.dates.forEach(function (d) { g.times.forEach(function (t) { draft[Core.key(d, t)] = 2; }); });
+    } else {
+      // 保留使用者已關掉的格子，補上新出現的格子
+      var next = {};
+      g.dates.forEach(function (d) {
+        g.times.forEach(function (t) {
+          var k = Core.key(d, t);
+          next[k] = (k in draft) ? draft[k] : 2;
+        });
+      });
+      draft = next;
+    }
+    picker = Core.mountPicker($('gridbox'), m, draft, {
+      editOff: true,
+      offFirst: true,
+      getMode: function () { return 2; },
+      onChange: count
+    });
+    count();
+  }
+
+  function count() {
+    var n = 0;
+    Object.keys(draft).forEach(function (k) { if (+draft[k] === 2) n++; });
+    $('gcount').textContent = '候選 ' + n + ' 格';
+  }
+
+  function drawRem() {
+    $('rchips').innerHTML = REM.map(function (r) {
+      return '<button class="chip pick' + (rem.indexOf(r[0]) >= 0 ? ' on' : '') + '" data-h="' + r[0] + '">' + r[1] + '</button>';
+    }).join('');
+    Array.prototype.forEach.call($('rchips').querySelectorAll('button[data-h]'), function (b) {
+      b.onclick = function () {
+        var h = +b.getAttribute('data-h'), i = rem.indexOf(h);
+        if (i >= 0) rem.splice(i, 1); else rem.push(h);
+        rem.sort(function (x, y) { return y - x; });
+        drawRem();
+      };
+    });
+  }
+
+  /* ---- 名單解析與驗證 ---- */
+  function parsePeople() {
+    var lines = $('f_people').value.split('\n');
+    var out = [], seen = {};
+    lines.forEach(function (line, i) {
+      var raw = line.trim();
+      if (!raw) return;
+      var m = raw.match(/^(.*?)[<（(]\s*([^\s>）)]+)\s*[>）)]\s*$/);
+      var name, email;
+      if (m) { name = m[1].trim(); email = m[2].trim(); }
+      else if (raw.indexOf('@') >= 0) { email = raw.replace(/[<>（）()]/g, '').trim(); name = ''; }
+      else { name = raw; email = ''; }
+
+      var err = '';
+      if (email) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) err = 'Email 格式不正確';
+        else if (CFG.DOMAIN && email.split('@')[1].toLowerCase() !== CFG.DOMAIN.toLowerCase())
+          err = '不是 @' + CFG.DOMAIN;
+        else if (seen[email.toLowerCase()]) err = '重複';
+      }
+      if (email && !err) seen[email.toLowerCase()] = 1;
+      if (!name) name = email ? email.split('@')[0] : '（未命名）';
+      out.push({ line: i + 1, raw: raw, name: name, email: email, err: err });
+    });
+    return out;
+  }
+
+  function showCheck() {
+    var list = parsePeople();
+    if (!list.length) {
+      $('pcheck').innerHTML = '<div class="note bad">名單是空的。</div>';
+      return list;
+    }
+    var needMail = $('f_verify').checked;
+    var bad = list.filter(function (p) { return p.err || (needMail && !p.email); });
+    var h = '<div class="chips">' + list.map(function (p) {
+      var problem = p.err || (needMail && !p.email ? '需要 Email' : '');
+      return '<span class="chip ' + (problem ? 'bad' : 'done') + '">' +
+        (problem ? '✕ ' : '✓ ') + Core.esc(p.name) +
+        (p.email ? ' <span class="dt">' + Core.esc(p.email) + '</span>' : '') +
+        (problem ? '　<span class="dt">' + problem + '</span>' : '') + '</span>';
+    }).join('') + '</div>';
+    h += '<p class="xs" style="margin-top:10px">共 ' + list.length + ' 位' +
+      (bad.length ? '，其中 <b style="color:var(--danger)">' + bad.length + ' 筆需要修正</b>' : '，全部通過') + '。</p>';
+    $('pcheck').innerHTML = h;
+    return list;
+  }
+
+  /* ---- 建立 ---- */
+  function create() {
+    var title = $('f_title').value.trim();
+    var oname = $('f_oname').value.trim();
+    var omail = $('f_omail').value.trim();
+    if (!title) { Core.toast('請填會議名稱', true); $('f_title').focus(); return; }
+    if (!oname) { Core.toast('請填主辦人姓名', true); $('f_oname').focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(omail)) { Core.toast('主辦人 Email 格式不正確', true); $('f_omail').focus(); return; }
+    if (!dates.length) { Core.toast('請至少選一個候選日期', true); return; }
+
+    var sh = shape();
+    if (sh.endMin <= sh.startMin) { Core.toast('每日結束時間要晚於開始時間', true); return; }
+
+    var g = Core.slots(sh);
+    var off = [];
+    var onCount = 0;
+    g.dates.forEach(function (d) {
+      g.times.forEach(function (t) {
+        var k = Core.key(d, t);
+        if (+draft[k] === 2) onCount++; else off.push(k);
+      });
+    });
+    if (!onCount) { Core.toast('候選時段全被關掉了', true); return; }
+
+    var need = Math.ceil(sh.lengthMin / sh.stepMin);
+    if (need > g.times.length) { Core.toast('會議長度超過每日可選範圍', true); return; }
+
+    var list = showCheck();
+    var needMail = $('f_verify').checked;
+    var bad = list.filter(function (p) { return p.err || (needMail && !p.email); });
+    if (!list.length) { Core.toast('請填參與者名單', true); return; }
+    if (bad.length) { Core.toast('名單有 ' + bad.length + ' 筆要修正', true); return; }
+
+    var dl = $('f_dl').value;
+    if (!dl) { Core.toast('請填回填截止時間', true); return; }
+    if (new Date(dl + ':00' + CFG.TZ_OFFSET).getTime() <= Date.now()) {
+      Core.toast('回填截止時間必須是未來', true); return;
+    }
+
+    var code = Core.newCode();
+    var meeting = {
+      code: code,
+      title: title,
+      desc: $('f_desc').value.trim(),
+      location: $('f_loc').value.trim(),
+      lengthMin: sh.lengthMin,
+      dates: dates.slice(),
+      startMin: sh.startMin, endMin: sh.endMin, stepMin: sh.stepMin,
+      brkOn: sh.brkOn, brkStart: sh.brkStart, brkEnd: sh.brkEnd,
+      off: off,
+      deadline: dl,
+      // 已經比截止時間更早的提醒點沒有意義，直接不存
+      reminders: rem.filter(function (h) {
+        return new Date(dl + ':00' + CFG.TZ_OFFSET).getTime() - h * 3600000 > Date.now();
+      }).sort(function (a, b) { return b - a; }),
+      verifyEmail: needMail,
+      autoInvite: $('f_autoinv').checked,
+      organizer: { name: oname, email: omail },
+      people: list.map(function (p) {
+        return { id: Core.newId(), name: p.name, email: p.email, pin: needMail ? Core.newPin() : '' };
+      }),
+      createdAt: new Date().toISOString(),
+      closed: false,
+      outbox: { invitesSent: false, remindersSent: [], resultSent: false }
+    };
+
+    var btn = $('b_create');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spin"></span> 建立中…';
+
+    Store.writeJson(Core.meetingPath(code), meeting, 'create poll ' + code)
+      .then(function () {
+        return Store.upsertJson(Core.indexPath(), function (cur) {
+          var arr = Array.isArray(cur) ? cur : [];
+          arr.unshift({
+            code: code, title: title,
+            organizerEmail: omail, organizerName: oname,
+            deadline: dl, createdAt: meeting.createdAt
+          });
+          return arr.slice(0, 500);
+        }, 'index += ' + code).catch(function () { /* 索引寫失敗不影響主流程 */ });
+      })
+      .then(function () {
+        Core.meEmail(omail);
+        Core.remember(code, title);
+        showDone(meeting);
+      })
+      .catch(function (err) {
+        btn.disabled = false;
+        btn.textContent = '建立時段調查';
+        Core.toast('建立失敗：' + err.message, true);
+      });
+  }
+
+  function showDone(m) {
+    var respondUrl = Core.pageUrl('respond.html', { code: m.code });
+    var adminUrl = Core.pageUrl('admin.html', { code: m.code });
+    var body = '各位好，\n\n想安排「' + m.title + '」（約 ' + m.lengthMin + ' 分鐘），'
+      + '請到下面這頁點選你有空的時段，點格子即可：\n\n' + respondUrl + '\n\n'
+      + '會議代碼：' + m.code + '\n'
+      + '候選日期：' + m.dates.map(function (d) { return Core.md(d) + '（' + Core.wdOf(d) + '）'; }).join('、') + '\n'
+      + '回填截止：' + Core.fmtDeadline(m) + '\n\n'
+      + (m.verifyEmail ? '（另外會有一封系統信寄給你，裡面有你的 6 碼驗證碼）\n\n' : '')
+      + '謝謝！\n' + m.organizer.name;
+    var to = m.people.map(function (p) { return p.email; }).filter(Boolean).join(',');
+
+    $('form').style.display = 'none';
+    var d = $('done');
+    d.style.display = '';
+    d.innerHTML =
+      '<p class="eyebrow">建立完成</p>' +
+      '<h1>' + Core.esc(m.title) + '</h1>' +
+      '<p class="lede">把下面的代碼與連結給參與者。代碼就是進入這場調查的鑰匙，請只給該進來的人。</p>' +
+
+      '<section class="blk"><p class="eyebrow">會議代碼（32 碼）</p>' +
+      '<div class="codebox" id="codebox">' + Core.esc(m.code) + '</div>' +
+      '<div class="hrow" style="margin-top:12px">' +
+      '<button class="q sm" id="b_c1">複製代碼</button>' +
+      '<button class="q sm" id="b_c2">複製填寫連結</button>' +
+      '<a class="lnk" href="' + Core.mailto(to, '【請點選有空時段】' + m.title, body) + '">寫邀請信給全部人</a>' +
+      '</div>' +
+      '<p class="xs mono" style="margin-top:10px" id="rurl">' + Core.esc(respondUrl) + '</p>' +
+      '</section>' +
+
+      (m.verifyEmail
+        ? '<section class="blk"><div class="note warn"><b>你開了 Email 驗證。</b>' +
+          '每位參與者的 6 碼驗證碼由 GitHub Actions 寄出（預設每 30 分鐘檢查一次；' +
+          '要立刻寄可以到 repo 的 Actions 頁手動執行一次 <span class="mono">meeting-mailer</span>）。' +
+          '如果還沒設定 SMTP，請改成不勾驗證，或到後台把驗證碼抄給參與者。</div></section>'
+        : '') +
+
+      '<section class="blk"><p class="eyebrow">接下來</p><div class="panel"><div class="stack">' +
+      '<div class="hrow">' +
+      '<a class="lnk" href="' + adminUrl + '">到後台看進度與催填 →</a>' +
+      '<a class="lnk" href="' + respondUrl + '">我先自己填一份 →</a>' +
+      '<a class="lnk" href="create.html">再開一場</a>' +
+      '</div>' +
+      '<p class="xs" style="margin:0">後台可以看誰還沒填、一鍵催填、看推薦時段、按 📅 直接建立 Google 日曆邀請。</p>' +
+      '</div></div></section>';
+
+    document.getElementById('b_c1').onclick = function () { Core.copy(m.code, '代碼已複製'); };
+    document.getElementById('b_c2').onclick = function () { Core.copy(respondUrl, '連結已複製'); };
+    window.scrollTo(0, 0);
+  }
+
+  /* ---- 綁定 ---- */
+  $('b_gen').onclick = genDates;
+  $('b_grid').onclick = function () { drawGrid(false); };
+  $('b_add').onclick = function () {
+    var v = $('f_add').value;
+    if (!v) return;
+    if (dates.indexOf(v) < 0) { dates.push(v); dates.sort(); }
+    drawChips(); drawGrid(false);
+  };
+  $('b_check').onclick = showCheck;
+  $('f_verify').onchange = function () { if ($('f_people').value.trim()) showCheck(); };
+  $('b_create').onclick = create;
+  ['f_ts', 'f_te', 'f_step', 'f_bk', 'f_bs', 'f_be'].forEach(function (id) {
+    $(id).onchange = function () { drawGrid(false); };
+  });
+
+  drawRem();
+  genDates();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>會議預約系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/ui.css">
+</head>
+<body>
+
+<div class="hero">
+  <p class="tag">Meeting Scheduler</p>
+  <h1 id="brand">會議預約系統</h1>
+  <p class="lede">找一個大家都有空的時間，不用再一封一封追。<br>
+    主辦人開一場調查，參與者拿代碼進來點格子，交集自己算出來。</p>
+
+  <div class="pair">
+    <a class="big-btn primary" href="create.html">
+      <strong>創建會議 →</strong>
+      <span>設定候選日期與時段、貼上參與者名單，拿到一組 32 碼會議代碼。</span>
+    </a>
+    <a class="big-btn" href="respond.html">
+      <strong>回覆會議時段 →</strong>
+      <span>輸入主辦人給你的 32 碼代碼，點選你有空的時段。</span>
+    </a>
+  </div>
+
+  <p class="xs" style="margin-top:34px">
+    已經開過調查？<a href="admin.html">到後台看進度與催填 →</a>
+  </p>
+
+  <div id="warn"></div>
+</div>
+
+<script src="assets/config.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/core.js"></script>
+<script>
+(function () {
+  document.getElementById('brand').textContent = Core.brandTitle();
+  document.title = Core.brandTitle();
+  Core.mountBack();
+
+  var warn = document.getElementById('warn');
+
+  if (Store.isDemo) {
+    var code = Core.demoCode();
+    warn.innerHTML =
+      '<div class="demo-note">' +
+      '<p style="margin:0 0 4px"><b>這是公開展示版。</b>' +
+      '你在這裡填的東西只會存在你自己的瀏覽器裡，不會傳到任何伺服器，' +
+      '也看不到別人的資料。換一台裝置或開無痕視窗就是一份全新的。</p>' +
+      '<p class="xs" style="margin:0">' +
+      '公司內部的正式版本會把資料寫進私有的 GitHub repo，並由 GitHub Actions 自動寄邀請信與催填。' +
+      '</p>' +
+      '<div class="hrow" style="margin-top:14px;justify-content:center">' +
+      (code ? '<a class="lnk" href="respond.html?code=' + encodeURIComponent(code) + '">直接看一場範例調查 →</a>' : '') +
+      (code ? '<a class="lnk" href="admin.html?code=' + encodeURIComponent(code) + '">看主辦人後台 →</a>' : '') +
+      '<button class="q sm" id="b_reset">重設範例資料</button>' +
+      '</div>' +
+      (CFG.INTERNAL_URL
+        ? '<p class="xs" style="margin:12px 0 0;text-align:center">' +
+          '<a href="' + CFG.INTERNAL_URL + '">' +
+          (CFG.INTERNAL_LABEL || '內部版本') + ' →</a></p>'
+        : '') +
+      '</div>';
+    var r = document.getElementById('b_reset');
+    if (r) r.onclick = function () {
+      if (!confirm('會清掉你在這個 demo 裡建立與填寫的所有東西，然後回到原始範例。確定？')) return;
+      Store.resetDemo();
+      location.reload();
+    };
+    return;
+  }
+
+  if (!Store.configured()) {
+    warn.innerHTML =
+      '<div class="note bad" style="max-width:560px;margin-top:30px;text-align:left">' +
+      '<b>還沒設定完成。</b>請先編輯 <span class="mono">assets/config.js</span>，' +
+      '把 OWNER、REPO、TOKEN 換成你自己的（步驟見 DEPLOY.md）。</div>';
+  }
+})();
+</script>
+</body>
+</html>
