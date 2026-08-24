@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MeetingSync Pro · 會議時段預約系統</title>
+<title>MeetingSync Pro · 團隊時段預約系統</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -255,6 +255,9 @@ input:focus, select:focus {
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 16px; padding: 2rem; max-width: 560px; width: 90%;
   box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
 .modal-sub { font-size: 13px; color: var(--text-sub); margin-bottom: 1.5rem; }
@@ -267,6 +270,12 @@ input:focus, select:focus {
   font-size: 13px; color: var(--maybe); flex: 1; overflow: hidden;
   text-overflow: ellipsis; white-space: nowrap; user-select: all;
 }
+.modal-close-icon {
+  position: absolute; top: 1.2rem; right: 1.2rem;
+  background: transparent; border: none; color: var(--text-sub);
+  font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 4px;
+}
+.modal-close-icon:hover { color: #fff; background: var(--border); }
 
 @media (max-width: 900px) {
   .workspace { grid-template-columns: 1fr; }
@@ -353,6 +362,7 @@ input:focus, select:focus {
         <button class="btn btn-primary" onclick="loadPollFromInput()" data-i18n="btn_load">載入會議</button>
         <button class="btn btn-secondary" onclick="copyCode()" data-i18n="btn_copy">複製代碼</button>
         <button class="btn btn-secondary" onclick="copyOnlyUrl()" data-i18n="btn_copy_url">複製 URL 網址</button>
+        <button class="btn btn-secondary" onclick="copyFullMeetingInfo()" data-i18n="btn_copy_info">一鍵複製會議資訊</button>
       </div>
     </div>
 
@@ -456,40 +466,14 @@ input:focus, select:focus {
       </div>
     </div>
 
-    <!-- 參與者密碼與刪除管理區 (獨立置底，不破版) -->
-    <div class="card" id="admin-user-manager" style="display:none; margin-top:1.5rem;" onclick="event.stopPropagation();">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-        <div>
-          <h2 class="card-title" id="admin-poll-title">會議名稱</h2>
-          <p class="card-subtitle" style="margin-bottom:0;" data-i18n="admin_user_sub">參與者名單、修改密碼 (PIN) 查詢與管理</p>
-        </div>
-        <button class="btn btn-danger btn-sm" onclick="deleteCurrentPoll()" data-i18n="btn_del_poll">刪除此會議</button>
-      </div>
-
-      <div style="overflow-x:auto;">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th data-i18n="th_user">參與者姓名</th>
-              <th data-i18n="th_pin">修改密碼 (PIN)</th>
-              <th data-i18n="th_slots">已選擇格數</th>
-              <th data-i18n="th_action">管理操作</th>
-            </tr>
-          </thead>
-          <tbody id="admin-user-list">
-            <tr><td colspan="4" style="text-align:center; color:var(--text-muted);" data-i18n="no_response">尚無人填寫</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
   </div>
 
 </main>
 
-<!-- Modal: 建立成功資訊與一鍵複製 -->
+<!-- Modal 1: 建立成功資訊與一鍵複製 -->
 <div class="modal-overlay" id="created-modal">
   <div class="modal-card">
+    <button class="modal-close-icon" onclick="closeCreatedModal()">✕</button>
     <h2 class="modal-title" data-i18n="modal_created_title">🎉 會議建立成功！</h2>
     <p class="modal-sub" data-i18n="modal_created_sub">請妥善保存以下資訊，並可點擊右側按鈕進行快速複製：</p>
 
@@ -524,8 +508,39 @@ input:focus, select:focus {
   </div>
 </div>
 
+<!-- Modal 2: 🌟 管理員專屬浮動視窗 (管理成員與 PIN 碼) -->
+<div class="modal-overlay" id="admin-user-modal">
+  <div class="modal-card" style="max-width: 680px;" onclick="event.stopPropagation();">
+    <button class="modal-close-icon" onclick="closeAdminUserModal()">✕</button>
+    
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; padding-right:2rem;">
+      <div>
+        <h2 class="modal-title" id="admin-poll-title">會議名稱</h2>
+        <p class="modal-sub" style="margin-bottom:0;" data-i18n="admin_user_sub">參與者名單、修改密碼 (PIN) 查詢與管理</p>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="deleteCurrentPoll()" data-i18n="btn_del_poll">刪除此會議</button>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th data-i18n="th_user">參與者姓名</th>
+            <th data-i18n="th_pin">修改密碼 (PIN)</th>
+            <th data-i18n="th_slots">已選擇格數</th>
+            <th data-i18n="th_action">管理操作</th>
+          </tr>
+        </thead>
+        <tbody id="admin-user-list">
+          <tr><td colspan="4" style="text-align:center; color:var(--text-muted);" data-i18n="no_response">尚無人填寫</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <script>
-// ⚙️ Cloudflare Worker 網址
+// ⚙️ 【Cloudflare Worker 網址】
 const WORKER_URL = 'https://meeting-proxy.bb25379.workers.dev'; 
 
 const I18N = {
@@ -681,15 +696,21 @@ window.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('mouseup', () => isMouseDown = false);
   document.addEventListener('dragstart', (e) => e.preventDefault());
 
-  // 🌟 全局事件：點擊空白處自動關閉管理面板
-  document.addEventListener('click', (e) => {
-    const manager = document.getElementById('admin-user-manager');
-    if (manager && manager.style.display === 'block') {
-      if (!manager.contains(e.target) && !e.target.closest('button[onclick*="toggleAdminManager"]')) {
-        closeAdminManager();
-      }
+  // 按下 Esc 關閉所有彈窗
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAdminUserModal();
+      closeCreatedModal();
     }
   });
+
+  // 點擊彈窗背景遮罩自動關閉 Modal
+  const adminModal = document.getElementById('admin-user-modal');
+  if (adminModal) {
+    adminModal.addEventListener('click', (e) => {
+      if (e.target === adminModal) closeAdminUserModal();
+    });
+  }
 });
 
 function initDates() {
@@ -1166,9 +1187,18 @@ async function verifyAdminAuth() {
     return;
   }
 
-  document.getElementById('admin-user-manager').style.display = 'block';
+  // 🌟 驗證成功後跳出管理員彈窗
+  openAdminUserModal();
+}
+
+function openAdminUserModal() {
   document.getElementById('admin-poll-title').textContent = currentPoll.title;
   renderAdminUserList();
+  document.getElementById('admin-user-modal').classList.add('show');
+}
+
+function closeAdminUserModal() {
+  document.getElementById('admin-user-modal').classList.remove('show');
 }
 
 function renderMyCreatedPolls() {
@@ -1192,29 +1222,12 @@ function renderMyCreatedPolls() {
       <td style="font-family:monospace; font-size:12px; color:var(--maybe);">${p.adminKey || 'N/A'}</td>
       <td>${p.endDate}</td>
       <td>
-        <button class="btn btn-primary btn-sm" onclick="toggleAdminManager('${p.code}', '${p.adminKey}', event)">管理</button>
+        <button class="btn btn-primary btn-sm" onclick="quickAdminLogin('${p.code}', '${p.adminKey}')">管理</button>
         <button class="btn btn-danger btn-sm" style="margin-left:4px;" onclick="directDeletePoll('${p.code}', event)">✕</button>
       </td>
     `;
     listBody.appendChild(tr);
   });
-}
-
-/* 🌟 管理按鈕開合切換 (Toggle) */
-function toggleAdminManager(code, key, e) {
-  if (e) e.stopPropagation();
-  const manager = document.getElementById('admin-user-manager');
-  
-  if (currentPoll && currentPoll.code === code && manager.style.display === 'block') {
-    closeAdminManager();
-    return;
-  }
-
-  quickAdminLogin(code, key);
-}
-
-function closeAdminManager() {
-  document.getElementById('admin-user-manager').style.display = 'none';
 }
 
 function quickAdminLogin(code, key) {
@@ -1266,7 +1279,6 @@ async function adminDeleteUser(uname) {
   alert(`已成功刪除 ${uname} 的資料`);
 }
 
-/* 🌟 直接點擊列表中的「✕」按鈕進行會議刪除 */
 async function directDeletePoll(code, e) {
   if (e) e.stopPropagation();
   if (!confirm(`確定要永久刪除代碼「${code}」的會議嗎？此動作無法復原。`)) return;
@@ -1278,7 +1290,7 @@ async function directDeletePoll(code, e) {
   localStorage.setItem('my_created_polls', JSON.stringify(myPolls));
 
   if (currentPoll && currentPoll.code === code) {
-    closeAdminManager();
+    closeAdminUserModal();
     clearWorkspace();
   }
 
