@@ -208,19 +208,22 @@ input:focus, select:focus {
 .grid-header { font-size: 11px; font-weight: 600; text-align: center; color: var(--text-sub); padding: 4px 0; }
 .grid-time { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; }
 .cell {
-  height: 26px; background: var(--no); border-radius: 3px;
+  height: 28px; background: var(--no); border-radius: 3px;
   cursor: pointer; transition: background 0.05s;
   min-width: 48px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
 }
 
 .cell.st-2 { background: var(--yes) !important; }
 .cell.st-1 { background: var(--maybe) !important; }
 .cell.st-0 { background: var(--no) !important; }
 
-.cell.h-1 { background: var(--heat-1); }
-.cell.h-2 { background: var(--heat-2); }
-.cell.h-3 { background: var(--heat-3); }
-.cell.h-4 { background: var(--heat-4); }
+/* Heatmap States (Graduated green) */
+.cell.h-1 { background: var(--heat-1); color: #A7F3D0; }
+.cell.h-2 { background: var(--heat-2); color: #FFFFFF; }
+.cell.h-3 { background: var(--heat-3); color: #FFFFFF; }
+.cell.h-4 { background: var(--heat-4); color: #064E3B; }
 
 /* Tooltip Panel */
 .info-tooltip {
@@ -250,7 +253,7 @@ input:focus, select:focus {
 .modal-overlay.show { opacity: 1; pointer-events: auto; }
 .modal-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; padding: 2rem; max-width: 540px; width: 90%;
+  border-radius: 16px; padding: 2rem; max-width: 560px; width: 90%;
   box-shadow: 0 20px 40px rgba(0,0,0,0.6);
 }
 .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
@@ -345,11 +348,12 @@ input:focus, select:focus {
   <!-- View 2: 填寫 / 查看時段 -->
   <div id="view-respond" style="display:none;">
     <div class="card" id="code-input-box" style="margin-bottom: 1.5rem;">
-      <div style="display:flex; gap:10px; max-width:760px; flex-wrap:wrap;">
-        <input type="text" id="input-code" style="flex:1; min-width:260px;" placeholder="請貼上 32 碼會議代碼">
+      <div style="display:flex; gap:10px; max-width:880px; flex-wrap:wrap;">
+        <input type="text" id="input-code" style="flex:1; min-width:240px;" placeholder="請貼上 32 碼會議代碼">
         <button class="btn btn-primary" onclick="loadPollFromInput()" data-i18n="btn_load">載入會議</button>
         <button class="btn btn-secondary" onclick="copyCode()" data-i18n="btn_copy">複製代碼</button>
-        <button class="btn btn-secondary" onclick="copyFullMeetingInfo()" data-i18n="btn_copy_info">一鍵複製會議資訊</button>
+        <button class="btn btn-secondary" onclick="copyOnlyUrl()" data-i18n="btn_copy_url">複製 URL 網址</button>
+        <button class="btn btn-secondary" onclick="copyFullMeetingInfo()" data-i18n="btn_copy_info">一鍵複製完整資訊</button>
       </div>
     </div>
 
@@ -514,7 +518,7 @@ input:focus, select:focus {
 </div>
 
 <script>
-// ⚙️ 【請在此處填入你部署好的 Cloudflare Worker 網址】
+// ⚙️ Cloudflare Worker 網址
 const WORKER_URL = 'https://meeting-proxy.bb25379.workers.dev'; 
 
 const I18N = {
@@ -523,7 +527,7 @@ const I18N = {
     tab_create: "建立新會議", tab_respond: "填寫 / 查看時段", tab_admin: "管理員後台",
     create_title: "建立新的會議預約調查", create_sub: "填寫會議資訊並設定開放時間，系統將自動產生 32 碼識別碼與連結。",
     lbl_title: "會議名稱 / 主題", lbl_organizer: "主辦單位 / 主辦人", lbl_range: "每日開放時段範圍", lbl_start: "開始日期", lbl_end: "結束日期（最長保存 60 天）",
-    btn_submit_create: "建立並取得預約連結", btn_load: "載入會議", btn_copy: "複製代碼", btn_copy_info: "一鍵複製會議資訊",
+    btn_submit_create: "建立並取得預約連結", btn_load: "載入會議", btn_copy: "複製代碼", btn_copy_url: "複製 URL 網址", btn_copy_info: "一鍵複製會議資訊",
     lbl_your_name: "您的姓名：", lbl_your_pin: "密碼 (修改憑證)：", lbl_state: "選擇填寫狀態：",
     mode_yes: "可以", mode_maybe: "勉強", mode_clear: "清除", btn_save: "儲存我的時段",
     heat_title: "全體重疊時段 (Heatmap)", tip_hover: "💡 請將滑鼠懸停在右側網格上，可查看該時段所有人出席狀況。",
@@ -542,7 +546,7 @@ const I18N = {
     tab_create: "New Meeting", tab_respond: "Respond / View", tab_admin: "Admin Console",
     create_title: "Create Meeting Poll", create_sub: "Fill in meeting info to generate a unique 32-character code.",
     lbl_title: "Meeting Title", lbl_organizer: "Organizer", lbl_range: "Daily Time Range", lbl_start: "Start Date", lbl_end: "End Date (Max 60 days)",
-    btn_submit_create: "Create & Get Link", btn_load: "Load Poll", btn_copy: "Copy Code", btn_copy_info: "Copy Meeting Info",
+    btn_submit_create: "Create & Get Link", btn_load: "Load Poll", btn_copy: "Copy Code", btn_copy_url: "Copy URL", btn_copy_info: "Copy Meeting Info",
     lbl_your_name: "Your Name:", lbl_your_pin: "Password (PIN):", lbl_state: "Selection Mode:",
     mode_yes: "Available", mode_maybe: "If Needed", mode_clear: "Clear", btn_save: "Save My Availability",
     heat_title: "Group Availability (Heatmap)", tip_hover: "💡 Hover over slots to view detailed attendee status.",
@@ -561,7 +565,7 @@ const I18N = {
     tab_create: "新規作成", tab_respond: "回答 / 閲覧", tab_admin: "管理者",
     create_title: "日程調整を作成", create_sub: "会議情報を入力して32桁のコードを生成します。",
     lbl_title: "会議名", lbl_organizer: "主催者", lbl_range: "時間帯", lbl_start: "開始日", lbl_end: "終了日 (最長60日)",
-    btn_submit_create: "作成してリンクを取得", btn_load: "読み込み", btn_copy: "コードをコピー", btn_copy_info: "詳細情報をコピー",
+    btn_submit_create: "作成してリンクを取得", btn_load: "読み込み", btn_copy: "コードをコピー", btn_copy_url: "URLをコピー", btn_copy_info: "詳細情報をコピー",
     lbl_your_name: "お名前:", lbl_your_pin: "パスワード:", lbl_state: "選択モード:",
     mode_yes: "可能", mode_maybe: "調整可能", mode_clear: "クリア", btn_save: "回答を保存",
     heat_title: "全体候補時間 (Heatmap)", tip_hover: "💡 マスにホバーして参加者の状況を確認できます。",
@@ -580,7 +584,7 @@ const I18N = {
     tab_create: "새 회의", tab_respond: "응답 / 보기", tab_admin: "관리자",
     create_title: "회의 일정 조사 생성", create_sub: "정보를 입력하여 32자리 코드를 생성합니다.",
     lbl_title: "회의 제목", lbl_organizer: "주최자", lbl_range: "시간 범위", lbl_start: "시작일", lbl_end: "종료일 (최대 60일)",
-    btn_submit_create: "생성 및 링크 복사", btn_load: "불러오기", btn_copy: "코드 복사", btn_copy_info: "회의 정보 복사",
+    btn_submit_create: "생성 및 링크 복사", btn_load: "불러오기", btn_copy: "코드 복사", btn_copy_url: "URL 복사", btn_copy_info: "회의 정보 복사",
     lbl_your_name: "이름:", lbl_your_pin: "비밀번호:", lbl_state: "상태 선택:",
     mode_yes: "가능", mode_maybe: "글쎄요", mode_clear: "지우기", btn_save: "내 시간 저장",
     heat_title: "전체 가능 시간 (Heatmap)", tip_hover: "💡 마우스를 올려 참석자 현황을 확인하세요.",
@@ -599,7 +603,7 @@ const I18N = {
     tab_create: "Nueva Reunión", tab_respond: "Responder / Ver", tab_admin: "Consola Admin",
     create_title: "Crear Encuesta de Reunión", create_sub: "Rellena la información para generar un código de 32 caracteres.",
     lbl_title: "Título", lbl_organizer: "Organizador", lbl_range: "Rango Horario", lbl_start: "Fecha Inicio", lbl_end: "Fecha Fin (Máx 60 días)",
-    btn_submit_create: "Crear y Obtener Enlace", btn_load: "Cargar", btn_copy: "Copiar Código", btn_copy_info: "Copiar Info Reunión",
+    btn_submit_create: "Crear y Obtener Enlace", btn_load: "Cargar", btn_copy: "Copiar Código", btn_copy_url: "Copiar URL", btn_copy_info: "Copiar Info Reunión",
     lbl_your_name: "Tu Nombre:", lbl_your_pin: "Contraseña:", lbl_state: "Estado:",
     mode_yes: "Disponible", mode_maybe: "Tal vez", mode_clear: "Borrar", btn_save: "Guardar Disponibilidad",
     heat_title: "Disponibilidad del Grupo", tip_hover: "💡 Pasa el ratón sobre una casilla para ver los asistentes.",
@@ -618,7 +622,7 @@ const I18N = {
     tab_create: "สร้างการประชุม", tab_respond: "ตอบกลับ / ดู", tab_admin: "ผู้ดูแลระบบ",
     create_title: "สร้างการนัดหมายประชุม", create_sub: "กรอกข้อมูลเพื่อสร้างรหัส 32 หลัก",
     lbl_title: "หัวข้อประชุม", lbl_organizer: "ผู้จัด", lbl_range: "ช่วงเวลา", lbl_start: "วันที่เริ่มต้น", lbl_end: "วันที่สิ้นสุด (สูงสุด 60 วัน)",
-    btn_submit_create: "สร้างและคัดลอกลิงก์", btn_load: "โหลด", btn_copy: "คัดลอกรหัส", btn_copy_info: "คัดลอกข้อมูลประชุม",
+    btn_submit_create: "สร้างและคัดลอกลิงก์", btn_load: "โหลด", btn_copy: "คัดลอกรหัส", btn_copy_url: "คัดลอก URL", btn_copy_info: "คัดลอกข้อมูลประชุม",
     lbl_your_name: "ชื่อของคุณ:", lbl_your_pin: "รหัสผ่าน:", lbl_state: "สถานะ:",
     mode_yes: "สะดวก", mode_maybe: "อาจจะ", mode_clear: "ล้าง", btn_save: "บันทึกเวลา",
     heat_title: "เวลาที่ทุกคนว่าง (Heatmap)", tip_hover: "💡 วางเมาส์เหนือช่องเพื่อดูผู้เข้าร่วม",
@@ -720,7 +724,6 @@ function generateAdminKey() {
   return key;
 }
 
-/* 🌐 API 雲端整合：建立會議並寫入 Worker */
 async function handleCreatePoll(e) {
   e.preventDefault();
   const title = document.getElementById('input-title').value.trim();
@@ -746,12 +749,10 @@ async function handleCreatePoll(e) {
     responses: {}
   };
 
-  // 嘗試儲存至 Cloudflare Worker 雲端
   if (!WORKER_URL.includes('XXXX')) {
     await savePollToCloud(code, pollData);
   }
 
-  // 同步備份一份至 LocalStorage (主辦人電腦)
   localStorage.setItem('poll_32_' + code, JSON.stringify(pollData));
 
   let myPolls = JSON.parse(localStorage.getItem('my_created_polls') || '[]');
@@ -784,18 +785,35 @@ function copyTextFromElem(elemId, labelName) {
   });
 }
 
-/* 🌟 一鍵複製完整會議資訊 JS 函數 */
+/* 🌟 單獨複製預約 URL */
+function copyOnlyUrl() {
+  let code = document.getElementById('input-code').value.trim();
+  if (!code && currentPoll) code = currentPoll.code;
+  if (!code || code.length !== 32) {
+    alert("請先輸入或載入有效的 32 碼會議代碼");
+    return;
+  }
+  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  navigator.clipboard.writeText(fullUrl).then(() => {
+    alert(`已成功複製專屬預約連結：\n${fullUrl}`);
+  });
+}
+
+/* 🌟 一鍵複製包含 8 碼 Admin Key 的完整資訊 */
 function copyFullMeetingInfo() {
   let title = "會議預約調查";
   let organizer = "";
   let code = document.getElementById('input-code').value.trim();
+  let adminKey = "";
 
   if (currentPoll) {
     title = currentPoll.title;
     organizer = currentPoll.organizer;
     code = currentPoll.code;
+    adminKey = currentPoll.adminKey || "";
   } else {
     code = document.getElementById('modal-display-code').textContent;
+    adminKey = document.getElementById('modal-display-key').textContent;
   }
 
   if (!code || code.length !== 32) {
@@ -805,10 +823,14 @@ function copyFullMeetingInfo() {
 
   const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
 
-  const infoText = `📌 會議主題：${title}\n👤 主辦人：${organizer}\n🔑 會議代碼 (32碼)：${code}\n🔗 預約連結：${fullUrl}\n\n請點擊連結或輸入代碼進入點選有空的時段！`;
+  let infoText = `📌 會議主題：${title}\n👤 主辦人：${organizer}\n🔑 會議代碼 (32碼)：${code}\n🔗 預約連結：${fullUrl}`;
+  if (adminKey && adminKey !== "--") {
+    infoText += `\n🔐 管理員金鑰 (8碼)：${adminKey}`;
+  }
+  infoText += `\n\n請點擊連結或輸入代碼進入點選有空的時段！`;
 
   navigator.clipboard.writeText(infoText).then(() => {
-    alert(`已成功複製會議完整邀請資訊：\n\n${infoText}`);
+    alert(`已成功複製會議完整資訊：\n\n${infoText}`);
   });
 }
 
@@ -840,12 +862,11 @@ function clearWorkspace() {
   document.getElementById('heat-grid').innerHTML = '';
 }
 
-/* 🌐 API 雲端整合：載入會議 (先向 Cloudflare Worker 讀取，失敗則嘗試 LocalStorage) */
 async function loadPoll(code) {
   let pollData = null;
   let sha = null;
+  let cloudError = null;
 
-  // 1. 若 Worker 網址已設定，優先向雲端抓取資料
   if (!WORKER_URL.includes('XXXX')) {
     try {
       const res = await fetch(`${WORKER_URL}?code=${code}`);
@@ -853,13 +874,15 @@ async function loadPoll(code) {
         const json = await res.json();
         pollData = json.data;
         sha = json.sha;
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        cloudError = errJson.error || `HTTP Status ${res.status}`;
       }
     } catch (e) {
-      console.warn("無法連接雲端 API，嘗試使用本機備份", e);
+      cloudError = e.message || "Network Error";
     }
   }
 
-  // 2. 若雲端拿不到資料，降級從 LocalStorage 讀取本機紀錄
   if (!pollData) {
     const raw = localStorage.getItem('poll_32_' + code);
     if (raw) pollData = JSON.parse(raw);
@@ -867,7 +890,11 @@ async function loadPoll(code) {
 
   if (!pollData) {
     clearWorkspace();
-    alert('找不到此 32 碼代碼對應的會議（可能已被刪除、已過期，或尚未建立）');
+    if (cloudError) {
+      alert(`找不到會議！\n雲端 API 回報錯誤：${cloudError}\n(請確認 GitHub 儲存庫內是否有 polls/.gitkeep 檔案，或代碼是否正確)`);
+    } else {
+      alert('找不到此 32 碼代碼對應的會議（可能已被刪除、已過期，或尚未建立）');
+    }
     return;
   }
 
@@ -885,7 +912,6 @@ async function loadPoll(code) {
   renderHeatGrid();
 }
 
-/* 🌐 API 雲端整合：寫入 Cloudflare Worker */
 async function savePollToCloud(code, pollData, sha = null) {
   if (WORKER_URL.includes('XXXX')) return false;
   try {
@@ -898,6 +924,9 @@ async function savePollToCloud(code, pollData, sha = null) {
       const json = await res.json();
       currentSha = json.content ? json.content.sha : null;
       return true;
+    } else {
+      const errJson = await res.json().catch(() => ({}));
+      alert(`儲存至雲端失敗！\n錯誤原因：${errJson.error || res.statusText}\n(請檢查 GitHub 是否已有 polls/ 資料夾及 Token 權限)`);
     }
   } catch (e) {
     console.error("雲端儲存失敗:", e);
@@ -982,8 +1011,9 @@ function renderMyGrid() {
   });
 }
 
+/* 🌟 重複點選相同狀態時自動清除 (Toggle) */
 function applyCellMode(slotId, cell) {
-  if (currentMode === 0) {
+  if (myDraft[slotId] === currentMode || currentMode === 0) {
     delete myDraft[slotId];
     cell.className = 'cell';
   } else {
@@ -992,6 +1022,7 @@ function applyCellMode(slotId, cell) {
   }
 }
 
+/* 🌟 When2meet 風格熱力圖：即時計算並在格子上標示人數與星號 */
 function renderHeatGrid() {
   const container = document.getElementById('heat-grid');
   container.innerHTML = '';
@@ -1039,6 +1070,14 @@ function renderHeatGrid() {
       });
 
       const yesCount = yesList.length;
+
+      // 1. 格子上直接顯示出席人數 (若全員出席則加上 ★)
+      if (yesCount > 0) {
+        const isAll = (total > 0 && yesCount === total);
+        cell.textContent = isAll ? `${yesCount}★` : `${yesCount}`;
+      }
+
+      // 2. 熱力圖漸層色彩
       if (total > 0 && yesCount > 0) {
         const ratio = yesCount / total;
         if (ratio === 1) cell.classList.add('h-4');
@@ -1072,7 +1111,6 @@ function loadUserHistory() {
   }
 }
 
-/* 🌐 API 雲端整合：儲存個人的時段 */
 async function saveResponse() {
   const name = document.getElementById('user-name').value.trim();
   const pin = document.getElementById('user-pin').value.trim();
@@ -1086,10 +1124,8 @@ async function saveResponse() {
 
   currentPoll.responses[name] = { pin, slots: myDraft };
 
-  // 1. 同步儲存至 Cloudflare Worker 雲端
   await savePollToCloud(currentPoll.code, currentPoll, currentSha);
 
-  // 2. 備份至本機 LocalStorage
   localStorage.setItem('poll_32_' + currentPoll.code, JSON.stringify(currentPoll));
   alert('成功儲存您的時段！');
 
