@@ -536,7 +536,7 @@ nav{display:flex;flex-direction:column;gap:2px;}
     <div class="section-header">
       <h2 class="section-title" data-i18n="tools_title">開發工具</h2>
       <div class="section-line"></div>
-      <span class="section-count" data-i18n="tools_count">1 Tool</span>
+      <span class="section-count" data-i18n="tools_count">2 Tools</span>
     </div>
     <div class="grid">
 
@@ -559,6 +559,32 @@ nav{display:flex;flex-direction:column;gap:2px;}
           <div class="card-footer">
             <span class="card-meta" data-i18n="picmark_meta">Web Tool · 標記 / 標註</span>
             <a class="card-link" href="marker.html" target="_blank">
+              <span data-i18n="link_use">去使用</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOL 2: 會議時段預約系統 -->
+      <div class="card">
+        <div class="card-thumb">
+          <img
+            src="meeting-cover.jpg"
+            alt="會議時段預約系統"
+            onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="thumb-placeholder" style="display:none;">
+            <div class="thumb-icon">🗓</div>
+            <div class="thumb-label">Meeting</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-badge" data-i18n="badge_tool">實用工具</span>
+          <h3 class="card-title" data-i18n="meeting_title">會議時段預約系統</h3>
+          <p class="card-desc" data-i18n="meeting_desc">找出多人都有空的開會時間。主辦人開一場調查並拿到 32 碼代碼，參與者點格子選有空的時段，系統即時算出交集、列出誰還沒填，並一鍵建立 Google 日曆邀請。這裡是公開展示版，資料只存在你的瀏覽器裡。</p>
+          <div class="card-footer">
+            <span class="card-meta" data-i18n="meeting_meta">Web Tool · 時段交集</span>
+            <a class="card-link" href="meeting/index.html" target="_blank">
               <span data-i18n="link_use">去使用</span>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </a>
@@ -734,10 +760,13 @@ var I18N = {
     ithome_desc:"於 2025 年參加 iThome 鐵人賽的 30 天系列文章比賽，寫下這篇「從一個網站的誕生，看懂 AWS 架構與自動化的全流程！」，深入淺出地分享雲端與 DevOps 實戰經驗，獲得本屆【Build on AWS 組】優選肯定。",
     ithome_meta:"30 篇 · 2025 鐵人賽文章", link_view:"去看看",
     badge_infra:"基礎建設", other_title:"其他專案", other_desc:"等待更新中", other_meta:"規劃中",
-    tools_title:"開發工具", tools_count:"1 個工具",
+    tools_title:"開發工具", tools_count:"2 個工具",
     badge_tool:"實用工具", picmark_title:"PicMark 圖片快捷標記",
     picmark_desc:"純瀏覽器的圖片標記與標註工具，支援數字標記與文字標註，適合製作教學截圖、操作步驟說明或問題回報。免安裝、開啟即用，支援多國語言。",
     picmark_meta:"Web Tool · 標記 / 標註", link_use:"去使用",
+    meeting_title:"會議時段預約系統",
+    meeting_desc:"找出多人都有空的開會時間。主辦人開一場調查並拿到 32 碼代碼，參與者點格子選有空的時段，系統即時算出交集、列出誰還沒填，並一鍵建立 Google 日曆邀請。這裡是公開展示版，資料只存在你的瀏覽器裡。",
+    meeting_meta:"Web Tool · 時段交集",
     travel_title:"旅遊分享", travel_count:"1 篇分享",
     badge_travel:"旅行足跡", trip1_title:"旅遊分享 - 大阪&京都&奈良&神戶 5日",
     trip1_desc:"旅程規劃分享，第一次去京都跟奈良，並且是盂蘭盆節期間呢～",
@@ -772,10 +801,13 @@ var I18N = {
     ithome_desc:"于 2025 年参加 iThome 铁人赛的 30 天系列文章比赛，写下这篇「从一个网站的诞生，看懂 AWS 架构与自动化的全流程！」，深入浅出地分享云端与 DevOps 实战经验，获得本届【Build on AWS 组】优选肯定。",
     ithome_meta:"30 篇 · 2025 铁人赛文章", link_view:"去看看",
     badge_infra:"基础建设", other_title:"其他项目", other_desc:"等待更新中", other_meta:"规划中",
-    tools_title:"开发工具", tools_count:"1 个工具",
+    tools_title:"开发工具", tools_count:"2 个工具",
     badge_tool:"实用工具", picmark_title:"PicMark 图片快捷标记",
     picmark_desc:"纯浏览器的图片标记与标注工具，支持数字标记与文字标注，适合制作教学截图、操作步骤说明或问题反馈。免安装、打开即用，支持多国语言。",
     picmark_meta:"Web Tool · 标记 / 标注", link_use:"去使用",
+    meeting_title:"会议时段预约系统",
+    meeting_desc:"找出多人都有空的开会时间。主办人开一场调查并拿到 32 码代码，参与者点格子选有空的时段，系统实时算出交集、列出谁还没填，并一键创建 Google 日历邀请。这里是公开演示版，数据只存在你的浏览器里。",
+    meeting_meta:"Web Tool · 时段交集",
     travel_title:"旅游分享", travel_count:"1 篇分享",
     badge_travel:"旅行足迹", trip1_title:"旅游分享 - 大阪&京都&奈良&神户 5日游",
     trip1_desc:"行程规划分享！第一次去京都和奈良，而且正好碰上了盂兰盆节呢～",
@@ -810,10 +842,13 @@ var I18N = {
     ithome_desc:"A 30-day article series for the 2025 iThome Ironman Contest: “From the Birth of a Website — Understanding AWS Architecture and Automation End-to-End.” An accessible deep dive into real-world Cloud and DevOps experience, honored with the Merit Award in the Build on AWS category.",
     ithome_meta:"30 Articles · 2025 Contest", link_view:"View",
     badge_infra:"Infrastructure", other_title:"More Projects", other_desc:"Coming soon", other_meta:"Planning",
-    tools_title:"Dev Tools", tools_count:"1 Tool",
+    tools_title:"Dev Tools", tools_count:"2 Tools",
     badge_tool:"Utility", picmark_title:"PicMark Image Annotator",
     picmark_desc:"A browser-based image marking and annotation tool supporting numbered markers and text labels. Great for tutorial screenshots, step-by-step guides or bug reports. No install needed, ready to use and multilingual.",
     picmark_meta:"Web Tool · Mark / Annotate", link_use:"Open",
+    meeting_title:"Meeting Time Finder",
+    meeting_desc:"Find a slot that actually works for everyone. The organiser opens a poll and gets a 32-character code; participants click cells to mark when they are free, and the tool works out the overlap, shows who has not replied yet, and builds a Google Calendar invite in one click. This is the public demo — everything you enter stays in your own browser.",
+    meeting_meta:"Web Tool · Availability",
     travel_title:"Travel Sharing", travel_count:"1 Post",
     badge_travel:"Footprints", trip1_title:"Travel Log – 5 Days in Osaka, Kyoto, Nara & Kobe",
     trip1_desc:"Itinerary & reflections! It was my very first time visiting Kyoto and Nara, and it happened to be right during the Obon festival season~",
@@ -848,10 +883,13 @@ var I18N = {
     ithome_desc:"2025 年の iThome アイアンマンコンテストの 30 日連載に参加し、「一つのウェブサイトの誕生から AWS アーキテクチャと自動化の全プロセスを理解する！」を執筆。クラウドと DevOps の実践経験を分かりやすく共有し、【Build on AWS 部門】で優秀賞を受賞しました。",
     ithome_meta:"全 30 記事 · 2025 コンテスト", link_view:"見てみる",
     badge_infra:"インフラ", other_title:"その他のプロジェクト", other_desc:"更新予定", other_meta:"計画中",
-    tools_title:"開発ツール", tools_count:"1 ツール",
+    tools_title:"開発ツール", tools_count:"2 ツール",
     badge_tool:"便利ツール", picmark_title:"PicMark 画像マーキング",
     picmark_desc:"ブラウザだけで使える画像マーキング＆注釈ツール。番号マーカーとテキスト注釈に対応し、チュートリアル用スクリーンショットや操作手順の説明、バグ報告に最適です。インストール不要、開いてすぐ使え、多言語対応。",
     picmark_meta:"Web Tool · マーク / 注釈", link_use:"使ってみる",
+    meeting_title:"会議日程調整ツール",
+    meeting_desc:"全員が空いている時間を見つけるツール。主催者が調査を作成すると 32 桁のコードが発行され、参加者はマスをクリックして空き時間を選ぶだけ。重なりを即座に集計し、未回答者を表示し、Google カレンダーの招待もワンクリックで作成できます。こちらは公開デモ版で、入力した内容はご自身のブラウザ内にのみ保存されます。",
+    meeting_meta:"Web Tool · 空き時間",
     travel_title:"旅行記", travel_count:"1 記事",
     badge_travel:"旅行記", trip1_title:"旅行記 – 大阪・京都・奈良・神戸 5日間の旅",
     trip1_desc:"旅のスケジュールと思い出の記録！初めての京都と奈良で、ちょうどお盆休みの時期に行ってきました～",
@@ -886,10 +924,13 @@ var I18N = {
     ithome_desc:"2025년 iThome 철인대회 30일 연재 대회에 참가해 「한 웹사이트의 탄생으로 보는 AWS 아키텍처와 자동화의 전 과정!」을 작성했습니다. 클라우드와 DevOps 실전 경험을 알기 쉽게 공유하여 【Build on AWS 부문】 우수상을 수상했습니다.",
     ithome_meta:"30편 · 2025 대회", link_view:"보러가기",
     badge_infra:"인프라", other_title:"기타 프로젝트", other_desc:"업데이트 예정", other_meta:"기획 중",
-    tools_title:"개발 도구", tools_count:"도구 1개",
+    tools_title:"개발 도구", tools_count:"도구 2개",
     badge_tool:"유용한 도구", picmark_title:"PicMark 이미지 마킹",
     picmark_desc:"브라우저만으로 사용하는 이미지 마킹·주석 도구로, 숫자 마커와 텍스트 주석을 지원합니다. 튜토리얼 스크린샷, 조작 단계 설명, 버그 리포트에 적합합니다. 설치 없이 바로 사용 가능하며 다국어를 지원합니다.",
     picmark_meta:"Web Tool · 마킹 / 주석", link_use:"사용하기",
+    meeting_title:"회의 시간 조정 도구",
+    meeting_desc:"모두가 가능한 회의 시간을 찾아주는 도구입니다. 주최자가 설문을 만들면 32자리 코드가 발급되고, 참가자는 칸을 클릭해 가능한 시간을 표시합니다. 겹치는 시간을 실시간으로 계산하고, 아직 응답하지 않은 사람을 보여주며, Google 캘린더 초대도 한 번에 만들 수 있습니다. 여기는 공개 데모 버전으로, 입력한 내용은 본인 브라우저에만 저장됩니다.",
+    meeting_meta:"Web Tool · 가능 시간",
     travel_title:"여행 공유", travel_count:"글 1개",
     badge_travel:"여행 발자취", trip1_title:"여행 공유 – 오사카·교토·나라·고베 5일 여행",
     trip1_desc:"일정 및 후기 공유! 처음 가보는 교토와 나라였는데, 마침 오봉(盂蘭盆節) 명절 기간에 다녀왔네요~",
@@ -924,10 +965,13 @@ var I18N = {
     ithome_desc:"Serie de 30 artículos para el concurso iThome Ironman 2025: “Desde el nacimiento de un sitio web: comprender la arquitectura de AWS y la automatización de principio a fin.” Una inmersión accesible en la experiencia real con Cloud y DevOps, galardonada con el Premio de Mérito en la categoría Build on AWS.",
     ithome_meta:"30 artículos · Concurso 2025", link_view:"Ver",
     badge_infra:"Infraestructura", other_title:"Más Proyectos", other_desc:"Próximamente", other_meta:"En preparación",
-    tools_title:"Herramientas", tools_count:"1 Herramienta",
+    tools_title:"Herramientas", tools_count:"2 Herramientas",
     badge_tool:"Utilidad", picmark_title:"PicMark Anotador de Imágenes",
     picmark_desc:"Herramienta de marcado y anotación de imágenes basada en el navegador, con marcadores numerados y etiquetas de texto. Ideal para capturas de tutoriales, guías paso a paso o informes de errores. Sin instalación, lista para usar y multilingüe.",
     picmark_meta:"Web Tool · Marcar / Anotar", link_use:"Usar",
+    meeting_title:"Buscador de Horarios de Reunión",
+    meeting_desc:"Encuentra un horario que funcione para todos. El organizador crea una encuesta y obtiene un código de 32 caracteres; los participantes hacen clic en las casillas para marcar su disponibilidad, y la herramienta calcula la coincidencia, muestra quién falta por responder y genera una invitación de Google Calendar con un clic. Esta es la demo pública: todo lo que introduzcas se queda en tu propio navegador.",
+    meeting_meta:"Web Tool · Disponibilidad",
     travel_title:"Viajes", travel_count:"1 Publicación",
     badge_travel:"Huellas", trip1_title:"Diarios de Viaje – 5 Días en Osaka, Kioto, Nara y Kobe",
     trip1_desc:"¡Compartiendo el itinerario y la experiencia! Fue mi primera vez en Kioto y Nara, y coincidió justo con el festival de Obon~",
