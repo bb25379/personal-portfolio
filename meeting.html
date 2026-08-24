@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MeetingSync Pro · 團隊時段預約系統</title>
+<title>MeetingSync Pro · 會議時段預約系統</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -353,6 +353,7 @@ input:focus, select:focus {
         <button class="btn btn-primary" onclick="loadPollFromInput()" data-i18n="btn_load">載入會議</button>
         <button class="btn btn-secondary" onclick="copyCode()" data-i18n="btn_copy">複製代碼</button>
         <button class="btn btn-secondary" onclick="copyOnlyUrl()" data-i18n="btn_copy_url">複製 URL 網址</button>
+        <button class="btn btn-secondary" onclick="copyFullMeetingInfo()" data-i18n="btn_copy_info">一鍵複製會議資訊</button>
       </div>
     </div>
 
@@ -456,8 +457,8 @@ input:focus, select:focus {
       </div>
     </div>
 
-    <!-- 參與者密碼與刪除管理區 -->
-    <div class="card" id="admin-user-manager" style="display:none;">
+    <!-- 參與者密碼與刪除管理區 (獨立置底，不破版) -->
+    <div class="card" id="admin-user-manager" style="display:none; margin-top:1.5rem;" onclick="event.stopPropagation();">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
         <div>
           <h2 class="card-title" id="admin-poll-title">會議名稱</h2>
@@ -525,7 +526,7 @@ input:focus, select:focus {
 </div>
 
 <script>
-// ⚙️ 【Cloudflare Worker 網址】
+// ⚙️ Cloudflare Worker 網址
 const WORKER_URL = 'https://meeting-proxy.bb25379.workers.dev'; 
 
 const I18N = {
@@ -680,6 +681,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('mouseup', () => isMouseDown = false);
   document.addEventListener('dragstart', (e) => e.preventDefault());
+
+  // 🌟 全局事件：點擊空白處自動關閉管理面板
+  document.addEventListener('click', (e) => {
+    const manager = document.getElementById('admin-user-manager');
+    if (manager && manager.style.display === 'block') {
+      if (!manager.contains(e.target) && !e.target.closest('button[onclick*="toggleAdminManager"]')) {
+        closeAdminManager();
+      }
+    }
+  });
 });
 
 function initDates() {
@@ -807,7 +818,6 @@ function copyOnlyUrl() {
   });
 }
 
-/* 🌟 一鍵複製包含完整 8 碼 Admin Key 與 URL 的資訊 */
 function copyFullMeetingInfo() {
   let title = "會議預約調查";
   let organizer = "";
@@ -1029,7 +1039,6 @@ function applyCellMode(slotId, cell) {
   }
 }
 
-/* 🌟 When2meet 風格熱力圖：顯示人數與全滿星號 (★) */
 function renderHeatGrid() {
   const container = document.getElementById('heat-grid');
   container.innerHTML = '';
@@ -1103,7 +1112,6 @@ function renderHeatGrid() {
   });
 }
 
-/* 🌟 輸入不同名字時防覆蓋修復：輸入新名字且密碼不合時清空選取網格 */
 function onNameInput() {
   const name = document.getElementById('user-name').value.trim();
   const pin = document.getElementById('user-pin').value.trim();
@@ -1117,7 +1125,6 @@ function onNameInput() {
     }
   }
   
-  // 若為新名字或密碼尚未填寫正確，清空 draft 避免覆蓋上一人的選擇
   myDraft = {};
   renderMyGrid();
 }
@@ -1165,7 +1172,6 @@ async function verifyAdminAuth() {
   renderAdminUserList();
 }
 
-/* 🌟 管理員歷史清單，新增「✕」關閉按鈕控制 */
 function renderMyCreatedPolls() {
   const listBody = document.getElementById('my-created-polls-list');
   listBody.innerHTML = '';
@@ -1187,12 +1193,25 @@ function renderMyCreatedPolls() {
       <td style="font-family:monospace; font-size:12px; color:var(--maybe);">${p.adminKey || 'N/A'}</td>
       <td>${p.endDate}</td>
       <td>
-        <button class="btn btn-primary btn-sm" onclick="quickAdminLogin('${p.code}', '${p.adminKey}')">管理</button>
-        <button class="btn btn-secondary btn-sm" style="margin-left:4px;" onclick="closeAdminManager()">✕</button>
+        <button class="btn btn-primary btn-sm" onclick="toggleAdminManager('${p.code}', '${p.adminKey}', event)">管理</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px;" onclick="directDeletePoll('${p.code}', event)">✕</button>
       </td>
     `;
     listBody.appendChild(tr);
   });
+}
+
+/* 🌟 管理按鈕開合切換 (Toggle) */
+function toggleAdminManager(code, key, e) {
+  if (e) e.stopPropagation();
+  const manager = document.getElementById('admin-user-manager');
+  
+  if (currentPoll && currentPoll.code === code && manager.style.display === 'block') {
+    closeAdminManager();
+    return;
+  }
+
+  quickAdminLogin(code, key);
 }
 
 function closeAdminManager() {
@@ -1248,20 +1267,29 @@ async function adminDeleteUser(uname) {
   alert(`已成功刪除 ${uname} 的資料`);
 }
 
-async function deleteCurrentPoll() {
-  if (!confirm(`確定要永久刪除會議「${currentPoll.title}」嗎？此動作無法復原。`)) return;
+/* 🌟 直接點擊列表中的「✕」按鈕進行會議刪除 */
+async function directDeletePoll(code, e) {
+  if (e) e.stopPropagation();
+  if (!confirm(`確定要永久刪除代碼「${code}」的會議嗎？此動作無法復原。`)) return;
 
-  const code = currentPoll.code;
   localStorage.removeItem('poll_32_' + code);
 
   let myPolls = JSON.parse(localStorage.getItem('my_created_polls') || '[]');
   myPolls = myPolls.filter(p => p.code !== code);
   localStorage.setItem('my_created_polls', JSON.stringify(myPolls));
 
-  document.getElementById('admin-user-manager').style.display = 'none';
-  clearWorkspace();
+  if (currentPoll && currentPoll.code === code) {
+    closeAdminManager();
+    clearWorkspace();
+  }
+
   renderMyCreatedPolls();
   alert('會議已成功刪除！');
+}
+
+async function deleteCurrentPoll() {
+  if (!currentPoll) return;
+  await directDeletePoll(currentPoll.code);
 }
 </script>
 </body>
