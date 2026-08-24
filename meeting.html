@@ -362,6 +362,7 @@ input:focus, select:focus {
         <button class="btn btn-primary" onclick="loadPollFromInput()" data-i18n="btn_load">載入會議</button>
         <button class="btn btn-secondary" onclick="copyCode()" data-i18n="btn_copy">複製代碼</button>
         <button class="btn btn-secondary" onclick="copyOnlyUrl()" data-i18n="btn_copy_url">複製 URL 網址</button>
+        <button class="btn btn-secondary" onclick="copyFullMeetingInfo()" data-i18n="btn_copy_info">一鍵複製會議資訊</button>
       </div>
     </div>
 
@@ -507,7 +508,7 @@ input:focus, select:focus {
   </div>
 </div>
 
-<!-- Modal 2: 🌟 管理員專屬浮動視窗 -->
+<!-- Modal 2: 🌟 管理員專屬浮動視窗 (管理成員與 PIN 碼) -->
 <div class="modal-overlay" id="admin-user-modal">
   <div class="modal-card" style="max-width: 680px;" onclick="event.stopPropagation();">
     <button class="modal-close-icon" onclick="closeAdminUserModal()">✕</button>
@@ -539,7 +540,7 @@ input:focus, select:focus {
 </div>
 
 <script>
-// ⚙️ Cloudflare Worker 網址
+// ⚙️ 【Cloudflare Worker 網址】
 const WORKER_URL = 'https://meeting-proxy.bb25379.workers.dev'; 
 
 const I18N = {
@@ -695,7 +696,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('mouseup', () => isMouseDown = false);
   document.addEventListener('dragstart', (e) => e.preventDefault());
 
-  // 按下 Esc 鍵關閉所有 Modal
+  // 按下 Esc 關閉所有彈窗
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeAdminUserModal();
@@ -703,7 +704,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 點擊彈窗外背景遮罩自動關閉 Modal
+  // 點擊彈窗背景遮罩自動關閉 Modal
   const adminModal = document.getElementById('admin-user-modal');
   if (adminModal) {
     adminModal.addEventListener('click', (e) => {
@@ -1131,7 +1132,6 @@ function renderHeatGrid() {
   });
 }
 
-/* 🌟 先畫格子再打名字不被清空的邏輯 */
 function onNameInput() {
   const name = document.getElementById('user-name').value.trim();
   const pin = document.getElementById('user-pin').value.trim();
@@ -1145,6 +1145,7 @@ function onNameInput() {
     }
   }
   
+  myDraft = {};
   renderMyGrid();
 }
 
