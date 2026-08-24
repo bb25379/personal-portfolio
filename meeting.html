@@ -507,7 +507,7 @@ input:focus, select:focus {
   </div>
 </div>
 
-<!-- Modal 2: 🌟 管理員專屬浮動視窗 (管理成員與 PIN 碼) -->
+<!-- Modal 2: 管理員專屬浮動視窗 (管理成員與 PIN 碼) -->
 <div class="modal-overlay" id="admin-user-modal">
   <div class="modal-card" style="max-width: 680px;" onclick="event.stopPropagation();">
     <button class="modal-close-icon" onclick="closeAdminUserModal()">✕</button>
@@ -695,7 +695,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('mouseup', () => isMouseDown = false);
   document.addEventListener('dragstart', (e) => e.preventDefault());
 
-  // 按下 Esc 關閉所有彈窗
+  // 按下 Esc 關閉所有 Modal
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       closeAdminUserModal();
@@ -703,7 +703,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 點擊彈窗背景遮罩自動關閉 Modal
+  // 點擊彈窗外背景遮罩自動關閉 Modal
   const adminModal = document.getElementById('admin-user-modal');
   if (adminModal) {
     adminModal.addEventListener('click', (e) => {
@@ -1003,6 +1003,24 @@ function setMode(m) {
   });
 }
 
+/* 🌟 檢查姓名與密碼是否已填寫 */
+function validateUserIdentity() {
+  const name = document.getElementById('user-name').value.trim();
+  const pin = document.getElementById('user-pin').value.trim();
+
+  if (!name) {
+    alert('請先輸入您的姓名，才能開始選擇時段格！');
+    document.getElementById('user-name').focus();
+    return false;
+  }
+  if (!pin) {
+    alert('請先設定 4 碼密碼（修改憑證），才能開始選擇時段格！');
+    document.getElementById('user-pin').focus();
+    return false;
+  }
+  return true;
+}
+
 function renderMyGrid() {
   const container = document.getElementById('my-grid');
   container.innerHTML = '';
@@ -1036,11 +1054,20 @@ function renderMyGrid() {
 
       cell.addEventListener('mousedown', (e) => {
         e.preventDefault();
+        // 🌟 點擊時檢查：未填寫姓名與密碼則禁止點選
+        if (!validateUserIdentity()) return;
         isMouseDown = true;
         applyCellMode(slotId, cell);
       });
       cell.addEventListener('mouseenter', () => {
-        if (isMouseDown) applyCellMode(slotId, cell);
+        if (isMouseDown) {
+          // 🌟 拖曳滑過時檢查：未填寫姓名與密碼則中斷拖曳
+          if (!validateUserIdentity()) {
+            isMouseDown = false;
+            return;
+          }
+          applyCellMode(slotId, cell);
+        }
       });
 
       container.appendChild(cell);
@@ -1156,7 +1183,11 @@ async function saveResponse() {
   const name = document.getElementById('user-name').value.trim();
   const pin = document.getElementById('user-pin').value.trim();
 
-  if (!name || !pin) { alert('請填寫姓名與密碼（用於日後再次修改的驗證）'); return; }
+  if (!name || !pin) { 
+    alert('請填寫姓名與密碼（用於日後再次修改的驗證）'); 
+    validateUserIdentity();
+    return; 
+  }
 
   if (currentPoll.responses[name] && currentPoll.responses[name].pin !== pin) {
     alert('此姓名已有記錄，且密碼不匹配！請輸入正確的修改密碼。');
