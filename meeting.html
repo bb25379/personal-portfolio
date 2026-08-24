@@ -514,6 +514,9 @@ input:focus, select:focus {
 </div>
 
 <script>
+// ⚙️ 【請在此處填入你部署好的 Cloudflare Worker 網址】
+const WORKER_URL = 'https://meeting-proxy.XXXX.workers.dev'; 
+
 const I18N = {
   "zh-TW": {
     notice_retention: "⏱️ 提示：為維持系統輕量安全，會議資料建立後將保留 60 天，逾期資料將自動進行銷毀清空。",
@@ -647,6 +650,7 @@ function changeLang(lang) {
 }
 
 let currentPoll = null;
+let currentSha = null;
 let myDraft = {};
 let currentMode = 2;
 let isMouseDown = false;
@@ -716,7 +720,8 @@ function generateAdminKey() {
   return key;
 }
 
-function handleCreatePoll(e) {
+/* 🌐 API 雲端整合：建立會議並寫入 Worker */
+async function handleCreatePoll(e) {
   e.preventDefault();
   const title = document.getElementById('input-title').value.trim();
   const organizer = document.getElementById('input-organizer').value.trim();
@@ -741,6 +746,12 @@ function handleCreatePoll(e) {
     responses: {}
   };
 
+  // 嘗試儲存至 Cloudflare Worker 雲端
+  if (!WORKER_URL.includes('XXXX')) {
+    await savePollToCloud(code, pollData);
+  }
+
+  // 同步備份一份至 LocalStorage (主辦人電腦)
   localStorage.setItem('poll_32_' + code, JSON.stringify(pollData));
 
   let myPolls = JSON.parse(localStorage.getItem('my_created_polls') || '[]');
@@ -773,6 +784,7 @@ function copyTextFromElem(elemId, labelName) {
   });
 }
 
+/* 🌟 一鍵複製完整會議資訊 JS 函數 */
 function copyFullMeetingInfo() {
   let title = "會議預約調查";
   let organizer = "";
@@ -784,6 +796,11 @@ function copyFullMeetingInfo() {
     code = currentPoll.code;
   } else {
     code = document.getElementById('modal-display-code').textContent;
+  }
+
+  if (!code || code.length !== 32) {
+    alert("請先輸入或載入有效的 32 碼會議代碼");
+    return;
   }
 
   const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
@@ -816,21 +833,47 @@ function loadPollFromInput() {
 
 function clearWorkspace() {
   currentPoll = null;
+  currentSha = null;
   myDraft = {};
   document.getElementById('poll-workspace').style.display = 'none';
   document.getElementById('my-grid').innerHTML = '';
   document.getElementById('heat-grid').innerHTML = '';
 }
 
-function loadPoll(code) {
-  const raw = localStorage.getItem('poll_32_' + code);
-  if (!raw) {
+/* 🌐 API 雲端整合：載入會議 (先向 Cloudflare Worker 讀取，失敗則嘗試 LocalStorage) */
+async function loadPoll(code) {
+  let pollData = null;
+  let sha = null;
+
+  // 1. 若 Worker 網址已設定，優先向雲端抓取資料
+  if (!WORKER_URL.includes('XXXX')) {
+    try {
+      const res = await fetch(`${WORKER_URL}?code=${code}`);
+      if (res.ok) {
+        const json = await res.json();
+        pollData = json.data;
+        sha = json.sha;
+      }
+    } catch (e) {
+      console.warn("無法連接雲端 API，嘗試使用本機備份", e);
+    }
+  }
+
+  // 2. 若雲端拿不到資料，降級從 LocalStorage 讀取本機紀錄
+  if (!pollData) {
+    const raw = localStorage.getItem('poll_32_' + code);
+    if (raw) pollData = JSON.parse(raw);
+  }
+
+  if (!pollData) {
     clearWorkspace();
-    alert('找不到此 32 碼代碼對應的會議（可能已刪除或過期）');
+    alert('找不到此 32 碼代碼對應的會議（可能已被刪除、已過期，或尚未建立）');
     return;
   }
 
-  currentPoll = JSON.parse(raw);
+  currentPoll = pollData;
+  currentSha = sha;
+
   const dict = I18N[currentLang] || I18N["zh-TW"];
   const prefix = dict['disp_organizer_prefix'] || '主辦人：';
 
@@ -840,6 +883,26 @@ function loadPoll(code) {
 
   renderMyGrid();
   renderHeatGrid();
+}
+
+/* 🌐 API 雲端整合：寫入 Cloudflare Worker */
+async function savePollToCloud(code, pollData, sha = null) {
+  if (WORKER_URL.includes('XXXX')) return false;
+  try {
+    const res = await fetch(`${WORKER_URL}?code=${code}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: pollData, sha: sha })
+    });
+    if (res.ok) {
+      const json = await res.json();
+      currentSha = json.content ? json.content.sha : null;
+      return true;
+    }
+  } catch (e) {
+    console.error("雲端儲存失敗:", e);
+  }
+  return false;
 }
 
 function getTimeSlots(rangeKey) {
@@ -1009,7 +1072,8 @@ function loadUserHistory() {
   }
 }
 
-function saveResponse() {
+/* 🌐 API 雲端整合：儲存個人的時段 */
+async function saveResponse() {
   const name = document.getElementById('user-name').value.trim();
   const pin = document.getElementById('user-pin').value.trim();
 
@@ -1021,26 +1085,30 @@ function saveResponse() {
   }
 
   currentPoll.responses[name] = { pin, slots: myDraft };
+
+  // 1. 同步儲存至 Cloudflare Worker 雲端
+  await savePollToCloud(currentPoll.code, currentPoll, currentSha);
+
+  // 2. 備份至本機 LocalStorage
   localStorage.setItem('poll_32_' + currentPoll.code, JSON.stringify(currentPoll));
   alert('成功儲存您的時段！');
 
   renderHeatGrid();
 }
 
-function verifyAdminAuth() {
+async function verifyAdminAuth() {
   const code = document.getElementById('admin-input-code').value.trim();
   const key = document.getElementById('admin-input-key').value.trim();
 
-  const raw = localStorage.getItem('poll_32_' + code);
-  if (!raw) { alert('找不到此 32 碼會議代碼'); return; }
+  await loadPoll(code);
 
-  const pollData = JSON.parse(raw);
-  if (pollData.adminKey !== key) {
+  if (!currentPoll) return;
+
+  if (currentPoll.adminKey !== key) {
     alert('管理員金鑰錯誤！存取被拒絕。');
     return;
   }
 
-  currentPoll = pollData;
   document.getElementById('admin-user-manager').style.display = 'block';
   document.getElementById('admin-poll-title').textContent = currentPoll.title;
   renderAdminUserList();
@@ -1111,10 +1179,11 @@ function renderAdminUserList() {
   });
 }
 
-function adminDeleteUser(uname) {
+async function adminDeleteUser(uname) {
   if (!confirm(`確定要刪除參與者「${uname}」的回覆資料嗎？`)) return;
 
   delete currentPoll.responses[uname];
+  await savePollToCloud(currentPoll.code, currentPoll, currentSha);
   localStorage.setItem('poll_32_' + currentPoll.code, JSON.stringify(currentPoll));
 
   renderAdminUserList();
@@ -1122,7 +1191,7 @@ function adminDeleteUser(uname) {
   alert(`已成功刪除 ${uname} 的資料`);
 }
 
-function deleteCurrentPoll() {
+async function deleteCurrentPoll() {
   if (!confirm(`確定要永久刪除會議「${currentPoll.title}」嗎？此動作無法復原。`)) return;
 
   const code = currentPoll.code;
