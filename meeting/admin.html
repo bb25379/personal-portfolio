@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>我發起的調查</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="assets/ui.css">
+</head>
+<body>
+
+<div class="rail">
+  <span class="nm" id="brand">會議預約系統</span>
+  <span class="grow"></span>
+  <a class="home" href="index.html">← 回首頁</a>
+  <a class="home" href="create.html">創建會議</a>
+</div>
+
+<div id="view"></div>
+<div class="toast" id="toast"></div>
+
+<script src="assets/config.js"></script>
+<script src="assets/store.js"></script>
+<script src="assets/core.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var view = $('view');
+  var M = null, CODE = '', SHA = null, RESP = [], T = null;
+
+  $('brand').textContent = Core.brandTitle();
+  document.title = '我發起的調查｜' + Core.brandTitle();
+  Core.mountBack();
+
+  /* ================= 清單 ================= */
+  function screenList() {
+    var mine = Core.mine();
+    var email = Core.meEmail();
+    view.innerHTML =
+      '<div class="page slim">' +
+      '<p class="eyebrow">後台</p>' +
+      '<h1>我發起的調查</h1>' +
+      '<p class="lede">這裡列出你在這台電腦上開過的調查。換電腦時，填入你的主辦人 Email 就能從索引撈回來。</p>' +
+      '<section class="blk"><div class="panel"><div class="hrow">' +
+      '<div class="fl"><label class="lb" for="i_mail">主辦人 Email</label>' +
+      '<input type="email" id="i_mail" value="' + Core.esc(email) + '" placeholder="you@example.com"></div>' +
+      '<div class="fl" style="flex:0 0 auto"><button class="q" id="b_pull" style="margin-bottom:1px">從索引撈回</button></div>' +
+      '</div></div></section>' +
+      '<section class="blk"><div id="listbox">' +
+      (mine.length ? '<p class="sub">載入中…</p>' : '<div class="panel"><p class="sub" style="margin:0">還沒有紀錄。' +
+        '先<a href="create.html">開一場調查</a>，或用上面的 Email 從索引撈回。</p></div>') +
+      '</div></section>' +
+      '<section class="blk"><div class="panel flat"><div class="hrow">' +
+      '<div class="fl"><label class="lb" for="i_code">用會議代碼直接打開</label>' +
+      '<input type="text" id="i_code" class="mono" placeholder="貼上 32 碼代碼"></div>' +
+      '<div class="fl" style="flex:0 0 auto"><button class="q" id="b_open" style="margin-bottom:1px">打開</button></div>' +
+      '</div></div></section>' +
+      '</div>';
+
+    $('b_pull').onclick = pull;
+    $('b_open').onclick = function () {
+      var c = $('i_code').value.trim();
+      if (!Core.validCode(c)) { Core.toast('代碼格式不對', true); return; }
+      location.search = '?code=' + encodeURIComponent(c);
+    };
+    if (mine.length) renderRows(mine);
+  }
+
+  function pull() {
+    var email = ($('i_mail').value || '').trim().toLowerCase();
+    if (!email) { Core.toast('請填 Email', true); return; }
+    Core.meEmail(email);
+    $('listbox').innerHTML = '<p class="sub"><span class="spin"></span> 讀取索引…</p>';
+    Store.readJson(Core.indexPath()).then(function (res) {
+      var arr = (res && Array.isArray(res.data)) ? res.data : [];
+      var mine = arr.filter(function (x) {
+        return String(x.organizerEmail || '').toLowerCase() === email;
+      });
+      if (!mine.length) {
+        $('listbox').innerHTML = '<div class="panel"><p class="sub" style="margin:0">索引裡沒有這個 Email 開的調查。</p></div>';
+        return;
+      }
+      mine.forEach(function (x) { Core.remember(x.code, x.title); });
+      renderRows(mine);
+    }).catch(function (e) {
+      $('listbox').innerHTML = '<div class="panel"><div class="note bad">' + Core.esc(e.message) + '</div></div>';
+    });
+  }
+
+  function renderRows(list) {
+    var seen = {}, rows = [];
+    list.forEach(function (x) { if (!seen[x.code]) { seen[x.code] = 1; rows.push(x); } });
+
+    $('listbox').innerHTML = '<div class="panel"><div class="scroll"><table class="tb">' +
+      '<thead><tr><th>會議</th><th>回填</th><th>截止</th><th style="width:76px"></th></tr></thead>' +
+      '<tbody>' + rows.map(function (r) {
+        return '<tr data-code="' + Core.esc(r.code) + '">' +
+          '<td><b>' + Core.esc(r.title || '(未命名)') + '</b>' +
+          '<div class="xs mono" style="word-break:break-all">' + Core.esc(r.code) + '</div></td>' +
+          '<td class="prog sub">…</td>' +
+          '<td class="sub mono">' + Core.esc(r.deadline ? r.deadline.replace('T', ' ') : '—') + '</td>' +
+          '<td><a class="lnk" href="?code=' + encodeURIComponent(r.code) + '">查看</a></td>' +
+          '</tr>';
+      }).join('') + '</tbody></table></div></div>';
+
+    // 逐筆補上回填進度
+    rows.slice(0, 25).forEach(function (r) {
+      var td = view.querySelector('tr[data-code="' + r.code + '"] .prog');
+      Store.readJson(Core.meetingPath(r.code)).then(function (res) {
+        if (!res) { td.textContent = '已刪除'; return; }
+        var tot = (res.data.people || []).length;
+        return Store.listDir(Core.pollDir(r.code) + '/responses').then(function (fs) {
+          var n = fs.filter(function (f) { return /\.json$/.test(f.name); }).length;
+          td.innerHTML = '<span class="num">' + n + '</span> / ' + tot +
+            (Core.isShut(res.data) ? ' <span class="tag shut">已結束</span>' : '');
+        });
+      }).catch(function () { td.textContent = '讀取失敗'; });
+    });
+  }
+
+  /* ================= 單場 ================= */
+  function loadOne(code) {
+    view.innerHTML = '<div class="page slim"><p class="sub" style="padding-top:40px">' +
+      '<span class="spin"></span> 讀取中…</p></div>';
+    Store.readJson(Core.meetingPath(code)).then(function (res) {
+      if (!res) throw Object.assign(new Error('找不到這組代碼的調查。'), { code: 'not_found' });
+      M = res.data; SHA = res.sha; CODE = code;
+      Core.remember(code, M.title);
+      return Store.listDir(Core.pollDir(code) + '/responses');
+    }).then(function (files) {
+      var jobs = files.filter(function (f) { return /\.json$/.test(f.name); })
+        .map(function (f) {
+          return Store.readJson(Core.pollDir(CODE) + '/responses/' + f.name)
+            .then(function (r) { return r ? r.data : null; })
+            .catch(function () { return null; });
+        });
+      return Promise.all(jobs);
+    }).then(function (list) {
+      RESP = list.filter(Boolean);
+      T = Core.tally(M, RESP);
+      screenOne();
+    }).catch(function (err) {
+      view.innerHTML = '<div class="page slim" style="padding-top:40px">' +
+        '<div class="note bad">' + Core.esc(err.message) + '</div>' +
+        '<p style="margin-top:16px"><a class="lnk" href="admin.html">← 回清單</a></p></div>';
+    });
+  }
+
+  function respondUrl() { return Core.pageUrl('respond.html', { code: CODE }); }
+
+  function inviteBody() {
+    return '各位好，\n\n想安排「' + M.title + '」（約 ' + M.lengthMin + ' 分鐘），'
+      + '請到下面這頁點選你有空的時段：\n\n' + respondUrl() + '\n\n'
+      + '會議代碼：' + CODE + '\n回填截止：' + Core.fmtDeadline(M) + '\n\n謝謝！\n' + M.organizer.name;
+  }
+  function nudgeBody() {
+    return 'Hi，\n\n提醒一下「' + M.title + '」的時段還沒收到你的回覆，'
+      + '目前已有 ' + T.done.length + ' / ' + T.total + ' 位填完，就等你的了：\n\n' + respondUrl() + '\n\n'
+      + '會議代碼：' + CODE + '\n回填截止：' + Core.fmtDeadline(M) + '\n\n感謝！\n' + M.organizer.name;
+  }
+
+  function reminderCal(hours) {
+    var dm = Core.deadlineMs(M);
+    if (dm === null) return null;
+    var at = new Date(dm - hours * 3600000);
+    if (at.getTime() < Date.now()) return null;
+    var end = new Date(at.getTime() + 900000);
+    function st(d) {
+      return d.getUTCFullYear() + Core.p2(d.getUTCMonth() + 1) + Core.p2(d.getUTCDate()) + 'T' +
+        Core.p2(d.getUTCHours()) + Core.p2(d.getUTCMinutes()) + '00Z';
+    }
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+      + '&text=' + encodeURIComponent('催填時段：' + M.title)
+      + '&dates=' + st(at) + '%2F' + st(end)
+      + '&ctz=' + encodeURIComponent(CFG.TZ_LABEL)
+      + '&details=' + encodeURIComponent('打開後台按「只催沒填的人」：\n' + Core.pageUrl('admin.html', { code: CODE }));
+  }
+
+  var REMLAB = { 168: '7 天前', 72: '3 天前', 48: '2 天前', 24: '1 天前', 6: '6 小時前', 3: '3 小時前', 1: '1 小時前' };
+
+  function screenOne() {
+    var pct = T.total ? Math.round(T.done.length / T.total * 100) : 0;
+    var shut = Core.isShut(M);
+    var h = '<div class="page">';
+
+    h += '<p class="eyebrow"><a href="admin.html" style="text-decoration:none">← 我發起的調查</a></p>';
+    h += '<div class="split"><h1>' + Core.esc(M.title) + ' <span class="tag ' +
+      (shut ? 'shut">已結束' : 'live">進行中') + '</span></h1></div>';
+    h += '<p class="sub">' + M.lengthMin + ' 分鐘　·　候選 ' + M.dates.length + ' 天　·　截止 ' +
+      Core.fmtDeadline(M) + (M.verifyEmail ? '　·　需 Email 驗證' : '') + '</p>';
+
+    /* 進度 */
+    h += '<section class="blk"><div class="panel"><div class="split">' +
+      '<div><p class="eyebrow">回填進度</p>' +
+      '<div class="tally"><span class="big">' + T.done.length + '</span>' +
+      '<span class="sub">／ ' + T.total + ' 位　' + pct + '%</span></div>' +
+      '<div class="bar"><i style="width:' + pct + '%"></i></div></div>' +
+      '<div style="text-align:right"><p class="eyebrow">會議代碼</p>' +
+      '<p class="xs mono" style="margin:0;max-width:320px;word-break:break-all">' + Core.esc(CODE) + '</p></div>' +
+      '</div>' +
+      '<div class="chips" style="margin-top:16px">' + (M.people || []).map(function (p) {
+        var did = RESP.some(function (r) { return r.pid === p.id; });
+        return '<span class="chip ' + (did ? 'done">✓ ' : 'wait">· ') + Core.esc(p.name) + '</span>';
+      }).join('') + '</div>' +
+      '<div class="hrow" style="margin-top:16px">' +
+      '<button class="q sm" id="b_code">複製代碼</button>' +
+      '<button class="q sm" id="b_url">複製填寫連結</button>' +
+      '<a class="lnk" href="' + Core.mailto((M.people || []).map(function (p) { return p.email; }).filter(Boolean).join(','),
+        '【請點選有空時段】' + M.title, inviteBody()) + '">寫邀請信給全部人</a>' +
+      (T.pending.length ? '<a class="lnk" href="' + Core.mailto(T.pending.map(function (p) { return p.email; }).filter(Boolean).join(','),
+        '【提醒｜尚未回填時段】' + M.title, nudgeBody()) + '">只催沒填的人（' + T.pending.length + '）</a>' : '') +
+      '<button class="q sm" id="b_csv">匯出 CSV</button>' +
+      '</div></div></section>';
+
+    /* 推薦時段 */
+    h += '<section class="blk"><p class="eyebrow">交集</p><h2>推薦時段</h2>';
+    if (!T.done.length) {
+      h += '<div class="panel"><p class="sub" style="margin:0">還沒有人填。把代碼與連結寄出去吧。</p></div>';
+    } else {
+      var top = T.blocks.filter(function (b) { return b.yes.length > 0; }).slice(0, 8);
+      if (!top.length) {
+        h += '<div class="panel"><div class="note bad">目前沒有任何時段是有人可以的。' +
+          '可能候選範圍太窄，建議延長截止並多開幾天。</div></div>';
+      } else {
+        h += '<div class="panel"><div class="scroll"><table class="tb">' +
+          '<thead><tr><th>時段</th><th style="text-align:right">可以</th>' +
+          '<th style="text-align:right">勉強</th><th style="text-align:right">不行</th>' +
+          '<th style="width:96px"></th></tr></thead><tbody>';
+        top.forEach(function (b) {
+          h += '<tr class="' + (b.all ? 'best' : '') + '">' +
+            '<td><span class="slot">' + (b.all ? '★ ' : '') + Core.blockLabel(b) + '</span>' +
+            (b.no.length ? '<div class="xs">不行：' + Core.esc(Core.namesOf(M, b.no)) + '</div>' : '') +
+            (b.mby.length ? '<div class="xs">勉強：' + Core.esc(Core.namesOf(M, b.mby)) + '</div>' : '') +
+            '</td>' +
+            '<td class="n" style="font-weight:700">' + b.yes.length + '</td>' +
+            '<td class="n">' + b.mby.length + '</td>' +
+            '<td class="n">' + b.no.length + '</td>' +
+            '<td><a class="lnk" href="' + Core.calLink(M, b, respondUrl()) + '" target="_blank" rel="noopener">📅 建立</a></td>' +
+            '</tr>';
+        });
+        h += '</tbody></table></div><p class="xs" style="margin:12px 0 0">' +
+          '★ ＝ 已填的人全部都可以。「📅 建立」會開一個時間與收件人都填好的 Google 日曆邀請，你只要按儲存。</p></div>';
+      }
+    }
+    h += '</section>';
+
+    /* 熱區 */
+    if (T.done.length) {
+      h += '<section class="blk"><p class="eyebrow">分佈</p><h2>每格有幾個人可以</h2>' +
+        '<div class="panel"><div id="heat"></div>' +
+        '<div class="scale" style="margin-top:12px">少' +
+        '<i style="background:var(--empty)"></i>' +
+        '<i style="background:color-mix(in srgb, var(--yes) 40%, var(--surface))"></i>' +
+        '<i style="background:color-mix(in srgb, var(--yes) 70%, var(--surface))"></i>' +
+        '<i style="background:var(--yes)"></i>多' +
+        '<span class="xs" style="margin-left:10px">★ ＝ 已填的人全數可以　·　斜線格未開放</span></div>' +
+        '<div class="who" id="who"></div></div></section>';
+    }
+
+    /* 催填與提醒 */
+    h += '<section class="blk"><p class="eyebrow">催填</p><h2>' +
+      (T.pending.length ? '還有 ' + T.pending.length + ' 位沒填' : '大家都填完了') + '</h2>' +
+      '<div class="panel"><div class="stack">';
+    if (T.pending.length) {
+      h += '<div class="chips">' + T.pending.map(function (p) {
+        return '<span class="chip wait">' + Core.esc(p.name) +
+          (p.email ? ' <span class="dt">' + Core.esc(p.email) + '</span>' : '') + '</span>';
+      }).join('') + '</div>';
+    } else {
+      h += '<div class="note good">全員回覆完成，上面第一列就是最好的時段。</div>';
+    }
+    var rems = (M.reminders || []).slice().sort(function (a, b) { return b - a; });
+    var sent = (M.outbox && M.outbox.remindersSent) || [];
+    if (rems.length) {
+      h += '<div><label class="lb">自動提醒時間點</label><div class="chips">';
+      rems.forEach(function (hr) {
+        var lab = REMLAB[hr] || (hr + ' 小時前');
+        if (sent.indexOf(hr) >= 0) { h += '<span class="chip done">✓ ' + lab + ' 已寄出</span>'; return; }
+        var url = reminderCal(hr);
+        h += url
+          ? '<span class="chip">' + lab + ' <a href="' + url + '" target="_blank" rel="noopener">加到我的日曆</a></span>'
+          : '<span class="chip">' + lab + '（已過）</span>';
+      });
+      h += '</div><p class="xs" style="margin:8px 0 0">若 GitHub Actions 的 SMTP 已設定，這些提醒會自動寄給未回填者；' +
+        '沒設定的話，可以用「加到我的日曆」提醒自己回來按催填。</p></div>';
+    }
+    h += '</div></div></section>';
+
+    /* 驗證碼 */
+    if (M.verifyEmail) {
+      h += '<section class="blk"><p class="eyebrow">驗證碼</p><h2>各參與者的 6 碼</h2>' +
+        '<div class="panel"><p class="xs" style="margin:0 0 10px">有人說沒收到信時，可以直接把他的碼給他。</p>' +
+        '<div class="chips">' + (M.people || []).map(function (p) {
+          return '<span class="chip">' + Core.esc(p.name) + ' <span class="dt">' + Core.esc(p.pin || '—') + '</span></span>';
+        }).join('') + '</div></div></section>';
+    }
+
+    /* 收尾 */
+    h += '<section class="blk"><p class="eyebrow">收尾</p><div class="panel flat"><div class="stack">' +
+      '<div class="hrow">' +
+      (M.closed
+        ? '<button class="q sm" id="b_open2">重新開放填寫</button>'
+        : '<button class="warn sm" id="b_close">結束回填</button>') +
+      '<span class="sub" style="flex:1 1 220px">結束之後參與者只能看，避免你發出邀請後又有人改。</span>' +
+      '</div>' +
+      '<div class="hrow">' +
+      '<div class="fl" style="flex:0 1 240px"><label class="lb" for="i_dl">延長截止時間</label>' +
+      '<input type="datetime-local" id="i_dl" value="' + Core.esc(M.deadline || '') + '"></div>' +
+      '<div class="fl" style="flex:0 0 auto"><button class="q sm" id="b_dl" style="margin-bottom:2px">更新截止時間</button></div>' +
+      '</div></div></div></section>';
+
+    h += '</div>';
+    view.innerHTML = h;
+
+    if (T.done.length) {
+      Core.mountHeat($('heat'), M, T, {
+        onHover: showWho,
+        onLeave: function () { showWho(null); }
+      });
+      showWho(null);
+    }
+
+    $('b_code').onclick = function () { Core.copy(CODE, '代碼已複製'); };
+    $('b_url').onclick = function () { Core.copy(respondUrl(), '連結已複製'); };
+    $('b_csv').onclick = exportCsv;
+    if ($('b_close')) $('b_close').onclick = function () { patch({ closed: true }, '已結束回填'); };
+    if ($('b_open2')) $('b_open2').onclick = function () { patch({ closed: false }, '已重新開放'); };
+    $('b_dl').onclick = function () {
+      var v = $('i_dl').value;
+      if (!v) { Core.toast('請選新的截止時間', true); return; }
+      var ob = JSON.parse(JSON.stringify(M.outbox || {}));
+      ob.remindersSent = [];
+      ob.resultSent = false;
+      patch({ deadline: v, closed: false, outbox: ob }, '截止時間已更新');
+    };
+  }
+
+  /* 滑過熱區格子 → 列出誰可以、誰不行 */
+  function showWho(k, cell) {
+    var box = $('who');
+    if (!box) return;
+    if (!k || !cell) {
+      box.innerHTML = '<span class="hint">把滑鼠移到任一格，這裡會列出那個時段誰可以、誰不行。</span>';
+      return;
+    }
+    function grp(cls, lab, ids) {
+      if (!ids.length) return '';
+      return '<div class="grp"><span class="lab ' + cls + '">' + lab + '</span>' +
+        '<span class="val">' + Core.esc(Core.namesOf(M, ids)) + '</span></div>';
+    }
+    var a = k.split(' ');
+    box.innerHTML = '<span class="k">' + Core.md(a[0]) + '（' + Core.wdOf(a[0]) + '）' + a[1] + '</span>' +
+      grp('y', '可以', cell.yi) + grp('m', '勉強', cell.mi) + grp('n', '不行', cell.ni);
+  }
+
+  function patch(fields, okMsg) {
+    var next = JSON.parse(JSON.stringify(M));
+    Object.keys(fields).forEach(function (k) { next[k] = fields[k]; });
+    Store.writeJson(Core.meetingPath(CODE), next, 'update ' + CODE, SHA)
+      .then(function () { Core.toast(okMsg); loadOne(CODE); })
+      .catch(function (err) {
+        if (err.code === 'conflict') Core.toast('資料被別人改過了，重新載入一次', true);
+        else Core.toast('更新失敗：' + err.message, true);
+      });
+  }
+
+  function exportCsv() {
+    var g = T.g, off = Core.offSet(M);
+    var head = ['時段'].concat((M.people || []).map(function (p) { return p.name; }));
+    var rows = [head];
+    g.dates.forEach(function (d) {
+      g.times.forEach(function (t) {
+        var k = Core.key(d, t);
+        if (off[k]) return;
+        var row = [k];
+        (M.people || []).forEach(function (p) {
+          var r = RESP.filter(function (x) { return x.pid === p.id; })[0];
+          if (!r) { row.push(''); return; }
+          var v = +(r.slots[k] || 0);
+          row.push(v === 2 ? '可以' : (v === 1 ? '勉強' : '不行'));
+        });
+        rows.push(row);
+      });
+    });
+    var csv = '﻿' + rows.map(function (r) {
+      return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(',');
+    }).join('\r\n');
+    var a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = (M.title || 'poll').replace(/[\\/:*?"<>|]/g, '_') + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    Core.toast('CSV 已下載');
+  }
+
+  /* ================= 啟動 ================= */
+  if (!Store.configured()) {
+    view.innerHTML = '<div class="page slim" style="padding-top:50px"><div class="note bad">' +
+      '<b>還沒設定完成。</b>請先編輯 <span class="mono">assets/config.js</span>（步驟見 DEPLOY.md）。</div></div>';
+  } else {
+    var c = Core.q('code');
+    if (c && Core.validCode(c)) loadOne(c); else screenList();
+  }
+})();
+</script>
+</body>
+</html>
