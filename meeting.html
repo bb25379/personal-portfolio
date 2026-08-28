@@ -80,6 +80,22 @@ body {
   outline: none;
   cursor: pointer;
 }
+/* 顯示時區選單（每個人各自設定，不影響別人） */
+.tz-select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  min-width: 215px;
+  max-width: 280px;
+}
+.tz-select:focus, .lang-select:focus { border-color: var(--primary); }
+.nav-tz-wrap { display: flex; align-items: center; gap: 6px; }
+.nav-tz-wrap .globe { font-size: 15px; }
 
 /* Container */
 .container {
@@ -215,6 +231,13 @@ input:focus, select:focus {
   font-size: 11px; font-weight: 700; color: #fff;
 }
 
+/* 換算時區後沒有對應時段的空格（例如跨日的邊緣） */
+.cell.empty {
+  background: transparent;
+  border: 1px dashed var(--border);
+  cursor: default;
+}
+
 .cell.st-2 { background: var(--yes) !important; }
 .cell.st-1 { background: var(--maybe) !important; }
 .cell.st-0 { background: var(--no) !important; }
@@ -277,7 +300,28 @@ input:focus, select:focus {
 }
 .modal-close-icon:hover { color: #fff; background: var(--border); }
 
+/* 時區提示條 */
+.tz-bar {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--maybe);
+  margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.tz-bar.same {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.25);
+  color: var(--text-sub);
+}
+.tz-bar b { color: var(--text-main); font-weight: 700; }
+
 @media (max-width: 900px) {
+  .navbar { height: auto; padding: 10px 1rem; flex-wrap: wrap; gap: 8px; }
+  .nav-right { flex-wrap: wrap; }
+  .tz-select { max-width: 100%; }
   .workspace { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .form-group.full { grid-column: span 1; }
@@ -292,6 +336,10 @@ input:focus, select:focus {
     <div class="brand-icon">M</div> MeetingSync Pro
   </a>
   <div class="nav-right">
+    <div class="nav-tz-wrap" title="切換成你自己的時區，格子會自動換算">
+      <span class="globe">🌐</span>
+      <select class="tz-select" id="displayTzSelect" onchange="changeDisplayTz(this.value)"></select>
+    </div>
     <select class="lang-select" id="langSelect" onchange="changeLang(this.value)">
       <option value="zh-TW">繁體中文</option>
       <option value="en">English</option>
@@ -333,7 +381,11 @@ input:focus, select:focus {
           <input type="text" id="input-organizer" placeholder="例如：黃小鴨" required>
         </div>
         <div class="form-group">
-          <label data-i18n="lbl_range">每日開放時段範圍</label>
+          <label data-i18n="lbl_timezone">會議基準時區</label>
+          <select id="input-timezone"></select>
+        </div>
+        <div class="form-group">
+          <label data-i18n="lbl_range">每日開放時段範圍（依基準時區）</label>
           <select id="input-time-range">
             <option value="0-24">全時段 24 Hours (00:00 - 24:00)</option>
             <option value="9-18" selected>09:00 - 18:00 (標準工時)</option>
@@ -364,6 +416,9 @@ input:focus, select:focus {
         <button class="btn btn-secondary" onclick="copyOnlyUrl()" data-i18n="btn_copy_url">複製 URL 網址</button>
       </div>
     </div>
+
+    <!-- 時區提示：這場會議的基準時區 vs 你目前的顯示時區 -->
+    <div class="tz-bar" id="tz-notice" style="display:none;"></div>
 
     <!-- 雙面板工作區 -->
     <div id="poll-workspace" class="workspace" style="display:none;">
@@ -500,6 +555,11 @@ input:focus, select:focus {
       </div>
     </div>
 
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label data-i18n="lbl_timezone">會議基準時區</label>
+      <div class="code-display" id="modal-display-tz" style="color:var(--text-sub);">--</div>
+    </div>
+
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
       <button class="btn btn-primary" style="flex:1;" onclick="copyFullMeetingInfo()" data-i18n="btn_copy_all_info">一鍵複製完整資訊</button>
       <button class="btn btn-secondary" onclick="closeCreatedModal()" data-i18n="btn_close">關閉視窗</button>
@@ -547,7 +607,7 @@ const I18N = {
     notice_retention: "⏱️ 提示：為維持系統輕量安全，會議資料建立後將保留 60 天，逾期資料將自動進行銷毀清空。",
     tab_create: "建立新會議", tab_respond: "填寫 / 查看時段", tab_admin: "管理員後台",
     create_title: "建立新的會議預約調查", create_sub: "填寫會議資訊並設定開放時間，系統將自動產生 32 碼識別碼與連結。",
-    lbl_title: "會議名稱 / 主題", lbl_organizer: "主辦單位 / 主辦人", lbl_range: "每日開放時段範圍", lbl_start: "開始日期", lbl_end: "結束日期（最長保存 60 天）",
+    lbl_title: "會議名稱 / 主題", lbl_organizer: "主辦單位 / 主辦人", lbl_range: "每日開放時段範圍（依基準時區）", lbl_start: "開始日期", lbl_end: "結束日期（最長保存 60 天）",
     btn_submit_create: "建立並取得預約連結", btn_load: "載入會議", btn_copy: "複製代碼", btn_copy_url: "複製 URL 網址", btn_copy_info: "一鍵複製會議資訊",
     lbl_your_name: "您的姓名：", lbl_your_pin: "密碼 (修改憑證)：", lbl_state: "選擇填寫狀態：",
     mode_yes: "可以", mode_maybe: "勉強", mode_clear: "清除", btn_save: "儲存我的時段",
@@ -560,13 +620,15 @@ const I18N = {
     modal_created_title: "🎉 會議建立成功！", modal_created_sub: "請妥善保存以下資訊，並可點擊右側按鈕進行快速複製：",
     btn_copy_code: "複製代碼", btn_copy_key: "複製金鑰", btn_copy_all_info: "一鍵複製完整資訊", btn_close: "關閉視窗",
     disp_organizer_prefix: "主辦人：", responded_suffix: "人已填寫", none_str: "無",
-    no_record: "尚無建立記錄", no_response: "尚無人填寫"
+    no_record: "尚無建立記錄", no_response: "尚無人填寫",
+    lbl_timezone: "會議基準時區", tz_group_common: "常用時區", tz_group_all: "所有時區", tz_base: "會議基準時區", tz_yours: "目前以你的時區顯示", tz_same: "目前顯示時區", tz_diff: "時差", btn_use_base_tz: "改用基準時區顯示", nav_tz_title: "顯示時區",
+    tz_legacy: "這場會議建立時沒有指定時區，時間以建立者當地時間顯示，未做換算。"
   },
   "en": {
     notice_retention: "⏱️ Note: Meeting records are retained for 60 days max before being automatically cleaned up.",
     tab_create: "New Meeting", tab_respond: "Respond / View", tab_admin: "Admin Console",
     create_title: "Create Meeting Poll", create_sub: "Fill in meeting info to generate a unique 32-character code.",
-    lbl_title: "Meeting Title", lbl_organizer: "Organizer", lbl_range: "Daily Time Range", lbl_start: "Start Date", lbl_end: "End Date (Max 60 days)",
+    lbl_title: "Meeting Title", lbl_organizer: "Organizer", lbl_range: "Daily Time Range (in meeting time zone)", lbl_start: "Start Date", lbl_end: "End Date (Max 60 days)",
     btn_submit_create: "Create & Get Link", btn_load: "Load Poll", btn_copy: "Copy Code", btn_copy_url: "Copy URL", btn_copy_info: "Copy Meeting Info",
     lbl_your_name: "Your Name:", lbl_your_pin: "Password (PIN):", lbl_state: "Selection Mode:",
     mode_yes: "Available", mode_maybe: "If Needed", mode_clear: "Clear", btn_save: "Save My Availability",
@@ -579,13 +641,15 @@ const I18N = {
     modal_created_title: "🎉 Meeting Created Successfully!", modal_created_sub: "Please save the credentials below and click to copy:",
     btn_copy_code: "Copy Code", btn_copy_key: "Copy Key", btn_copy_all_info: "Copy Full Info", btn_close: "Close Window",
     disp_organizer_prefix: "Organizer: ", responded_suffix: " responded", none_str: "None",
-    no_record: "No records found", no_response: "No responses yet"
+    no_record: "No records found", no_response: "No responses yet",
+    lbl_timezone: "Meeting Time Zone", tz_group_common: "Common time zones", tz_group_all: "All time zones", tz_base: "Meeting time zone", tz_yours: "Shown in your time zone", tz_same: "Displayed time zone", tz_diff: "difference", btn_use_base_tz: "Show in meeting time zone", nav_tz_title: "Display time zone",
+    tz_legacy: "This meeting was created without a time zone, so times are shown as entered (no conversion)."
   },
   "ja": {
     notice_retention: "⏱️ 注意: データは最大60日間保持され、その後自動削除されます。",
     tab_create: "新規作成", tab_respond: "回答 / 閲覧", tab_admin: "管理者",
     create_title: "日程調整を作成", create_sub: "会議情報を入力して32桁のコードを生成します。",
-    lbl_title: "会議名", lbl_organizer: "主催者", lbl_range: "時間帯", lbl_start: "開始日", lbl_end: "終了日 (最長60日)",
+    lbl_title: "会議名", lbl_organizer: "主催者", lbl_range: "時間帯（基準タイムゾーン基準）", lbl_start: "開始日", lbl_end: "終了日 (最長60日)",
     btn_submit_create: "作成してリンクを取得", btn_load: "読み込み", btn_copy: "コードをコピー", btn_copy_url: "URLをコピー", btn_copy_info: "詳細情報をコピー",
     lbl_your_name: "お名前:", lbl_your_pin: "パスワード:", lbl_state: "選択モード:",
     mode_yes: "可能", mode_maybe: "調整可能", mode_clear: "クリア", btn_save: "回答を保存",
@@ -598,13 +662,15 @@ const I18N = {
     modal_created_title: "🎉 作成が完了しました！", modal_created_sub: "以下の情報を保存・コピーしてください：",
     btn_copy_code: "コードをコピー", btn_copy_key: "キーをコピー", btn_copy_all_info: "すべての情報をコピー", btn_close: "閉じる",
     disp_organizer_prefix: "主催者：", responded_suffix: "人が回答済み", none_str: "なし",
-    no_record: "履歴はありません", no_response: "回答者はまだいません"
+    no_record: "履歴はありません", no_response: "回答者はまだいません",
+    lbl_timezone: "会議の基準タイムゾーン", tz_group_common: "よく使うタイムゾーン", tz_group_all: "すべてのタイムゾーン", tz_base: "会議の基準タイムゾーン", tz_yours: "あなたのタイムゾーンで表示中", tz_same: "表示タイムゾーン", tz_diff: "時差", btn_use_base_tz: "基準タイムゾーンで表示", nav_tz_title: "表示タイムゾーン",
+    tz_legacy: "この会議はタイムゾーン未指定で作成されたため、入力時刻をそのまま表示しています（換算なし）。"
   },
   "ko": {
     notice_retention: "⏱️ 안내: 회의 데이터는 최대 60일간 보관된 후 자동 삭제됩니다.",
     tab_create: "새 회의", tab_respond: "응답 / 보기", tab_admin: "관리자",
     create_title: "회의 일정 조사 생성", create_sub: "정보를 입력하여 32자리 코드를 생성합니다.",
-    lbl_title: "회의 제목", lbl_organizer: "주최자", lbl_range: "시간 범위", lbl_start: "시작일", lbl_end: "종료일 (최대 60일)",
+    lbl_title: "회의 제목", lbl_organizer: "주최자", lbl_range: "시간 범위 (기준 시간대)", lbl_start: "시작일", lbl_end: "종료일 (최대 60일)",
     btn_submit_create: "생성 및 링크 복사", btn_load: "불러오기", btn_copy: "코드 복사", btn_copy_url: "URL 복사", btn_copy_info: "회의 정보 복사",
     lbl_your_name: "이름:", lbl_your_pin: "비밀번호:", lbl_state: "상태 선택:",
     mode_yes: "가능", mode_maybe: "글쎄요", mode_clear: "지우기", btn_save: "내 시간 저장",
@@ -617,13 +683,15 @@ const I18N = {
     modal_created_title: "🎉 회의 생성 완료!", modal_created_sub: "아래 정보를 저장하거나 클릭하여 복사하세요:",
     btn_copy_code: "코드 복사", btn_copy_key: "키 복사", btn_copy_all_info: "전체 정보 복사", btn_close: "닫기",
     disp_organizer_prefix: "주최자: ", responded_suffix: "명 응답 완료", none_str: "없음",
-    no_record: "기록이 없습니다", no_response: "응답자가 없습니다"
+    no_record: "기록이 없습니다", no_response: "응답자가 없습니다",
+    lbl_timezone: "회의 기준 시간대", tz_group_common: "자주 쓰는 시간대", tz_group_all: "모든 시간대", tz_base: "회의 기준 시간대", tz_yours: "내 시간대로 표시 중", tz_same: "표시 시간대", tz_diff: "시차", btn_use_base_tz: "기준 시간대로 보기", nav_tz_title: "표시 시간대",
+    tz_legacy: "이 회의는 시간대 없이 생성되어 입력된 시간 그대로 표시됩니다(변환 없음)."
   },
   "es": {
     notice_retention: "⏱️ Nota: Los datos de la reunión se conservan un máximo de 60 días.",
     tab_create: "Nueva Reunión", tab_respond: "Responder / Ver", tab_admin: "Consola Admin",
     create_title: "Crear Encuesta de Reunión", create_sub: "Rellena la información para generar un código de 32 caracteres.",
-    lbl_title: "Título", lbl_organizer: "Organizador", lbl_range: "Rango Horario", lbl_start: "Fecha Inicio", lbl_end: "Fecha Fin (Máx 60 días)",
+    lbl_title: "Título", lbl_organizer: "Organizador", lbl_range: "Rango Horario (en la zona de la reunión)", lbl_start: "Fecha Inicio", lbl_end: "Fecha Fin (Máx 60 días)",
     btn_submit_create: "Crear y Obtener Enlace", btn_load: "Cargar", btn_copy: "Copiar Código", btn_copy_url: "Copiar URL", btn_copy_info: "Copiar Info Reunión",
     lbl_your_name: "Tu Nombre:", lbl_your_pin: "Contraseña:", lbl_state: "Estado:",
     mode_yes: "Disponible", mode_maybe: "Tal vez", mode_clear: "Borrar", btn_save: "Guardar Disponibilidad",
@@ -636,13 +704,15 @@ const I18N = {
     modal_created_title: "🎉 ¡Reunión Creada con Éxito!", modal_created_sub: "Guarda la información a continuación:",
     btn_copy_code: "Copiar Código", btn_copy_key: "Copiar Clave", btn_copy_all_info: "Copiar Info Completa", btn_close: "Cerrar Ventana",
     disp_organizer_prefix: "Organizador: ", responded_suffix: " han respondido", none_str: "Ninguno",
-    no_record: "Sin registros", no_response: "Sin respuestas aún"
+    no_record: "Sin registros", no_response: "Sin respuestas aún",
+    lbl_timezone: "Zona horaria de la reunión", tz_group_common: "Zonas horarias comunes", tz_group_all: "Todas las zonas horarias", tz_base: "Zona horaria de la reunión", tz_yours: "Mostrado en tu zona horaria", tz_same: "Zona horaria mostrada", tz_diff: "diferencia", btn_use_base_tz: "Ver en la zona de la reunión", nav_tz_title: "Zona horaria de visualización",
+    tz_legacy: "Esta reunión se creó sin zona horaria, por lo que las horas se muestran tal cual (sin conversión)."
   },
   "th": {
     notice_retention: "⏱️ หมายเหตุ: ข้อมูลการประชุมจะถูกเก็บไว้นานสูงสุด 60 วัน",
     tab_create: "สร้างการประชุม", tab_respond: "ตอบกลับ / ดู", tab_admin: "ผู้ดูแลระบบ",
     create_title: "สร้างการนัดหมายประชุม", create_sub: "กรอกข้อมูลเพื่อสร้างรหัส 32 หลัก",
-    lbl_title: "หัวข้อประชุม", lbl_organizer: "ผู้จัด", lbl_range: "ช่วงเวลา", lbl_start: "วันที่เริ่มต้น", lbl_end: "วันที่สิ้นสุด (สูงสุด 60 วัน)",
+    lbl_title: "หัวข้อประชุม", lbl_organizer: "ผู้จัด", lbl_range: "ช่วงเวลา (ตามโซนเวลาหลัก)", lbl_start: "วันที่เริ่มต้น", lbl_end: "วันที่สิ้นสุด (สูงสุด 60 วัน)",
     btn_submit_create: "สร้างและคัดลอกลิงก์", btn_load: "โหลด", btn_copy: "คัดลอกรหัส", btn_copy_url: "คัดลอก URL", btn_copy_info: "คัดลอกข้อมูลประชุม",
     lbl_your_name: "ชื่อของคุณ:", lbl_your_pin: "รหัสผ่าน:", lbl_state: "สถานะ:",
     mode_yes: "สะดวก", mode_maybe: "อาจจะ", mode_clear: "ล้าง", btn_save: "บันทึกเวลา",
@@ -655,9 +725,241 @@ const I18N = {
     modal_created_title: "🎉 สร้างการประชุมสำเร็จ!", modal_created_sub: "โปรดบันทึกข้อมูลและคลิกคัดลอก:",
     btn_copy_code: "คัดลอกรหัส", btn_copy_key: "คัดลอก Admin Key", btn_copy_all_info: "คัดลอกข้อมูลทั้งหมด", btn_close: "ปิดหน้าต่าง",
     disp_organizer_prefix: "ผู้จัด: ", responded_suffix: " คนตอบกลับแล้ว", none_str: "ไม่มี",
-    no_record: "ไม่มีประวัติ", no_response: "ยังไม่มีผู้ตอบ"
+    no_record: "ไม่มีประวัติ", no_response: "ยังไม่มีผู้ตอบ",
+    lbl_timezone: "โซนเวลาหลักของการประชุม", tz_group_common: "โซนเวลาที่ใช้บ่อย", tz_group_all: "โซนเวลาทั้งหมด", tz_base: "โซนเวลาหลักของการประชุม", tz_yours: "แสดงตามโซนเวลาของคุณ", tz_same: "โซนเวลาที่แสดง", tz_diff: "ต่างกัน", btn_use_base_tz: "แสดงตามโซนเวลาหลัก", nav_tz_title: "โซนเวลาที่แสดง",
+    tz_legacy: "การประชุมนี้สร้างโดยไม่ได้ระบุโซนเวลา จึงแสดงเวลาตามที่บันทึกไว้ (ไม่มีการแปลง)"
   }
 };
+
+/* ============================================================
+ *  時區處理
+ *
+ *  設計原則：
+ *    · 每場會議有一個「基準時區」（建立者選的），存在 poll.timezone
+ *    · 資料永遠用基準時區的日期＋時間當 key（slotId），
+ *      所以換顯示時區不會動到任何已存的資料，舊會議也不會壞掉
+ *    · 每個人可以自己選「顯示時區」，畫面即時換算（含跨日）
+ * ========================================================== */
+
+/* 常用時區排在最前面，其餘走瀏覽器內建的完整清單 */
+const COMMON_TZ = [
+  'Asia/Taipei', 'Asia/Tokyo', 'Asia/Seoul', 'Asia/Shanghai', 'Asia/Hong_Kong',
+  'Asia/Singapore', 'Asia/Bangkok', 'Asia/Ho_Chi_Minh', 'Asia/Jakarta', 'Asia/Manila',
+  'Asia/Kuala_Lumpur', 'Asia/Kolkata', 'Asia/Dubai',
+  'Australia/Sydney', 'Australia/Perth', 'Pacific/Auckland',
+  'Europe/London', 'Europe/Paris', 'Europe/Berlin', 'Europe/Amsterdam',
+  'Europe/Madrid', 'Europe/Rome', 'Europe/Warsaw', 'Europe/Moscow',
+  'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles',
+  'America/Vancouver', 'America/Toronto', 'America/Mexico_City', 'America/Sao_Paulo',
+  'UTC'
+];
+
+function localTz() {
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; }
+  catch (e) { return 'UTC'; }
+}
+
+function allTimeZones() {
+  try {
+    if (typeof Intl.supportedValuesOf === 'function') return Intl.supportedValuesOf('timeZone');
+  } catch (e) {}
+  return COMMON_TZ.slice();
+}
+
+/* 某個時區在某個瞬間的 UTC 偏移量（毫秒）。夏令時間也算得出來 */
+const _offsetCache = new Map();
+function tzOffsetMs(tz, dateMs) {
+  const bucket = Math.floor(dateMs / 3600000);          // 同一小時內共用快取
+  const ck = tz + '|' + bucket;
+  if (_offsetCache.has(ck)) return _offsetCache.get(ck);
+  let off = 0;
+  try {
+    const dtf = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz, hour12: false,
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    const p = {};
+    dtf.formatToParts(new Date(dateMs)).forEach(x => { p[x.type] = x.value; });
+    const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day,
+      p.hour === '24' ? 0 : +p.hour, +p.minute, +p.second);
+    off = asUTC - Math.floor(dateMs / 1000) * 1000;
+  } catch (e) { off = 0; }
+  _offsetCache.set(ck, off);
+  return off;
+}
+
+/* 「某時區的某年某月某日某時」→ 真正的 UTC 毫秒 */
+function zonedToUtcMs(dateStr, hh, mm, tz) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const guess = Date.UTC(y, m - 1, d, hh, mm || 0, 0);
+  let utc = guess - tzOffsetMs(tz, guess);
+  utc = guess - tzOffsetMs(tz, utc);   // 夏令時間交界處再校正一次
+  return utc;
+}
+
+/* UTC 毫秒 → 某時區的日期與時間字串 */
+function utcMsToZoned(ms, tz) {
+  const dtf = new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz, hour12: false,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', weekday: 'short'
+  });
+  const p = {};
+  dtf.formatToParts(new Date(ms)).forEach(x => { p[x.type] = x.value; });
+  const hour = p.hour === '24' ? '00' : p.hour;
+  return {
+    date: `${p.year}-${p.month}-${p.day}`,
+    time: `${hour}:${p.minute}`,
+    weekday: p.weekday
+  };
+}
+
+/* (UTC+08:00) 這種字串 */
+function offsetLabel(tz, atMs) {
+  const off = tzOffsetMs(tz, atMs || Date.now());
+  const sign = off < 0 ? '-' : '+';
+  const abs = Math.abs(off) / 60000;
+  const hh = String(Math.floor(abs / 60)).padStart(2, '0');
+  const mm = String(Math.round(abs % 60)).padStart(2, '0');
+  return `(UTC${sign}${hh}:${mm})`;
+}
+function tzLabel(tz) { return `${offsetLabel(tz)} ${tz.replace(/_/g, ' ')}`; }
+
+/* 兩個時區現在差幾小時，給提示條用 */
+function tzDiffText(baseTz, viewTz, atMs) {
+  const diff = (tzOffsetMs(viewTz, atMs || Date.now()) - tzOffsetMs(baseTz, atMs || Date.now())) / 3600000;
+  if (diff === 0) return '';
+  const s = (diff > 0 ? '+' : '−') + (Math.abs(diff) % 1 === 0
+    ? Math.abs(diff) : Math.abs(diff).toFixed(1));
+  return s;
+}
+
+let displayTz = localStorage.getItem('display_tz') || localTz();
+
+/* 把兩個時區選單填好 */
+function buildTzOptions(selectEl, selected) {
+  const now = Date.now();
+  const zones = allTimeZones();
+  const rest = zones.filter(z => COMMON_TZ.indexOf(z) < 0)
+    .sort((a, b) => (tzOffsetMs(a, now) - tzOffsetMs(b, now)) || a.localeCompare(b));
+
+  const mk = (list, labelText) => {
+    const g = document.createElement('optgroup');
+    g.label = labelText;
+    list.forEach(z => {
+      const o = document.createElement('option');
+      o.value = z;
+      o.textContent = tzLabel(z);
+      g.appendChild(o);
+    });
+    return g;
+  };
+
+  selectEl.innerHTML = '';
+  const dict = I18N[currentLang] || I18N['zh-TW'];
+  selectEl.appendChild(mk(COMMON_TZ.slice().sort((a, b) => tzOffsetMs(a, now) - tzOffsetMs(b, now)),
+    dict.tz_group_common || '常用時區'));
+  if (rest.length) selectEl.appendChild(mk(rest, dict.tz_group_all || '所有時區'));
+
+  if (selected && !zones.includes(selected)) {   // 例如舊瀏覽器沒有的時區
+    const o = document.createElement('option');
+    o.value = selected; o.textContent = tzLabel(selected);
+    selectEl.insertBefore(o, selectEl.firstChild);
+  }
+  selectEl.value = selected;
+}
+
+function initTimezones() {
+  const my = localTz();
+  buildTzOptions(document.getElementById('input-timezone'), my);   // 建立會議：預設自己的時區
+  buildTzOptions(document.getElementById('displayTzSelect'), displayTz);
+}
+
+function changeDisplayTz(tz) {
+  displayTz = tz;
+  localStorage.setItem('display_tz', tz);
+  if (currentPoll) {
+    renderMyGrid();
+    renderHeatGrid();
+    renderTzNotice();
+  }
+}
+
+/* 這場會議的基準時區。舊資料沒有存 → 當成跟顯示時區相同（行為與加功能前一樣） */
+function pollBaseTz() {
+  return (currentPoll && currentPoll.timezone) || displayTz;
+}
+
+function renderTzNotice() {
+  const box = document.getElementById('tz-notice');
+  if (!currentPoll) { box.style.display = 'none'; return; }
+  const dict = I18N[currentLang] || I18N['zh-TW'];
+  const base = pollBaseTz();
+  box.style.display = 'flex';
+
+  // 加時區功能之前建立的舊會議：沒有基準時區可以換算，照原樣顯示並講清楚
+  if (!currentPoll.timezone) {
+    box.className = 'tz-bar';
+    box.innerHTML = `🌐 ${dict.tz_legacy || '這場會議建立時沒有指定時區，時間以建立者當地時間顯示，未做換算。'}`;
+    return;
+  }
+
+  if (base === displayTz) {
+    box.className = 'tz-bar same';
+    box.innerHTML = `🌐 ${dict.tz_same || '目前顯示時區'}：<b>${tzLabel(base)}</b>`;
+    return;
+  }
+  const diff = tzDiffText(base, displayTz);
+  box.className = 'tz-bar';
+  box.innerHTML =
+    `🌐 ${dict.tz_base || '會議基準時區'}：<b>${tzLabel(base)}</b>　→　` +
+    `${dict.tz_yours || '目前以你的時區顯示'}：<b>${tzLabel(displayTz)}</b>` +
+    (diff ? `（${dict.tz_diff || '時差'} ${diff} h）` : '') +
+    ` <button class="btn btn-secondary btn-sm" onclick="useBaseTz()">${dict.btn_use_base_tz || '改用基準時區顯示'}</button>`;
+}
+
+function useBaseTz() {
+  const base = pollBaseTz();
+  document.getElementById('displayTzSelect').value = base;
+  changeDisplayTz(base);
+}
+
+/* ============================================================
+ *  依顯示時區算出畫面要怎麼排
+ *  回傳：欄（顯示時區的日期）、列（顯示時區的時間）、
+ *        以及每個 (欄,列) 對應到哪一個原始 slotId
+ * ========================================================== */
+function buildViewModel() {
+  const baseTz = pollBaseTz();
+  const dates = getDateArray(currentPoll.startDate, currentPoll.endDate);
+  const times = getTimeSlots(currentPoll.timeRange);
+
+  const cols = [], rows = [], map = {};
+  const colSeen = {}, rowSeen = {};
+
+  dates.forEach(d => {
+    times.forEach(t => {
+      const slotId = `${d}_${t}`;                       // 原始 key，永遠是基準時區
+      const hh = parseInt(t.slice(0, 2), 10);
+      const utc = zonedToUtcMs(d, hh, 0, baseTz);
+      const z = (baseTz === displayTz)
+        ? { date: d, time: t }                          // 同時區就不用換算，維持原樣
+        : utcMsToZoned(utc, displayTz);
+
+      if (!colSeen[z.date]) { colSeen[z.date] = 1; cols.push(z.date); }
+      if (!rowSeen[z.time]) { rowSeen[z.time] = 1; rows.push(z.time); }
+      map[`${z.date}|${z.time}`] = { slotId, baseDate: d, baseTime: t };
+    });
+  });
+
+  /* 日期欄照時間先後排；
+   * 時間列則保留「從基準時區第一個時段開始」的順序——
+   * 例如台北 09–17 到了紐約是 21:00→05:00，這樣才會連成一段，
+   * 而不是被 00:00 切成前後兩塊。 */
+  cols.sort();
+  return { cols, rows, map, baseTz };
+}
 
 let currentLang = "zh-TW";
 function changeLang(lang) {
@@ -668,8 +970,13 @@ function changeLang(lang) {
     if (dict[key]) el.textContent = dict[key];
   });
 
+  // 時區選單裡的分組標題也要跟著換語言
+  buildTzOptions(document.getElementById('input-timezone'), document.getElementById('input-timezone').value || localTz());
+  buildTzOptions(document.getElementById('displayTzSelect'), displayTz);
+
   if (currentPoll) {
     document.getElementById('disp-organizer').innerHTML = `<span data-i18n="disp_organizer_prefix">${dict['disp_organizer_prefix'] || '主辦人：'}</span><span id="disp-organizer-val">${currentPoll.organizer}</span>`;
+    renderTzNotice();
     renderHeatGrid();
   }
 }
@@ -683,6 +990,7 @@ let isMouseDown = false;
 window.addEventListener('DOMContentLoaded', () => {
   cleanupExpiredPolls();
   initDates();
+  initTimezones();
 
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get('code');
@@ -766,6 +1074,7 @@ async function handleCreatePoll(e) {
   const title = document.getElementById('input-title').value.trim();
   const organizer = document.getElementById('input-organizer').value.trim();
   const timeRange = document.getElementById('input-time-range').value;
+  const timezone = document.getElementById('input-timezone').value || localTz();
   const startDate = document.getElementById('input-start-date').value;
   const endDate = document.getElementById('input-end-date').value;
 
@@ -780,6 +1089,7 @@ async function handleCreatePoll(e) {
     title: title,
     organizer: organizer,
     timeRange: timeRange,
+    timezone: timezone,          // 這場會議的基準時區，時段一律以它為準
     startDate: startDate,
     endDate: endDate,
     createdTimestamp: new Date().getTime(),
@@ -796,7 +1106,7 @@ async function handleCreatePoll(e) {
   myPolls.unshift({ code, adminKey, title, organizer, endDate });
   localStorage.setItem('my_created_polls', JSON.stringify(myPolls));
 
-  openCreatedModal(code, adminKey);
+  openCreatedModal(code, adminKey, timezone);
 
   const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
   window.history.pushState({ path: newUrl }, '', newUrl);
@@ -805,8 +1115,9 @@ async function handleCreatePoll(e) {
   loadPoll(code);
 }
 
-function openCreatedModal(code, adminKey) {
+function openCreatedModal(code, adminKey, timezone) {
   const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  document.getElementById('modal-display-tz').textContent = tzLabel(timezone || localTz());
   document.getElementById('modal-display-code').textContent = code;
   document.getElementById('modal-display-key').textContent = adminKey;
   document.getElementById('modal-display-url').textContent = fullUrl;
@@ -860,7 +1171,9 @@ function copyFullMeetingInfo() {
 
   const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
 
-  let infoText = `📌 會議主題：${title}\n👤 主辦人：${organizer}\n🔑 會議代碼 (32碼)：${code}\n🔗 預約連結：${fullUrl}`;
+  const tzText = currentPoll && currentPoll.timezone ? `\n🌐 基準時區：${tzLabel(currentPoll.timezone)}` : '';
+
+  let infoText = `📌 會議主題：${title}\n👤 主辦人：${organizer}${tzText}\n🔑 會議代碼 (32碼)：${code}\n🔗 預約連結：${fullUrl}`;
   if (adminKey && adminKey !== "--") {
     infoText += `\n🔐 管理員金鑰 (8碼)：${adminKey}`;
   }
@@ -945,6 +1258,7 @@ async function loadPoll(code) {
   document.getElementById('disp-organizer').innerHTML = `<span data-i18n="disp_organizer_prefix">${prefix}</span><span id="disp-organizer-val">${currentPoll.organizer}</span>`;
   document.getElementById('poll-workspace').style.display = 'grid';
 
+  renderTzNotice();
   renderMyGrid();
   renderHeatGrid();
 }
@@ -1021,34 +1335,48 @@ function validateUserIdentity() {
   return true;
 }
 
+/* 日期欄位標題：顯示時區的月/日 */
+function colHeaderText(dateStr) {
+  return dateStr.slice(5);
+}
+
 function renderMyGrid() {
   const container = document.getElementById('my-grid');
   container.innerHTML = '';
 
-  const dates = getDateArray(currentPoll.startDate, currentPoll.endDate);
-  const times = getTimeSlots(currentPoll.timeRange);
+  const vm = buildViewModel();
 
-  container.style.gridTemplateColumns = `50px repeat(${dates.length}, minmax(50px, 1fr))`;
+  container.style.gridTemplateColumns = `56px repeat(${vm.cols.length}, minmax(50px, 1fr))`;
 
   container.appendChild(document.createElement('div'));
-  dates.forEach(d => {
+  vm.cols.forEach(d => {
     const h = document.createElement('div');
     h.className = 'grid-header';
-    h.textContent = d.slice(5);
+    h.textContent = colHeaderText(d);
     container.appendChild(h);
   });
 
-  times.forEach(t => {
+  vm.rows.forEach(t => {
     const timeLbl = document.createElement('div');
     timeLbl.className = 'grid-time';
     timeLbl.textContent = t;
     container.appendChild(timeLbl);
 
-    dates.forEach(d => {
-      const slotId = `${d}_${t}`;
+    vm.cols.forEach(d => {
+      const hit = vm.map[`${d}|${t}`];
       const cell = document.createElement('div');
+
+      // 換算之後這一格沒有對應的候選時段（跨日邊緣）→ 放一個不能點的空格
+      if (!hit) {
+        cell.className = 'cell empty';
+        container.appendChild(cell);
+        return;
+      }
+
+      const slotId = hit.slotId;
       cell.className = 'cell';
-      
+      cell.title = `${d} ${t}`;
+
       const st = myDraft[slotId] || 0;
       if (st > 0) cell.classList.add(`st-${st}`);
 
@@ -1089,8 +1417,6 @@ function renderHeatGrid() {
   const container = document.getElementById('heat-grid');
   container.innerHTML = '';
 
-  const dates = getDateArray(currentPoll.startDate, currentPoll.endDate);
-  const times = getTimeSlots(currentPoll.timeRange);
   const responses = currentPoll.responses || {};
   const total = Object.keys(responses).length;
 
@@ -1102,25 +1428,36 @@ function renderHeatGrid() {
 
   document.getElementById('disp-count').textContent = `${total} ${suffix}`;
 
-  container.style.gridTemplateColumns = `50px repeat(${dates.length}, minmax(50px, 1fr))`;
+  const vm = buildViewModel();
+  const showBase = (vm.baseTz !== displayTz);
+
+  container.style.gridTemplateColumns = `56px repeat(${vm.cols.length}, minmax(50px, 1fr))`;
 
   container.appendChild(document.createElement('div'));
-  dates.forEach(d => {
+  vm.cols.forEach(d => {
     const h = document.createElement('div');
     h.className = 'grid-header';
-    h.textContent = d.slice(5);
+    h.textContent = colHeaderText(d);
     container.appendChild(h);
   });
 
-  times.forEach(t => {
+  vm.rows.forEach(t => {
     const timeLbl = document.createElement('div');
     timeLbl.className = 'grid-time';
     timeLbl.textContent = t;
     container.appendChild(timeLbl);
 
-    dates.forEach(d => {
-      const slotId = `${d}_${t}`;
+    vm.cols.forEach(d => {
+      const hit = vm.map[`${d}|${t}`];
       const cell = document.createElement('div');
+
+      if (!hit) {
+        cell.className = 'cell empty';
+        container.appendChild(cell);
+        return;
+      }
+
+      const slotId = hit.slotId;
       cell.className = 'cell';
 
       let yesList = [], maybeList = [], noList = [];
@@ -1148,7 +1485,11 @@ function renderHeatGrid() {
 
       cell.addEventListener('mouseenter', () => {
         const tooltip = document.getElementById('tooltip-box');
-        tooltip.innerHTML = `<strong>${d} ${t}</strong> (${yesList.length}/${total})：` +
+        // 換了時區時，同時標出這一格在會議基準時區是幾點，避免對不上
+        const baseNote = showBase
+          ? `<span style="color:var(--text-muted)">（${dict.tz_base || '會議基準時區'} ${hit.baseDate} ${hit.baseTime}）</span>`
+          : '';
+        tooltip.innerHTML = `<strong>${d} ${t}</strong> ${baseNote} (${yesList.length}/${total})：` +
           `<div class="grp"><span class="lab-yes">${modeYesText}：</span> ${yesList.join(', ') || noneText}</div>` +
           `<div class="grp"><span class="lab-maybe">${modeMaybeText}：</span> ${maybeList.join(', ') || noneText}</div>`;
       });
