@@ -1,1333 +1,2692 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PicMark 圖片快捷標記與標註大師</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f3f4f6;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-sizing: border-box;
-        }
-        .container {
-            max-width: 1400px;
-            width: 100%;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative;
-            box-sizing: border-box;
-        }
-        
-        .lang-selector-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            z-index: 10;
-        }
-        .lang-select {
-            padding: 4px 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            background-color: white;
-            font-size: 13px;
-            cursor: pointer;
-            outline: none;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PicMark — 圖片標記與標註工作台</title>
+<style>
+/* =========================================================
+   PicMark — design tokens
+   ========================================================= */
+:root{
+    --paper:#F4F5F7;
+    --surface:#FFFFFF;
+    --surface-2:#FAFBFC;
+    --line:#E4E7EC;
+    --line-strong:#D3D8E0;
+    --ink:#15181D;
+    --ink-2:#5B6472;
+    --ink-3:#8A93A2;
 
-        h1 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            color: #1f2937;
-            font-size: 24px;
-            text-align: center;
-            padding-right: 150px;
-        }
+    --stage:#24272E;
+    --stage-2:#1B1E24;
+    --stage-line:rgba(255,255,255,.10);
+    --stage-ink:#D8DCE3;
+    --stage-ink-2:#9AA2AF;
+    --mark:rgba(255,255,255,.40);
 
-        /* 工具列配置 */
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            background: #f9fafb;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            align-items: center;
-            border: 1px solid #e5e7eb;
-        }
-        .tool-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-right: 1px solid #e5e7eb;
-            padding-right: 12px;
-        }
-        .tool-group:last-child {
-            border-right: none;
-            padding-right: 0;
-        }
-        label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #4b5563;
-            white-space: nowrap;
-        }
-        input[type="text"], input[type="number"], input[type="color"], select {
-            padding: 6px 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            outline: none;
-            background: white;
-        }
-        input[type="number"] { width: 55px; }
-        input[type="text"] { width: 130px; }
-        input[type="range"] { width: 80px; cursor: pointer; vertical-align: middle; }
+    --accent:#1F6F5C;
+    --accent-hover:#1A5F4F;
+    --accent-soft:#E8F1EE;
+    --accent-ring:rgba(31,111,92,.30);
+    --danger:#B4302B;
+    --danger-soft:#FBECEB;
 
-        /* 按鈕樣式 */
-        button {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-        button:hover:not(:disabled) { background-color: #2563eb; }
-        button:disabled {
-            background-color: #e5e7eb;
-            cursor: not-allowed;
-            color: #9ca3af;
-        }
-        button.secondary { background-color: #4b5563; }
-        button.secondary:hover:not(:disabled) { background-color: #374151; }
-        button.danger { background-color: #ef4444; }
-        button.danger:hover:not(:disabled) { background-color: #dc2626; }
-        
-        .mode-btn {
-            background-color: #f3f4f6;
-            color: #374151;
-            border: 1px solid #d1d5db;
-        }
-        .mode-btn:hover { background-color: #e5e7eb; }
-        .mode-btn.active {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
+    --r-sm:6px;
+    --r:8px;
+    --r-lg:12px;
 
-        /* 畫布區域 */
-        .canvas-area {
-            position: relative;
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            min-height: 450px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: auto;
-            background-color: #fafafa;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .canvas-wrapper {
-            position: relative;
-            display: none;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            border-radius: 4px;
-        }
-        canvas {
-            display: block;
-            max-width: 100%;
-            height: auto;
-            touch-action: none; /* 💡 告訴手機瀏覽器不要擅自捲動畫面或縮放，交給 canvas 處理 */
-        }
-        
-        .placeholder-text {
-            color: #9ca3af;
-            font-size: 16px;
-            text-align: center;
-            pointer-events: none;
-            line-height: 1.8;
-            width: 100%;
-            max-width: 650px;
-        }
-        .kbd-container {
-            font-size:13px; 
-            display:inline-block; 
-            margin-top:15px; 
-            background-color: #e2e8f0; 
-            padding: 12px 18px; 
-            border-radius: 8px;
-            color: #475569;
-            text-align: left;
-        }
-        .kbd {
-            background: #ffffff;
-            border-radius: 4px;
-            padding: 2px 6px;
-            font-size: 12px;
-            font-family: monospace;
-            color: #334155;
-            border: 1px solid #cbd5e1;
-            border-bottom: 3px solid #cbd5e1;
-        }
+    --ui:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC","Noto Sans JP","Noto Sans KR","Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,"Liberation Mono",monospace;
 
-        /* 📱 手機版 RWD 樣式 */
-        @media (max-width: 768px) {
-            body {
-                padding: 0;
-            }
-            .container {
-                padding: 10px;
-                border-radius: 0;
-                box-shadow: none;
-                padding-top: 140px; 
-                padding-bottom: 120px; 
-            }
-            
-            h1 {
-                font-size: 16px;
-                padding-right: 0;
-                margin: 5px 0 15px 50px; 
-                text-align: left;
-            }
+    --rail:60px;
+    --panel:286px;
+    --top:56px;
+    --status:30px;
+}
 
-            .toolbar {
-                display: block; 
-                background: transparent;
-                border: none;
-                padding: 0;
-                margin: 0;
-            }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font-family:var(--ui);
+    font-size:13px;
+    color:var(--ink);
+    background:var(--paper);
+    -webkit-font-smoothing:antialiased;
+    overflow:hidden;
+}
+button{font-family:inherit}
 
-            /* 【頂部第一層】：歷史回退與語言 */
-            .tool-group:nth-child(6) { 
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: calc(100% - 110px);
-                height: 50px;
-                background: white;
-                box-sizing: border-box;
-                padding: 8px;
-                z-index: 100;
-                display: flex !important;
-                border: 1px solid #e5e7eb;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            }
-            .lang-selector-container {
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: 110px;
-                height: 50px;
-                background: white;
-                box-sizing: border-box;
-                padding: 10px 8px;
-                z-index: 100;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border: 1px solid #e5e7eb;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            }
+.eyebrow{
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:.10em;
+    text-transform:uppercase;
+    color:var(--ink-3);
+}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
-            /* 【第二層上部】：屬性控制欄 */
-            .tool-group:nth-child(3), .tool-group:nth-child(4), .tool-group:nth-child(5) { 
-                position: fixed;
-                top: 50px;
-                left: 50px; 
-                width: calc(100% - 50px);
-                background: #f9fafb;
-                z-index: 99;
-                padding: 6px 10px !important;
-                border-bottom: 1px solid #e5e7eb;
-                box-sizing: border-box;
-                overflow-x: auto;
-                white-space: nowrap;
-                display: flex !important;
-                gap: 8px;
-            }
-            .tool-group:nth-child(4), .tool-group:nth-child(5) {
-                top: 90px;
-                border-bottom: 2px solid #cbd5e1;
-            }
+/* =========================================================
+   App shell
+   ========================================================= */
+.app{
+    height:100vh;
+    height:100dvh;
+    display:grid;
+    grid-template-rows:var(--top) 1fr var(--status);
+}
 
-            /* 【左側垂直工具列】 */
-            .tool-group:nth-child(2) { 
-                position: fixed;
-                top: 50px;
-                left: 0;
-                width: 50px;
-                height: calc(100vh - 50px);
-                background: #f1f5f9;
-                z-index: 98;
-                flex-direction: column !important; 
-                overflow-y: auto;
-                padding: 10px 0 !important;
-                gap: 12px !important;
-                border-right: 2px solid #cbd5e1;
-                align-items: center;
-            }
-            .tool-group:nth-child(2) label { display: none; }
-            .mode-btn {
-                padding: 8px !important;
-                width: 38px;
-                height: 38px;
-                justify-content: center;
-                border-radius: 50%;
-            }
-            .mode-btn span { display: none; }
+/* ---------- Top bar ---------- */
+.topbar{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:0 14px;
+    background:var(--surface);
+    border-bottom:1px solid var(--line);
+    min-width:0;
+}
+.brand{display:flex;align-items:center;gap:9px;flex:0 0 auto}
+.brand-mark{
+    width:28px;height:28px;border-radius:7px;
+    background:var(--accent);
+    color:#fff;
+    display:grid;place-items:center;
+    flex:0 0 auto;
+}
+.brand-text{display:flex;flex-direction:column;line-height:1.15}
+.brand-name{font-size:14px;font-weight:700;letter-spacing:-.01em}
+.brand-tagline{font-size:10.5px;color:var(--ink-3)}
 
-            /* 【底部第三層】：載入圖片與下載 */
-            .tool-group:nth-child(1) { 
-                position: fixed;
-                bottom: 60px;
-                left: 0;
-                width: 100%;
-                background: white;
-                z-index: 100;
-                padding: 8px 15px !important;
-                border-top: 1px solid #e5e7eb;
-                box-sizing: border-box;
-                display: flex !important;
-            }
-            .tool-group:last-child { 
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background: white;
-                z-index: 100;
-                padding: 10px 15px !important;
-                border-top: 1px solid #cbd5e1;
-                box-sizing: border-box;
-                display: flex !important;
-            }
+.topbar-divider{width:1px;height:24px;background:var(--line);flex:0 0 auto}
 
-            .canvas-area {
-                margin-left: 45px; 
-                min-height: 300px;
-                padding: 5px;
-            }
-            input[type="range"] { width: 65px; }
-        }
-    </style>
+.filechip{
+    display:flex;align-items:center;gap:10px;
+    min-width:0;flex:1 1 auto;
+    padding:5px 10px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface-2);
+    color:var(--ink-2);
+    max-width:420px;
+}
+.filechip .chip-dot{width:6px;height:6px;border-radius:50%;background:var(--line-strong);flex:0 0 auto}
+.filechip.is-loaded .chip-dot{background:var(--accent)}
+.chip-name{
+    font-size:12px;font-weight:600;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.chip-dim{font-family:var(--mono);font-size:11px;color:var(--ink-3);flex:0 0 auto}
+.chip-index{
+    font-family:var(--mono);font-size:10.5px;font-weight:700;flex:0 0 auto;
+    padding:1px 6px;border-radius:999px;
+    background:var(--accent-soft);color:var(--accent);
+}
+.chip-index:empty{display:none}
+
+.topbar-actions{display:flex;align-items:center;gap:6px;margin-left:auto;flex:0 0 auto}
+
+/* ---------- Buttons ---------- */
+.btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    height:32px;padding:0 12px;
+    border:1px solid var(--line-strong);
+    border-radius:var(--r-sm);
+    background:var(--surface);
+    color:var(--ink);
+    font-size:12.5px;font-weight:600;
+    cursor:pointer;
+    transition:background .15s,border-color .15s,color .15s;
+    white-space:nowrap;
+    position:relative;
+}
+.btn:hover:not(:disabled){background:var(--surface-2);border-color:var(--ink-3)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn svg{width:16px;height:16px;flex:0 0 auto}
+
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover);border-color:var(--accent-hover)}
+
+.btn-icon{
+    width:32px;height:32px;padding:0;
+    border-color:transparent;background:transparent;color:var(--ink-2);
+}
+.btn-icon:hover:not(:disabled){background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+.btn-icon.is-danger:hover:not(:disabled){background:var(--danger-soft);border-color:#F0D2D0;color:var(--danger)}
+
+/* ---------- Language ---------- */
+.lang{
+    display:flex;align-items:center;gap:5px;
+    height:32px;padding:0 6px 0 9px;
+    border:1px solid var(--line);border-radius:var(--r-sm);
+    background:var(--surface);
+    color:var(--ink-2);
+}
+.lang svg{width:15px;height:15px;flex:0 0 auto}
+.lang select{
+    border:none;background:transparent;
+    font-family:inherit;font-size:12px;font-weight:600;color:var(--ink);
+    padding:0 18px 0 0;
+    appearance:none;-webkit-appearance:none;
+    cursor:pointer;outline:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B6472' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 0 center;background-size:13px;
+}
+
+/* =========================================================
+   Workspace
+   ========================================================= */
+.workspace{
+    display:grid;
+    grid-template-columns:var(--rail) 1fr var(--panel);
+    min-height:0;min-width:0;
+}
+
+/* ---------- Tool rail ---------- */
+.rail{
+    position:relative;
+    background:var(--surface);
+    border-right:1px solid var(--line);
+    display:flex;flex-direction:column;align-items:center;
+    gap:4px;
+    padding:10px 0;
+    overflow:auto;
+}
+.rail::after{
+    content:"";
+    position:absolute;top:10px;bottom:10px;right:0;width:5px;
+    background-image:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px 9px);
+    pointer-events:none;
+}
+.rail-label{margin:2px 0 6px}
+
+.mode-btn{
+    position:relative;
+    width:40px;height:40px;
+    display:flex;align-items:center;justify-content:center;
+    border:1px solid transparent;border-radius:var(--r);
+    background:transparent;color:var(--ink-2);
+    cursor:pointer;
+    transition:background .15s,color .15s,border-color .15s;
+    flex:0 0 auto;
+}
+.mode-btn svg{width:20px;height:20px}
+.mode-btn:hover{background:var(--surface-2);border-color:var(--line);color:var(--ink)}
+.mode-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.mode-btn.active::before{
+    content:"";position:absolute;left:-10px;top:50%;transform:translateY(-50%);
+    width:3px;height:18px;border-radius:0 2px 2px 0;background:var(--accent);
+}
+.tool-tip{display:none}
+
+/* floating tooltip (never clipped by scroll containers) */
+.float-tip{
+    position:fixed;z-index:900;
+    display:none;align-items:center;gap:7px;
+    padding:5px 9px;border-radius:var(--r-sm);
+    background:var(--ink);color:#fff;
+    font-size:11.5px;font-weight:600;white-space:nowrap;
+    pointer-events:none;
+    box-shadow:0 6px 18px rgba(0,0,0,.22);
+}
+.float-tip .tip-key{
+    font-family:var(--mono);font-size:10.5px;font-weight:700;
+    padding:1px 5px;border-radius:4px;
+    background:rgba(255,255,255,.16);color:#fff;
+}
+
+/* ---------- Stage column ---------- */
+.center{display:flex;flex-direction:column;min-width:0;min-height:0}
+
+.stage{
+    flex:1 1 auto;
+    position:relative;
+    background:radial-gradient(120% 100% at 50% 0%,var(--stage) 0%,var(--stage-2) 100%);
+    min-width:0;min-height:0;
+    overflow:hidden;
+    touch-action:none;
+}
+.stage.is-dragover{box-shadow:inset 0 0 0 2px var(--accent)}
+.stage.is-panning{cursor:grabbing}
+.stage.can-pan{cursor:grab}
+
+.canvas-pan{
+    position:absolute;top:0;left:0;
+    transform-origin:0 0;
+    will-change:transform;
+}
+.canvas-frame{
+    position:relative;
+    display:none;
+    line-height:0;
+    background-color:#fff;
+    background-image:
+        linear-gradient(45deg,#E9EBEE 25%,transparent 25%,transparent 75%,#E9EBEE 75%),
+        linear-gradient(45deg,#E9EBEE 25%,transparent 25%,transparent 75%,#E9EBEE 75%);
+    background-size:18px 18px;
+    background-position:0 0,9px 9px;
+    box-shadow:0 18px 45px rgba(0,0,0,.45);
+}
+canvas{display:block;touch-action:none}
+
+/* inline text editor, lives inside the transformed layer so it scales with zoom */
+.text-editor{
+    position:absolute;
+    margin:0;padding:0;
+    border:none;outline:1px dashed rgba(59,130,246,.9);
+    background:rgba(255,255,255,.82);
+    line-height:1;
+    letter-spacing:0;
+    min-width:40px;
+    z-index:5;
+}
+
+/* ---------- Zoom bar ---------- */
+.zoombar{
+    position:absolute;right:16px;bottom:16px;
+    display:none;align-items:center;gap:2px;
+    padding:4px;
+    border-radius:999px;
+    background:rgba(20,22,26,.86);
+    border:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(6px);
+    z-index:20;
+}
+.zoombar.is-on{display:flex}
+.zoom-btn{
+    width:28px;height:28px;
+    display:grid;place-items:center;
+    border:none;border-radius:50%;
+    background:transparent;color:var(--stage-ink);
+    cursor:pointer;
+}
+.zoom-btn:hover{background:rgba(255,255,255,.12);color:#fff}
+.zoom-btn svg{width:15px;height:15px}
+.zoom-level{
+    min-width:54px;height:28px;padding:0 6px;
+    border:none;border-radius:999px;background:transparent;
+    color:#fff;font-family:var(--mono);font-size:11.5px;font-weight:600;
+    cursor:pointer;
+}
+.zoom-level:hover{background:rgba(255,255,255,.12)}
+
+/* ---------- Filmstrip ---------- */
+.filmstrip{
+    display:none;flex:0 0 auto;
+    align-items:center;gap:8px;
+    padding:9px 12px;
+    background:var(--surface);
+    border-top:1px solid var(--line);
+    overflow-x:auto;overflow-y:hidden;
+}
+.filmstrip.is-on{display:flex}
+.film-item{
+    position:relative;flex:0 0 auto;
+    width:86px;height:58px;
+    border:1px solid var(--line-strong);border-radius:var(--r-sm);
+    background:#EDEFF2;overflow:hidden;cursor:pointer;
+    transition:border-color .15s,box-shadow .15s;
+}
+.film-item img{width:100%;height:100%;object-fit:cover;display:block}
+.film-item:hover{border-color:var(--ink-3)}
+.film-item.is-active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-ring)}
+.film-idx{
+    position:absolute;left:4px;top:4px;
+    font-family:var(--mono);font-size:9.5px;font-weight:700;
+    padding:1px 5px;border-radius:4px;
+    background:rgba(16,18,22,.74);color:#fff;
+}
+.film-badge{
+    position:absolute;left:4px;bottom:4px;
+    font-family:var(--mono);font-size:9.5px;font-weight:700;
+    padding:1px 5px;border-radius:4px;
+    background:var(--accent);color:#fff;
+}
+.film-badge:empty{display:none}
+.film-close{
+    position:absolute;right:3px;top:3px;
+    width:18px;height:18px;padding:0;
+    border:none;border-radius:50%;
+    background:rgba(16,18,22,.74);color:#fff;
+    display:grid;place-items:center;cursor:pointer;
+    opacity:0;transition:opacity .12s;
+}
+.film-close svg{width:11px;height:11px}
+.film-close:hover{background:var(--danger)}
+.film-item:hover .film-close,.film-item.is-active .film-close{opacity:1}
+.film-add{
+    flex:0 0 auto;width:58px;height:58px;
+    border:1px dashed var(--line-strong);border-radius:var(--r-sm);
+    background:transparent;color:var(--ink-3);
+    display:grid;place-items:center;cursor:pointer;
+}
+.film-add:hover:not(:disabled){border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.film-add:disabled{opacity:.4;cursor:not-allowed}
+.film-add svg{width:18px;height:18px}
+.film-count{
+    flex:0 0 auto;margin-left:auto;padding-left:12px;
+    font-family:var(--mono);font-size:11px;color:var(--ink-3);white-space:nowrap;
+}
+
+/* ---------- Empty state ---------- */
+.empty{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;color:var(--stage-ink);
+    padding:24px;overflow:auto;
+}
+.empty-inner{max-width:560px}
+.empty-mark{
+    width:54px;height:54px;margin:0 auto 18px;
+    display:grid;place-items:center;
+    border:1px dashed rgba(255,255,255,.28);
+    border-radius:var(--r-lg);
+    color:var(--stage-ink-2);
+}
+.empty-mark svg{width:24px;height:24px}
+.empty-title{font-size:19px;font-weight:700;margin:0 0 8px;color:#fff;letter-spacing:-.01em}
+.empty-desc{font-size:13px;line-height:1.7;margin:0;color:var(--stage-ink-2)}
+.tips{
+    margin-top:22px;padding:14px 16px;
+    text-align:left;
+    border:1px solid var(--stage-line);border-radius:var(--r);
+    background:rgba(255,255,255,.035);
+}
+.tips-title{
+    font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;
+    color:var(--stage-ink-2);margin-bottom:9px;
+}
+.tips ul{margin:0;padding-left:16px}
+.tips li{font-size:12.5px;line-height:1.85;color:var(--stage-ink)}
+.tips b{color:#fff;font-weight:600}
+kbd{
+    font-family:var(--mono);font-size:11px;
+    padding:1px 5px;margin:0 1px;
+    border-radius:4px;
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.16);
+    color:#fff;
+}
+
+/* =========================================================
+   Inspector
+   ========================================================= */
+.inspector{
+    background:var(--surface);
+    border-left:1px solid var(--line);
+    display:flex;flex-direction:column;
+    min-height:0;
+}
+.panel-scroll{flex:1 1 auto;overflow-y:auto;min-height:0;display:flex;flex-direction:column}
+.group{padding:14px 16px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.group-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.group-title{flex:1 1 auto}
+.badge{
+    font-family:var(--mono);font-size:10px;font-weight:700;
+    padding:2px 6px;border-radius:999px;
+    background:var(--accent-soft);color:var(--accent);
+}
+.field{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.field:last-child{margin-bottom:0}
+.field-label{flex:0 0 74px;font-size:12px;font-weight:600;color:var(--ink-2)}
+.field-ctl{flex:1 1 auto;display:flex;align-items:center;gap:8px;min-width:0}
+
+input[type="text"],input[type="number"],select{
+    height:30px;padding:0 9px;
+    border:1px solid var(--line-strong);
+    border-radius:var(--r-sm);
+    background:var(--surface);
+    font-family:inherit;font-size:12.5px;color:var(--ink);
+    outline:none;min-width:0;width:100%;
+    transition:border-color .15s,box-shadow .15s;
+}
+input[type="number"]{font-family:var(--mono);text-align:center;padding:0 4px}
+input:focus,select:focus,button:focus-visible,.lang select:focus-visible{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-ring);
+}
+button:focus-visible{outline:none}
+select{
+    appearance:none;-webkit-appearance:none;cursor:pointer;
+    padding-right:26px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235B6472' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center;background-size:13px;
+}
+select:disabled{background-color:var(--surface-2);color:var(--ink-3);cursor:not-allowed}
+
+input[type="color"]{
+    -webkit-appearance:none;appearance:none;
+    width:38px;height:30px;padding:0;
+    border:1px solid var(--line-strong);border-radius:var(--r-sm);
+    background:var(--surface);cursor:pointer;flex:0 0 auto;
+}
+input[type="color"]::-webkit-color-swatch-wrapper{padding:3px}
+input[type="color"]::-webkit-color-swatch{border:none;border-radius:3px}
+input[type="color"]::-moz-color-swatch{border:none;border-radius:3px}
+
+input[type="range"]{
+    -webkit-appearance:none;appearance:none;
+    flex:1 1 auto;min-width:0;height:22px;
+    background:transparent;cursor:pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:var(--line-strong)}
+input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:15px;height:15px;margin-top:-6px;border-radius:50%;
+    background:var(--surface);border:1.5px solid var(--accent);
+    box-shadow:0 1px 2px rgba(0,0,0,.18);
+}
+input[type="range"]::-moz-range-track{height:3px;border-radius:2px;background:var(--line-strong)}
+input[type="range"]::-moz-range-thumb{
+    width:13px;height:13px;border-radius:50%;
+    background:var(--surface);border:1.5px solid var(--accent);
+}
+.num-box{flex:0 0 52px}
+.readout{flex:0 0 44px;text-align:right;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+
+/* ---------- Layers ---------- */
+.layers-group{flex:1 1 auto;display:flex;flex-direction:column;min-height:120px;border-bottom:none}
+.layers{
+    flex:1 1 auto;overflow-y:auto;min-height:0;
+    display:flex;flex-direction:column;gap:3px;
+    margin:0 -6px;padding:0 6px;
+}
+.layer{
+    display:flex;align-items:center;gap:8px;
+    padding:5px 6px;
+    border:1px solid transparent;border-radius:var(--r-sm);
+    cursor:pointer;
+    transition:background .12s,border-color .12s;
+}
+.layer:hover{background:var(--surface-2);border-color:var(--line)}
+.layer.is-active{background:var(--accent-soft);border-color:rgba(31,111,92,.35)}
+.layer-swatch{
+    width:16px;height:16px;border-radius:4px;flex:0 0 auto;
+    border:1px solid rgba(0,0,0,.14);
+}
+.layer-icon{width:15px;height:15px;color:var(--ink-2);flex:0 0 auto}
+.layer.is-active .layer-icon{color:var(--accent)}
+.layer-name{
+    flex:1 1 auto;min-width:0;
+    font-size:12px;font-weight:600;color:var(--ink);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.layer-acts{display:flex;gap:1px;flex:0 0 auto;opacity:0;transition:opacity .12s}
+.layer:hover .layer-acts,.layer.is-active .layer-acts{opacity:1}
+.layer-btn{
+    width:22px;height:22px;display:grid;place-items:center;
+    border:none;border-radius:4px;background:transparent;
+    color:var(--ink-3);cursor:pointer;
+}
+.layer-btn:hover{background:rgba(0,0,0,.07);color:var(--ink)}
+.layer-btn.is-danger:hover{background:var(--danger-soft);color:var(--danger)}
+.layer-btn svg{width:13px;height:13px}
+.layer-btn:disabled{opacity:.3;cursor:not-allowed}
+.layers-empty{
+    padding:14px 4px;text-align:center;
+    font-size:11.5px;color:var(--ink-3);
+}
+
+/* ---------- Export ---------- */
+.export{
+    flex:0 0 auto;
+    padding:14px 16px;
+    background:var(--surface-2);
+    border-top:1px solid var(--line);
+}
+.fmt-box{flex:0 0 90px}
+.export .btn-primary{width:100%;height:36px;margin-top:12px}
+
+/* =========================================================
+   Status bar
+   ========================================================= */
+.statusbar{
+    display:flex;align-items:center;gap:14px;
+    padding:0 14px;
+    background:var(--surface);
+    border-top:1px solid var(--line);
+    font-size:11.5px;color:var(--ink-3);
+    min-width:0;
+}
+.status-item{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.status-item b{color:var(--ink);font-weight:600}
+.status-hint{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.status-right{margin-left:auto;font-family:var(--mono);white-space:nowrap}
+
+/* =========================================================
+   Modal
+   ========================================================= */
+.modal-backdrop{
+    position:fixed;inset:0;z-index:1000;
+    background:rgba(16,18,22,.55);
+    display:none;align-items:center;justify-content:center;
+    padding:20px;
+}
+.modal-backdrop.is-open{display:flex}
+.modal{
+    width:100%;max-width:400px;
+    background:var(--surface);
+    border-radius:var(--r-lg);
+    box-shadow:0 24px 60px rgba(0,0,0,.30);
+    padding:22px;
+}
+.modal h3{margin:0 0 8px;font-size:15px;font-weight:700}
+.modal p{margin:0;font-size:13px;line-height:1.7;color:var(--ink-2)}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;flex-wrap:wrap}
+
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width:1180px){
+    :root{--panel:258px}
+    .brand-tagline{display:none}
+    .filechip{max-width:270px}
+}
+
+@media (max-width:900px){
+    :root{--top:52px}
+    .app{grid-template-rows:var(--top) 1fr}
+    .statusbar{display:none}
+    .float-tip{display:none !important}
+
+    .workspace{grid-template-columns:1fr;grid-template-rows:1fr auto auto}
+    .brand-text{display:none}
+    .filechip{max-width:none;flex:1 1 auto}
+    .topbar{gap:10px;padding:0 10px}
+    .topbar-divider{display:none}
+    .lang select{padding-right:16px;font-size:11px;max-width:62px}
+    .lang{padding:0 4px 0 7px}
+
+    .center{order:1}
+    .zoombar{right:10px;bottom:10px}
+
+    .inspector{
+        order:2;flex-direction:row;
+        border-left:none;border-top:1px solid var(--line);
+        overflow-x:auto;overflow-y:hidden;
+        -webkit-overflow-scrolling:touch;
+    }
+    .panel-scroll{display:flex;flex-direction:row;overflow:visible;flex:0 0 auto}
+    .group{
+        display:flex;flex-direction:row;align-items:flex-end;gap:12px;
+        padding:8px 12px;
+        border-bottom:none;border-right:1px solid var(--line);
+        flex:0 0 auto;
+    }
+    .group-head{display:none}
+    .field{flex-direction:column;align-items:flex-start;gap:3px;margin-bottom:0;flex:0 0 auto}
+    .field-label{flex:0 0 auto;font-size:10px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3)}
+    .field-ctl{width:auto}
+    input[type="range"]{width:96px;flex:0 0 auto}
+    .num-box{flex:0 0 46px;width:46px}
+    .fmt-box{flex:0 0 78px;width:78px}
+    #fileNameInput{width:130px}
+    #textToDraw{width:150px}
+
+    .layers-group{min-height:0;align-items:stretch}
+    .layers{flex-direction:row;gap:6px;margin:0;padding:0;overflow-x:auto;overflow-y:hidden}
+    .layer{width:170px;flex:0 0 auto}
+    .layer-acts{opacity:1}
+    .layers-empty{padding:10px 14px;white-space:nowrap}
+
+    .export{
+        display:flex;flex-direction:row;align-items:flex-end;gap:12px;
+        padding:8px 12px;border-top:none;background:var(--surface);flex:0 0 auto;
+    }
+    .export .btn-primary{width:auto;margin-top:0;height:30px;padding:0 14px}
+
+    .rail{
+        order:3;flex-direction:row;justify-content:flex-start;
+        gap:2px;padding:6px 8px;
+        border-right:none;border-top:1px solid var(--line);
+        overflow-x:auto;overflow-y:hidden;
+        padding-bottom:calc(6px + env(safe-area-inset-bottom));
+    }
+    .rail::after{display:none}
+    .rail-label{display:none}
+    .mode-btn{flex-direction:column;gap:2px;width:auto;min-width:52px;height:44px;padding:0 6px}
+    .mode-btn svg{width:18px;height:18px}
+    .mode-btn.active::before{display:none}
+    .rail .tool-tip{
+        display:block;
+        font-size:9px;font-weight:600;
+        max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    }
+
+    .filmstrip{padding:6px 8px;gap:6px}
+    .film-item{width:66px;height:46px}
+    .film-add{width:44px;height:46px}
+    .film-count{display:none}
+    .empty-mark{width:44px;height:44px;margin-bottom:12px}
+    .empty-title{font-size:16px}
+    .empty-desc{font-size:12px}
+    .tips{margin-top:14px;padding:11px 12px}
+    .tips li{font-size:11.5px;line-height:1.7}
+}
+
+@media (max-width:900px) and (max-height:640px){
+    .tips{display:none}
+}
+
+@media (prefers-reduced-motion:reduce){
+    *{transition:none !important;animation:none !important}
+}
+</style>
 </head>
 <body>
 
-<div class="container">
-    <div class="lang-selector-container">
-        🌐 <select id="langSelect" class="lang-select">
-            <option value="zh-TW">繁體中文</option>
-            <option value="zh-CN">简体中文</option>
-            <option value="en">English</option>
-            <option value="ja">日本語</option>
-            <option value="ko">한국어</option>
-            <option value="es">Español</option>
-        </select>
+<div class="app">
+
+    <!-- ===================== Top bar ===================== -->
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/>
+                </svg>
+            </span>
+            <span class="brand-text">
+                <span class="brand-name">PicMark</span>
+                <span class="brand-tagline" id="tagline">截圖標註工作台</span>
+            </span>
+        </div>
+
+        <button class="btn" id="loadBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 15v3a2 2 0 002 2h12a2 2 0 002-2v-3"/>
+            </svg>
+            <span id="btnLoad">載入圖片</span>
+        </button>
+        <input type="file" id="imageLoader" accept="image/*" multiple class="sr-only">
+
+        <span class="topbar-divider"></span>
+
+        <div class="filechip" id="fileChip">
+            <span class="chip-dot"></span>
+            <span class="chip-name" id="chipName">尚未載入圖片</span>
+            <span class="chip-dim mono" id="chipDim"></span>
+            <span class="chip-index mono" id="chipIndex"></span>
+        </div>
+
+        <div class="topbar-actions">
+            <button class="btn btn-icon has-tip" data-tip-pos="bottom" data-key="Ctrl Z" id="undoBtn">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 8L5 12l4 4"/><path d="M5 12h9a5 5 0 010 10h-2"/>
+                </svg>
+                <span class="tool-tip" id="btnUndo">上一步</span>
+            </button>
+            <button class="btn btn-icon has-tip" data-tip-pos="bottom" data-key="Ctrl ⇧ Z" id="redoBtn" disabled>
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 8l4 4-4 4"/><path d="M19 12h-9a5 5 0 000 10h2"/>
+                </svg>
+                <span class="tool-tip" id="btnRedo">下一步</span>
+            </button>
+            <button class="btn btn-icon is-danger has-tip" data-tip-pos="bottom" id="clearBtn">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 7h16M10 7V5h4v2M6 7l1 13h10l1-13"/><path d="M10 11v6M14 11v6"/>
+                </svg>
+                <span class="tool-tip" id="btnClear">全清除</span>
+            </button>
+
+            <span class="topbar-divider"></span>
+
+            <div class="lang">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 2.6 15 0 18-2.6-3-2.6-15.4 0-18z"/>
+                </svg>
+                <select id="langSelect" aria-label="Language">
+                    <option value="zh-TW">繁體中文</option>
+                    <option value="zh-CN">简体中文</option>
+                    <option value="en">English</option>
+                    <option value="ja">日本語</option>
+                    <option value="ko">한국어</option>
+                    <option value="es">Español</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== Workspace ===================== -->
+    <div class="workspace">
+
+        <!-- Tool rail -->
+        <nav class="rail">
+            <span class="eyebrow rail-label" id="lblTool">工具</span>
+
+            <button class="mode-btn active has-tip" data-key="1" id="btnToolSelect" data-mode="select">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
+                    <path d="M5.5 3.5l13 7.2-5.7 1.5-2.6 5.4z"/>
+                </svg>
+                <span class="tool-tip" id="txtToolSelect">選擇與移動</span>
+            </button>
+
+            <button class="mode-btn has-tip" data-key="2" id="btnToolMarker" data-mode="marker">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="8.2"/><path d="M10.6 9.9L12.6 8.6V16"/>
+                </svg>
+                <span class="tool-tip" id="txtToolMarker">數字標記</span>
+            </button>
+
+            <button class="mode-btn has-tip" data-key="3" id="btnToolText" data-mode="text">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <path d="M5 7V5h14v2M12 5v14M9.5 19h5"/>
+                </svg>
+                <span class="tool-tip" id="txtToolText">文字標記</span>
+            </button>
+
+            <button class="mode-btn has-tip" data-key="4" id="btnToolRect" data-mode="rect">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <rect x="4.2" y="6.2" width="15.6" height="11.6" rx="1.6"/>
+                </svg>
+                <span class="tool-tip" id="txtToolRect">矩形</span>
+            </button>
+
+            <button class="mode-btn has-tip" data-key="5" id="btnToolCircle" data-mode="circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="7.8"/>
+                </svg>
+                <span class="tool-tip" id="txtToolCircle">圓形</span>
+            </button>
+
+            <button class="mode-btn has-tip" data-key="6" id="btnToolArrow" data-mode="arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 19L18.5 5.5M18.5 5.5h-7.2M18.5 5.5v7.2"/>
+                </svg>
+                <span class="tool-tip" id="txtToolArrow">箭頭</span>
+            </button>
+
+            <button class="mode-btn has-tip" data-key="7" id="btnToolLine" data-mode="line">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <path d="M5 18.5L19 5.5"/>
+                </svg>
+                <span class="tool-tip" id="txtToolLine">直線</span>
+            </button>
+
+            <button class="mode-btn has-tip" data-key="8" id="btnToolBlur" data-mode="blur">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+                    <rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1" fill="currentColor" stroke="none"/>
+                    <rect x="4" y="14" width="6" height="6" rx="1" fill="currentColor" stroke="none"/><rect x="14" y="14" width="6" height="6" rx="1"/>
+                </svg>
+                <span class="tool-tip" id="txtToolBlur">馬賽克</span>
+            </button>
+        </nav>
+
+        <!-- Stage + filmstrip -->
+        <div class="center">
+        <main class="stage" id="dropZone">
+            <div class="canvas-pan" id="canvasPan">
+                <div class="canvas-frame" id="canvasWrapper">
+                    <canvas id="imageCanvas"></canvas>
+                    <input type="text" class="text-editor" id="textEditor" style="display:none">
+                </div>
+            </div>
+
+            <div class="empty" id="placeholder">
+                <div class="empty-inner">
+                    <div class="empty-mark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M3.5 17l4.8-4.4 3.4 3 3-2.6 5.8 5"/>
+                        </svg>
+                    </div>
+                    <div id="placeholderText"></div>
+                </div>
+            </div>
+
+            <div class="zoombar" id="zoomBar">
+                <button class="zoom-btn has-tip" id="zoomOutBtn" data-tip-pos="top">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>
+                    <span class="tool-tip" id="tipZoomOut">縮小</span>
+                </button>
+                <button class="zoom-level has-tip" id="zoomLevel" data-tip-pos="top">100%<span class="tool-tip" id="tipZoomFit">符合視窗</span></button>
+                <button class="zoom-btn has-tip" id="zoomInBtn" data-tip-pos="top">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                    <span class="tool-tip" id="tipZoomIn">放大</span>
+                </button>
+                <button class="zoom-btn has-tip" id="zoomOneBtn" data-tip-pos="top">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 9V5h4M20 9V5h-4M4 15v4h4M20 15v4h-4"/>
+                    </svg>
+                    <span class="tool-tip" id="tipZoomOne">實際大小 100%</span>
+                </button>
+            </div>
+        </main>
+
+        <div class="filmstrip" id="filmstrip"></div>
+        </div>
+
+        <!-- Inspector -->
+        <aside class="inspector">
+            <div class="panel-scroll">
+
+                <section class="group">
+                    <div class="group-head">
+                        <span class="eyebrow group-title" id="grpStyle">外觀</span>
+                        <span class="badge" id="selBadge" style="display:none">選取中</span>
+                    </div>
+
+                    <div class="field">
+                        <span class="field-label" id="lblColor">顏色</span>
+                        <div class="field-ctl"><input type="color" id="primaryColor" value="#cc0000"></div>
+                    </div>
+
+                    <div class="field">
+                        <span class="field-label" id="lblThickness">粗細</span>
+                        <div class="field-ctl">
+                            <input type="range" id="brushSizeRange" min="2" max="100" value="30">
+                            <input type="number" class="num-box" id="brushSize" value="30" min="2" max="400">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <span class="field-label" id="lblOpacity">不透明度</span>
+                        <div class="field-ctl">
+                            <input type="range" id="brushOpacity" min="10" max="100" value="100">
+                            <span class="readout" id="opacityVal">100%</span>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <span class="field-label" id="lblFillStyle">樣式</span>
+                        <div class="field-ctl">
+                            <select id="fillStyleSelect">
+                                <option value="stroke" id="optStroke">空心 (框線)</option>
+                                <option value="fill" id="optFill">實心 (填滿)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="group" id="numberParamsGroup" style="display:none">
+                    <div class="group-head"><span class="eyebrow group-title" id="grpMarker">數字標記</span></div>
+                    <div class="field" id="nextNumField">
+                        <span class="field-label" id="lblStartNum">下一個數字</span>
+                        <div class="field-ctl"><input type="number" class="num-box" id="startNum" value="1" min="0"></div>
+                    </div>
+                    <div class="field" id="markerNumField" style="display:none">
+                        <span class="field-label" id="lblMarkerNum">這個標記</span>
+                        <div class="field-ctl"><input type="number" class="num-box" id="markerNum" value="1" min="0"></div>
+                    </div>
+                    <div class="field">
+                        <span class="field-label" id="lblTextColor">字色</span>
+                        <div class="field-ctl"><input type="color" id="textColor" value="#ffffff"></div>
+                    </div>
+                </section>
+
+                <section class="group" id="textParamsGroup" style="display:none">
+                    <div class="group-head"><span class="eyebrow group-title" id="grpText">文字內容</span></div>
+                    <div class="field">
+                        <span class="field-label" id="lblTextInput">輸入文字</span>
+                        <div class="field-ctl"><input type="text" id="textToDraw" placeholder="輸入文字..."></div>
+                    </div>
+                </section>
+
+                <section class="group layers-group">
+                    <div class="group-head">
+                        <span class="eyebrow group-title" id="grpLayers">圖層</span>
+                        <span class="badge mono" id="layerCount">0</span>
+                    </div>
+                    <div class="layers" id="layerList"></div>
+                </section>
+
+            </div>
+
+            <footer class="export">
+                <div class="group-head"><span class="eyebrow group-title" id="grpExport">匯出</span></div>
+                <div class="field">
+                    <span class="field-label" id="lblFileName">檔名</span>
+                    <div class="field-ctl"><input type="text" id="fileNameInput" value="picmark_image" placeholder="請輸入自訂檔名"></div>
+                </div>
+                <div class="field">
+                    <span class="field-label" id="lblFormat">格式</span>
+                    <div class="field-ctl">
+                        <select id="exportFormat" class="fmt-box">
+                            <option value="image/png">PNG</option>
+                            <option value="image/jpeg">JPG</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field" id="qualityField" style="display:none">
+                    <span class="field-label" id="lblQuality">JPG 品質</span>
+                    <div class="field-ctl">
+                        <input type="range" id="jpgQuality" min="40" max="100" value="90">
+                        <span class="readout" id="qualityVal">90%</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="downloadBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 4v12M8 12l4 4 4-4"/><path d="M4 20h16"/>
+                    </svg>
+                    <span id="btnDownload">下載圖片</span>
+                </button>
+                <button class="btn" id="downloadAllBtn" style="display:none">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8 3h9a2 2 0 012 2v9"/><rect x="3" y="8" width="13" height="13" rx="2"/>
+                    </svg>
+                    <span id="btnDownloadAll">匯出全部</span>
+                </button>
+            </footer>
+        </aside>
     </div>
 
-    <h1 id="titleText">🎯 PicMark 圖片快捷標記與標註大師</h1>
-    
-    <div class="toolbar">
-        <div class="tool-group">
-            <label id="lblLoad">1. 載入圖片：</label>
-            <input type="file" id="imageLoader" accept="image/*">
-        </div>
+    <!-- ===================== Status bar ===================== -->
+    <footer class="statusbar">
+        <span class="status-item"><span id="statusToolLabel">目前工具</span> <b id="statusTool">選擇與移動</b></span>
+        <span class="status-item status-hint" id="statusHint"></span>
+        <span class="status-right" id="statusDims"></span>
+    </footer>
+</div>
 
-        <div class="tool-group">
-            <label id="lblTool">工具：</label>
-            <button class="mode-btn active" id="btnToolSelect" data-mode="select">👆 <span id="txtToolSelect">選擇與移動</span></button>
-            <button class="mode-btn" id="btnToolMarker" data-mode="marker">🎯 <span id="txtToolMarker">數字標記</span></button>
-            <button class="mode-btn" id="btnToolText" data-mode="text">🔤 <span id="txtToolText">文字標記</span></button>
-            <button class="mode-btn" id="btnToolRect" data-mode="rect">⬜ <span id="txtToolRect">矩形</span></button>
-            <button class="mode-btn" id="btnToolCircle" data-mode="circle">⭕ <span id="txtToolCircle">圓形</span></button>
-            <button class="mode-btn" id="btnToolArrow" data-mode="arrow">↗️ <span id="txtToolArrow">箭頭</span></button>
-            <button class="mode-btn" id="btnToolLine" data-mode="line">➖ <span id="txtToolLine">直線</span></button>
-            <button class="mode-btn" id="btnToolBlur" data-mode="blur">🌫️ <span id="txtToolBlur">馬賽克</span></button>
-        </div>
+<!-- floating tooltip -->
+<div class="float-tip" id="floatTip"><span id="floatTipText"></span></div>
 
-        <div class="tool-group">
-            <label id="lblColor">顏色：</label>
-            <input type="color" id="primaryColor" value="#cc0000">
-            
-            <label id="lblThickness">粗細/大小：</label>
-            <input type="range" id="brushSizeRange" min="2" max="100" value="30">
-            <input type="number" id="brushSize" value="30" min="2" max="100">
-
-            <label id="lblOpacity">不透明度：</label>
-            <input type="range" id="brushOpacity" min="10" max="100" value="100">
-            <span id="opacityVal">100%</span>
-
-            <label id="lblFillStyle">樣式：</label>
-            <select id="fillStyleSelect">
-                <option value="stroke" id="optStroke">空心 (框線)</option>
-                <option value="fill" id="optFill">實心 (填滿)</option>
-            </select>
-        </div>
-
-        <div class="tool-group" id="numberParamsGroup" style="display: none;">
-            <label id="lblStartNum">標記數字：</label>
-            <input type="number" id="startNum" value="1" min="0">
-            <label id="lblTextColor">字色：</label>
-            <input type="color" id="textColor" value="#ffffff">
-        </div>
-
-        <div class="tool-group" id="textParamsGroup" style="display: none;">
-            <label id="lblTextInput">輸入文字：</label>
-            <input type="text" id="textToDraw" value="Memo" placeholder="輸入文字...">
-        </div>
-
-        <div class="tool-group">
-            <button id="undoBtn" class="secondary">↩️ <span id="btnUndo">上一步</span></button>
-            <button id="redoBtn" class="secondary" disabled>↪️ <span id="btnRedo">下一步</span></button>
-            <button id="clearBtn" class="danger">🧹 <span id="btnClear">全清除</span></button>
-        </div>
-
-        <div class="tool-group" style="margin-left: auto; border-right: none;">
-            <label id="lblFileName">檔名：</label>
-            <input type="text" id="fileNameInput" value="picmark_image" placeholder="請輸入自訂檔名">
-            <select id="exportFormat">
-                <option value="image/png">.png</option>
-                <option value="image/jpeg">.jpg</option>
-            </select>
-            <button id="downloadBtn" style="background-color: #10b981;">💾 <span id="btnDownload">下載圖片</span></button>
-        </div>
-    </div>
-
-    <!-- 畫布工作區 -->
-    <div class="canvas-area" id="dropZone">
-        <div class="canvas-wrapper" id="canvasWrapper">
-            <canvas id="imageCanvas"></canvas>
-        </div>
-        <div class="placeholder-text" id="placeholder"></div>
+<!-- confirm modal -->
+<div class="modal-backdrop" id="modal">
+    <div class="modal" role="dialog" aria-modal="true">
+        <h3 id="modalTitle"></h3>
+        <p id="modalMsg"></p>
+        <div class="modal-actions" id="modalActions"></div>
     </div>
 </div>
 
 <script>
-    // --- 多國語言 ---
-    const i18n = {
-        "zh-TW": {
-            title: "🎯 PicMark 圖片快捷標記與標註大師",
-            lblLoad: "1. 載入圖片：",
-            lblTool: "工具：",
-            txtToolSelect: "選擇與移動",
-            txtToolMarker: "數字標記",
-            txtToolText: "文字標記",
-            txtToolRect: "矩形",
-            txtToolCircle: "圓形",
-            txtToolArrow: "箭頭",
-            txtToolLine: "直線",
-            txtToolBlur: "馬賽克",
-            lblColor: "顏色：",
-            lblThickness: "粗細/大小：",
-            lblOpacity: "不透明度：",
-            lblFillStyle: "樣式：",
-            optStroke: "空心 (框線)",
-            optFill: "實心 (填滿)",
-            lblStartNum: "標記數字：",
-            lblTextColor: "字色：",
-            lblTextInput: "輸入文字：",
-            btnUndo: "上一步",
-            btnRedo: "下一步",
-            btnClear: "全清除",
-            lblFileName: "檔名：",
-            btnDownload: "下載圖片",
-            fileNamePlaceholder: "請輸入自訂檔名",
-            noImageAlert: "請先載入圖片！",
-            textInputPlaceholder: "輸入文字...",
-            promptEditText: "請修改文字內容：",
-            placeholderHtml: `
-                請點擊上方選擇檔案、<br>或在此處<strong>拖曳圖片</strong>、或直接使用 <strong>Ctrl + V (Cmd + V)</strong> 貼上截圖。<br>
-                <div class="kbd-container">
-                    💡 操作小秘訣：<br>
-                    1. 點選 <span class="kbd">👆 選擇與移動</span> 可以拖曳任何已畫上去的物件！<br>
-                    2. 在選擇模式下，<strong>雙擊文字</strong>可以重新編輯文字內容。<br>
-                    3. 復原 (上一步)：<span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; 重做 (下一步)：<span class="kbd">Cmd/Ctrl + Shift + Z</span>
-                </div>
-            `
-        },
-        "zh-CN": {
-            title: "🎯 PicMark 图片快捷标记与标注大师",
-            lblLoad: "1. 载入图片：",
-            lblTool: "工具：",
-            txtToolSelect: "选择与移动",
-            txtToolMarker: "数字标记",
-            txtToolText: "文字标记",
-            txtToolRect: "矩形",
-            txtToolCircle: "圆形",
-            txtToolArrow: "箭头",
-            txtToolLine: "直线",
-            txtToolBlur: "马赛克",
-            lblColor: "颜色：",
-            lblThickness: "粗细/大小：",
-            lblOpacity: "不透明度：",
-            lblFillStyle: "样式：",
-            optStroke: "空心 (框线)",
-            optFill: "实心 (填充)",
-            lblStartNum: "标记数字：",
-            lblTextColor: "字色：",
-            lblTextInput: "输入文字：",
-            btnUndo: "上一步",
-            btnRedo: "下一步",
-            btnClear: "全清除",
-            lblFileName: "文件名：",
-            btnDownload: "下载图片",
-            fileNamePlaceholder: "请输入自定文件名",
-            noImageAlert: "请先载入图片！",
-            textInputPlaceholder: "输入文字...",
-            promptEditText: "请修改文字内容：",
-            placeholderHtml: `
-                请点击上方选择文件、<br>或在此处<strong>拖拽图片</strong>、或直接使用 <strong>Ctrl + V (Cmd + V)</strong> 粘贴截图。<br>
-                <div class="kbd-container">
-                    💡 操作小秘诀：<br>
-                    1. 点击 <span class="kbd">👆 选择与移动</span> 可以拖拽 any 已画上去的物件！<br>
-                    2. 在选择模式下，<strong>双击文字</strong>可以重新编辑文字内容。<br>
-                    3. 复原 (上一步)：<span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; 重做 (下一步)：<span class="kbd">Cmd/Ctrl + Shift + Z</span>
-                </div>
-            `
-        },
-        "en": {
-            title: "🎯 PicMark - Image Marker & Annotator Master",
-            lblLoad: "1. Load Image:",
-            lblTool: "Tools:",
-            txtToolSelect: "Select & Move",
-            txtToolMarker: "Number",
-            txtToolText: "Text",
-            txtToolRect: "Rectangle",
-            txtToolCircle: "Circle",
-            txtToolArrow: "Arrow",
-            txtToolLine: "Line",
-            txtToolBlur: "Blur/Mosaic",
-            lblColor: "Color:",
-            lblThickness: "Size/Thickness:",
-            lblOpacity: "Opacity:",
-            lblFillStyle: "Type:",
-            optStroke: "Stroke (Hollow)",
-            optFill: "Fill (Solid)",
-            lblStartNum: "Marker No.:",
-            lblTextColor: "Font Color:",
-            lblTextInput: "Text:",
-            btnUndo: "Undo",
-            btnRedo: "Redo",
-            btnClear: "Clear All",
-            lblFileName: "File Name:",
-            btnDownload: "Download",
-            fileNamePlaceholder: "Enter file name",
-            noImageAlert: "Please load an image first!",
-            textInputPlaceholder: "Enter text...",
-            promptEditText: "Edit text content:",
-            placeholderHtml: `
-                Click above to select a file, <br>or <strong>drag & drop an image</strong> here, or press <strong>Ctrl + V (Cmd + V)</strong> to paste a screenshot.<br>
-                <div class="kbd-container">
-                    💡 Tips:<br>
-                    1. Select <span class="kbd">👆 Select & Move</span> to drag and reposition any placed object on the screen!<br>
-                    2. Under Select mode, <strong>double-click any text</strong> to edit its content.<br>
-                    3. Undo: <span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; Redo: <span class="kbd">Cmd/Ctrl + Shift + Z</span>
-                </div>
-            `
-        },
-        "ja": {
-            title: "🎯 PicMark - 画像注釈＆マークマスター",
-            lblLoad: "1. 画像を選択:",
-            lblTool: "ツール:",
-            txtToolSelect: "選択と移動",
-            txtToolMarker: "数字",
-            txtToolText: "テキスト",
-            txtToolRect: "矩形",
-            txtToolCircle: "円形",
-            txtToolArrow: "矢印",
-            txtToolLine: "直線",
-            txtToolBlur: "モザイク",
-            lblColor: "カラー:",
-            lblThickness: "太さ/サイズ:",
-            lblOpacity: "不透明度:",
-            lblFillStyle: "スタイル:",
-            optStroke: "枠線のみ (空心)",
-            optFill: "塗りつぶし (実心)",
-            lblStartNum: "マーク番号:",
-            lblTextColor: "文字色:",
-            lblTextInput: "文字列:",
-            btnUndo: "元に戻す",
-            btnRedo: "やり直し",
-            btnClear: "すべてクリア",
-            lblFileName: "ファイル名:",
-            btnDownload: "ダウンロード",
-            fileNamePlaceholder: "ファイル名を入力",
-            noImageAlert: "先に画像を読み込んでください！",
-            textInputPlaceholder: "テキストを入力...",
-            promptEditText: "テキストを編集します：",
-            placeholderHtml: `
-                上のボタンからファイルを選択するか、<br>ここに<strong>画像をドラッグ＆ドロップ</strong>、または <strong>Ctrl + V (Cmd + V)</strong> で貼り付けてください。<br>
-                <div class="kbd-container">
-                    💡 操作のコツ:<br>
-                    1. <span class="kbd">👆 選択と移動</span> をクリックすると、配置したすべてのオブジェクトをドラッグして移動できます！<br>
-                    2. 選択モード中、<strong>テキストをダブルクリック</strong>すると内容を再編集できます。<br>
-                    3. 元に戻す: <span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; やり直し: <span class="kbd">Cmd/Ctrl + Shift + Z</span>
-                </div>
-            `
-        },
-        "ko": {
-            title: "🎯 PicMark - 이미지 빠른 숫자 및 마크 마스터",
-            lblLoad: "1. 이미지 불러오기:",
-            lblTool: "도구:",
-            txtToolSelect: "선택 및 이동",
-            txtToolMarker: "숫자 마크",
-            txtToolText: "텍스트",
-            txtToolRect: "사각형",
-            txtToolCircle: "원형",
-            txtToolArrow: "화살표",
-            txtToolLine: "직선",
-            txtToolBlur: "모자이크",
-            lblColor: "색상:",
-            lblThickness: "두께/크기:",
-            lblOpacity: "투명도:",
-            lblFillStyle: "스타일:",
-            optStroke: "테두리 (비움)",
-            optFill: "채우기 (채움)",
-            lblStartNum: "마크 번호:",
-            lblTextColor: "글자 색상:",
-            lblTextInput: "텍스트 입력:",
-            btnUndo: "실행 취소",
-            btnRedo: "다시 실행",
-            btnClear: "모두 지우기",
-            lblFileName: "파일 이름:",
-            btnDownload: "다운로드",
-            fileNamePlaceholder: "파일 이름 입력",
-            noImageAlert: "먼저 이미지를 로드해주세요!",
-            textInputPlaceholder: "텍스트 입력...",
-            promptEditText: "텍스트 수정:",
-            placeholderHtml: `
-                위의 파일 선택을 클릭하거나, <br>여기에 <strong>이미지를 드래그 앤 드롭</strong>하거나, <strong>Ctrl + V (Cmd + V)</strong>를 눌러 스크린샷을 붙여넣으세요.<br>
-                <div class="kbd-container">
-                    💡 조작 팁:<br>
-                    1. <span class="kbd">👆 선택 및 이동</span>을 선택해 화면에 배치된 개체를 드래그하여 이동할 수 있습니다!<br>
-                    2. 선택 모드에서 <strong>텍스트를 더블 클릭</strong>하면 내용을 다시 편집할 수 있습니다.<br>
-                    3. 실행 취소: <span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; 다시 실행: <span class="kbd">Cmd/Ctrl + Shift + Z</span>
-                </div>
-            `
-        },
-        "es": {
-            title: "🎯 PicMark - Marcador y Anotador Pro",
-            lblLoad: "1. Cargar imagen:",
-            lblTool: "Herramienta:",
-            txtToolSelect: "Seleccionar y mover",
-            txtToolMarker: "Número",
-            txtToolText: "Texto",
-            txtToolRect: "Rectángulo",
-            txtToolCircle: "Círculo",
-            txtToolArrow: "Flecha",
-            txtToolLine: "Línea",
-            txtToolBlur: "Mosaico",
-            lblColor: "Color:",
-            lblThickness: "Grosor/Tamaño:",
-            lblOpacity: "Opacidad:",
-            lblFillStyle: "Estilo:",
-            optStroke: "Contorno (Vacío)",
-            optFill: "Relleno (Sólido)",
-            lblStartNum: "No. Marcador:",
-            lblTextColor: "Color de fuente:",
-            lblTextInput: "Texto:",
-            btnUndo: "Deshacer",
-            btnRedo: "Rehacer",
-            btnClear: "Borrar todo",
-            lblFileName: "Nombre:",
-            btnDownload: "Descargar",
-            fileNamePlaceholder: "Nombre de archivo",
-            noImageAlert: "¡Por favor, cargue una imagen primero!",
-            textInputPlaceholder: "Ingrese texto...",
-            promptEditText: "Modificar texto:",
-            placeholderHtml: `
-                Haga clic arriba para seleccionar un archivo, <br>o <strong>arrastre y suelte una imagen</strong> aquí, o presione <strong>Ctrl + V (Cmd + V)</strong> para pegar una captura de pantalla.<br>
-                <div class="kbd-container">
-                    💡 Consejos de uso:<br>
-                    1. ¡Seleccione <span class="kbd">👆 Seleccionar y mover</span> para arrastrar y reposicionar cualquier objeto dibujado!<br>
-                    2. En el modo de selección, haga <strong>doble clic en un texto</strong> para editar su contenido.<br>
-                    3. Deshacer: <span class="kbd">Cmd/Ctrl + Z</span> &nbsp;|&nbsp; Rehacer: <span class="kbd">Cmd/Ctrl + Shift + Z</span>
-                </div>
-            `
-        }
-    };
-
-    // --- 元件初始化 ---
-    const langSelect = document.getElementById('langSelect');
-    const imageLoader = document.getElementById('imageLoader');
-    const canvas = document.getElementById('imageCanvas');
-    const ctx = canvas.getContext('2d');
-    const canvasWrapper = document.getElementById('canvasWrapper');
-    const placeholder = document.getElementById('placeholder');
-    const dropZone = document.getElementById('dropZone');
-    
-    // 設定
-    const startNumInput = document.getElementById('startNum');
-    const brushSizeInput = document.getElementById('brushSize');
-    const brushSizeRange = document.getElementById('brushSizeRange'); 
-    const primaryColorInput = document.getElementById('primaryColor');
-    const textColorInput = document.getElementById('textColor');
-    const brushOpacityInput = document.getElementById('brushOpacity');
-    const opacityVal = document.getElementById('opacityVal');
-    const fillStyleSelect = document.getElementById('fillStyleSelect');
-    const textToDrawInput = document.getElementById('textToDraw');
-    const fileNameInput = document.getElementById('fileNameInput');
-
-    const numberParamsGroup = document.getElementById('numberParamsGroup');
-    const textParamsGroup = document.getElementById('textParamsGroup');
-    
-    // 按鈕
-    const undoBtn = document.getElementById('undoBtn');
-    const redoBtn = document.getElementById('redoBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const exportFormat = document.getElementById('exportFormat');
-
-    // --- 物件導向系統變數 ---
-    let loadedImage = null;
-    let objects = [];       
-    let redoStack = [];     
-    let history = [];       
-    
-    let currentMode = 'select'; 
-    let isDrawing = false;
-    let dragStartX = 0;
-    let dragStartY = 0;
-
-    // 選取互動變數
-    let selectedObject = null;
-    let isDraggingObject = false;
-    let dragOffsetX = 0;
-    let dragOffsetY = 0;
-
-    let baseStartNumber = 1;
-
-    // --- 多國語言設定 ---
-    let currentLang = 'zh-TW';
-    function updateLanguage(langCode) {
-        currentLang = langCode;
-        const dict = i18n[langCode];
-        if (!dict) return;
-
-        document.getElementById('titleText').innerText = dict.title;
-        document.getElementById('lblLoad').innerText = dict.lblLoad;
-        document.getElementById('lblTool').innerText = dict.lblTool;
-        document.getElementById('txtToolSelect').innerText = dict.txtToolSelect;
-        document.getElementById('txtToolMarker').innerText = dict.txtToolMarker;
-        document.getElementById('txtToolText').innerText = dict.txtToolText;
-        document.getElementById('txtToolRect').innerText = dict.txtToolRect;
-        document.getElementById('txtToolCircle').innerText = dict.txtToolCircle;
-        document.getElementById('txtToolArrow').innerText = dict.txtToolArrow;
-        document.getElementById('txtToolLine').innerText = dict.txtToolLine;
-        document.getElementById('txtToolBlur').innerText = dict.txtToolBlur;
-        document.getElementById('lblColor').innerText = dict.lblColor;
-        document.getElementById('lblThickness').innerText = dict.lblThickness;
-        document.getElementById('lblOpacity').innerText = dict.lblOpacity;
-        document.getElementById('lblFillStyle').innerText = dict.lblFillStyle;
-        document.getElementById('optStroke').innerText = dict.optStroke;
-        document.getElementById('optFill').innerText = dict.optFill;
-        document.getElementById('lblStartNum').innerText = dict.lblStartNum;
-        document.getElementById('lblTextColor').innerText = dict.lblTextColor;
-        document.getElementById('lblTextInput').innerText = dict.lblTextInput;
-        document.getElementById('btnUndo').innerText = dict.btnUndo;
-        document.getElementById('btnRedo').innerText = dict.btnRedo;
-        document.getElementById('btnClear').innerText = dict.btnClear;
-        document.getElementById('lblFileName').innerText = dict.lblFileName;
-        document.getElementById('btnDownload').innerText = dict.btnDownload;
-        fileNameInput.placeholder = dict.fileNamePlaceholder;
-        textToDrawInput.placeholder = dict.textInputPlaceholder;
-        
-        if (!loadedImage) {
-            placeholder.innerHTML = dict.placeholderHtml;
-        }
+/* =========================================================
+   i18n
+   ========================================================= */
+const i18n = {
+    "zh-TW": {
+        title:"PicMark — 圖片標記與標註工作台", tagline:"截圖標註工作台", btnLoad:"載入圖片", lblTool:"工具",
+        txtToolSelect:"選擇與移動", txtToolMarker:"數字標記", txtToolText:"文字標記", txtToolRect:"矩形",
+        txtToolCircle:"圓形", txtToolArrow:"箭頭", txtToolLine:"直線", txtToolBlur:"馬賽克",
+        grpStyle:"外觀", selBadge:"選取中", lblColor:"顏色", lblThickness:"粗細", lblOpacity:"不透明度",
+        lblFillStyle:"樣式", optStroke:"空心 (框線)", optFill:"實心 (填滿)",
+        grpMarker:"數字標記", lblStartNum:"下一個數字", lblMarkerNum:"這個標記", lblTextColor:"字色",
+        grpText:"文字內容", lblTextInput:"輸入文字",
+        grpLayers:"圖層", layersEmpty:"還沒有任何標記", tipUp:"上移一層", tipDown:"下移一層", tipDelete:"刪除",
+        btnUndo:"上一步", btnRedo:"下一步", btnClear:"全清除",
+        grpExport:"匯出", lblFileName:"檔名", lblFormat:"格式", lblQuality:"JPG 品質", btnDownload:"下載圖片",
+        fileNamePlaceholder:"請輸入自訂檔名", noImageAlert:"請先載入圖片！", textInputPlaceholder:"輸入文字...",
+        chipNoImage:"尚未載入圖片", statusToolLabel:"目前工具",
+        statusHint:"1–8 切換工具 · Ctrl+滾輪 縮放 · 空白鍵拖曳平移 · [ ] 切換圖片 · 0 符合視窗 · Delete 刪除選取",
+        tipZoomOut:"縮小", tipZoomIn:"放大", tipZoomFit:"符合視窗 (0)", tipZoomOne:"實際大小 100%",
+        btnCancel:"取消", btnOk:"知道了", btnClose:"關閉",
+        limitTitle:"已達圖片上限", limitMsg:"一次最多同時編輯 {max} 張圖片，這次略過了 {n} 張。",
+        closeTitle:"關閉圖片", closeMsg:"「{name}」上有 {n} 個標記，關閉後會一併移除。要繼續嗎？",
+        tipAdd:"再加入圖片", tipCloseDoc:"關閉這張", btnDownloadAll:"匯出全部", filmCount:"{n} / {max} 張",
+        placeholderHtml:`
+            <h2 class="empty-title">開始標註</h2>
+            <p class="empty-desc">按上方「載入圖片」選檔案、把圖片拖進這個區域，或直接用 <kbd>Ctrl</kbd><kbd>V</kbd> 貼上截圖。</p>
+            <div class="tips">
+                <div class="tips-title">操作提示</div>
+                <ul>
+                    <li>一次可選多張圖片（最多 30 張），下方縮圖列可隨時切換，每張的標記與復原紀錄各自獨立。</li>
+                    <li>數字鍵 <kbd>1</kbd>–<kbd>8</kbd> 快速切換工具，滑鼠移到工具上可看名稱。</li>
+                    <li><kbd>Ctrl</kbd> + 滾輪縮放、按住 <kbd>空白鍵</kbd> 拖曳平移、<kbd>0</kbd> 回到符合視窗。</li>
+                    <li>選到物件後可直接改右側顏色粗細，四角控制點可調整大小。</li>
+                    <li>用文字工具在圖上點一下即可直接打字，<b>雙擊</b>可重新編輯。</li>
+                </ul>
+            </div>`
+    },
+    "zh-CN": {
+        title:"PicMark — 图片标记与标注工作台", tagline:"截图标注工作台", btnLoad:"载入图片", lblTool:"工具",
+        txtToolSelect:"选择与移动", txtToolMarker:"数字标记", txtToolText:"文字标记", txtToolRect:"矩形",
+        txtToolCircle:"圆形", txtToolArrow:"箭头", txtToolLine:"直线", txtToolBlur:"马赛克",
+        grpStyle:"外观", selBadge:"选中", lblColor:"颜色", lblThickness:"粗细", lblOpacity:"不透明度",
+        lblFillStyle:"样式", optStroke:"空心 (框线)", optFill:"实心 (填充)",
+        grpMarker:"数字标记", lblStartNum:"下一个数字", lblMarkerNum:"此标记", lblTextColor:"字色",
+        grpText:"文字内容", lblTextInput:"输入文字",
+        grpLayers:"图层", layersEmpty:"还没有任何标记", tipUp:"上移一层", tipDown:"下移一层", tipDelete:"删除",
+        btnUndo:"上一步", btnRedo:"下一步", btnClear:"全清除",
+        grpExport:"导出", lblFileName:"文件名", lblFormat:"格式", lblQuality:"JPG 质量", btnDownload:"下载图片",
+        fileNamePlaceholder:"请输入自定文件名", noImageAlert:"请先载入图片！", textInputPlaceholder:"输入文字...",
+        chipNoImage:"尚未载入图片", statusToolLabel:"当前工具",
+        statusHint:"1–8 切换工具 · Ctrl+滚轮 缩放 · 空格拖拽平移 · [ ] 切换图片 · 0 适合窗口 · Delete 删除选中",
+        tipZoomOut:"缩小", tipZoomIn:"放大", tipZoomFit:"适合窗口 (0)", tipZoomOne:"实际大小 100%",
+        btnCancel:"取消", btnOk:"知道了", btnClose:"关闭",
+        limitTitle:"已达图片上限", limitMsg:"一次最多同时编辑 {max} 张图片，这次略过了 {n} 张。",
+        closeTitle:"关闭图片", closeMsg:"「{name}」上有 {n} 个标记，关闭后会一并移除。要继续吗？",
+        tipAdd:"再加入图片", tipCloseDoc:"关闭这张", btnDownloadAll:"导出全部", filmCount:"{n} / {max} 张",
+        placeholderHtml:`
+            <h2 class="empty-title">开始标注</h2>
+            <p class="empty-desc">点上方「载入图片」选择文件、把图片拖进这个区域，或直接用 <kbd>Ctrl</kbd><kbd>V</kbd> 粘贴截图。</p>
+            <div class="tips">
+                <div class="tips-title">操作提示</div>
+                <ul>
+                    <li>一次可选多张图片（最多 30 张），下方缩略图栏可随时切换，每张的标记与撤销记录各自独立。</li>
+                    <li>数字键 <kbd>1</kbd>–<kbd>8</kbd> 快速切换工具，鼠标移到工具上可看名称。</li>
+                    <li><kbd>Ctrl</kbd> + 滚轮缩放、按住 <kbd>空格</kbd> 拖拽平移、<kbd>0</kbd> 回到适合窗口。</li>
+                    <li>选中对象后可直接改右侧颜色粗细，四角控制点可调整大小。</li>
+                    <li>用文字工具在图上点一下即可直接输入，<b>双击</b>可重新编辑。</li>
+                </ul>
+            </div>`
+    },
+    "en": {
+        title:"PicMark — Image Marker & Annotation Workbench", tagline:"Screenshot annotation workbench",
+        btnLoad:"Open image", lblTool:"Tools",
+        txtToolSelect:"Select & move", txtToolMarker:"Number marker", txtToolText:"Text", txtToolRect:"Rectangle",
+        txtToolCircle:"Circle", txtToolArrow:"Arrow", txtToolLine:"Line", txtToolBlur:"Mosaic",
+        grpStyle:"Appearance", selBadge:"Selected", lblColor:"Color", lblThickness:"Size", lblOpacity:"Opacity",
+        lblFillStyle:"Style", optStroke:"Stroke (hollow)", optFill:"Fill (solid)",
+        grpMarker:"Number marker", lblStartNum:"Next number", lblMarkerNum:"This marker", lblTextColor:"Text color",
+        grpText:"Text", lblTextInput:"Content",
+        grpLayers:"Layers", layersEmpty:"Nothing marked yet", tipUp:"Bring forward", tipDown:"Send backward", tipDelete:"Delete",
+        btnUndo:"Undo", btnRedo:"Redo", btnClear:"Clear all",
+        grpExport:"Export", lblFileName:"File name", lblFormat:"Format", lblQuality:"JPG quality", btnDownload:"Download image",
+        fileNamePlaceholder:"Enter a file name", noImageAlert:"Load an image first.", textInputPlaceholder:"Type text...",
+        chipNoImage:"No image loaded", statusToolLabel:"Current tool",
+        statusHint:"1–8 switch tools · Ctrl+wheel zoom · Space+drag pan · [ ] switch image · 0 fit · Delete removes selection",
+        tipZoomOut:"Zoom out", tipZoomIn:"Zoom in", tipZoomFit:"Fit to window (0)", tipZoomOne:"Actual size 100%",
+        btnCancel:"Cancel", btnOk:"Got it", btnClose:"Close",
+        limitTitle:"Image limit reached", limitMsg:"You can edit up to {max} images at once, so {n} were skipped.",
+        closeTitle:"Close image", closeMsg:"“{name}” has {n} annotations, which will be removed with it. Continue?",
+        tipAdd:"Add more images", tipCloseDoc:"Close this image", btnDownloadAll:"Export all", filmCount:"{n} / {max}",
+        placeholderHtml:`
+            <h2 class="empty-title">Start annotating</h2>
+            <p class="empty-desc">Use “Open image” above, drop an image into this area, or press <kbd>Ctrl</kbd><kbd>V</kbd> to paste a screenshot.</p>
+            <div class="tips">
+                <div class="tips-title">Tips</div>
+                <ul>
+                    <li>Open several images at once (up to 30). Switch between them in the filmstrip below — each keeps its own annotations and undo history.</li>
+                    <li>Keys <kbd>1</kbd>–<kbd>8</kbd> switch tools; hover a tool to see its name.</li>
+                    <li><kbd>Ctrl</kbd> + wheel to zoom, hold <kbd>Space</kbd> and drag to pan, <kbd>0</kbd> to fit.</li>
+                    <li>Select an object to edit its color and size live; drag the corner handles to resize.</li>
+                    <li>With the text tool, click on the image and type straight away. <b>Double-click</b> to edit later.</li>
+                </ul>
+            </div>`
+    },
+    "ja": {
+        title:"PicMark — 画像注釈ワークベンチ", tagline:"スクリーンショット注釈ワークベンチ",
+        btnLoad:"画像を開く", lblTool:"ツール",
+        txtToolSelect:"選択と移動", txtToolMarker:"数字マーク", txtToolText:"テキスト", txtToolRect:"矩形",
+        txtToolCircle:"円形", txtToolArrow:"矢印", txtToolLine:"直線", txtToolBlur:"モザイク",
+        grpStyle:"外観", selBadge:"選択中", lblColor:"カラー", lblThickness:"太さ", lblOpacity:"不透明度",
+        lblFillStyle:"スタイル", optStroke:"枠線のみ (空心)", optFill:"塗りつぶし (実心)",
+        grpMarker:"数字マーク", lblStartNum:"次の番号", lblMarkerNum:"この番号", lblTextColor:"文字色",
+        grpText:"テキスト", lblTextInput:"内容",
+        grpLayers:"レイヤー", layersEmpty:"まだ注釈がありません", tipUp:"前面へ", tipDown:"背面へ", tipDelete:"削除",
+        btnUndo:"元に戻す", btnRedo:"やり直し", btnClear:"すべてクリア",
+        grpExport:"書き出し", lblFileName:"ファイル名", lblFormat:"形式", lblQuality:"JPG 品質", btnDownload:"画像を保存",
+        fileNamePlaceholder:"ファイル名を入力", noImageAlert:"先に画像を読み込んでください。", textInputPlaceholder:"テキストを入力...",
+        chipNoImage:"画像が読み込まれていません", statusToolLabel:"現在のツール",
+        statusHint:"1–8 ツール切替 · Ctrl+ホイール 拡大縮小 · スペース+ドラッグ 移動 · [ ] 画像切替 · 0 全体表示 · Delete 選択削除",
+        tipZoomOut:"縮小", tipZoomIn:"拡大", tipZoomFit:"ウィンドウに合わせる (0)", tipZoomOne:"実際のサイズ 100%",
+        btnCancel:"キャンセル", btnOk:"OK", btnClose:"閉じる",
+        limitTitle:"画像の上限に達しました", limitMsg:"同時に編集できるのは最大 {max} 枚です。{n} 枚をスキップしました。",
+        closeTitle:"画像を閉じる", closeMsg:"「{name}」には {n} 個の注釈があり、一緒に削除されます。続けますか？",
+        tipAdd:"画像を追加", tipCloseDoc:"この画像を閉じる", btnDownloadAll:"すべて書き出し", filmCount:"{n} / {max} 枚",
+        placeholderHtml:`
+            <h2 class="empty-title">注釈を始める</h2>
+            <p class="empty-desc">上の「画像を開く」から選ぶか、この領域に画像をドラッグ＆ドロップ、または <kbd>Ctrl</kbd><kbd>V</kbd> で貼り付けてください。</p>
+            <div class="tips">
+                <div class="tips-title">操作のヒント</div>
+                <ul>
+                    <li>複数の画像（最大 30 枚）を同時に開けます。下のフィルムストリップで切り替えでき、注釈と履歴は画像ごとに独立しています。</li>
+                    <li>数字キー <kbd>1</kbd>–<kbd>8</kbd> でツールを切替。ツールにカーソルを合わせると名前が出ます。</li>
+                    <li><kbd>Ctrl</kbd> + ホイールで拡大縮小、<kbd>スペース</kbd> を押しながらドラッグで移動、<kbd>0</kbd> で全体表示。</li>
+                    <li>オブジェクトを選ぶと右側で色や太さを即時変更でき、四隅のハンドルでサイズ変更できます。</li>
+                    <li>テキストツールで画像をクリックするとその場で入力でき、<b>ダブルクリック</b>で再編集できます。</li>
+                </ul>
+            </div>`
+    },
+    "ko": {
+        title:"PicMark — 이미지 마크 및 주석 작업대", tagline:"스크린샷 주석 작업대",
+        btnLoad:"이미지 열기", lblTool:"도구",
+        txtToolSelect:"선택 및 이동", txtToolMarker:"숫자 마크", txtToolText:"텍스트", txtToolRect:"사각형",
+        txtToolCircle:"원형", txtToolArrow:"화살표", txtToolLine:"직선", txtToolBlur:"모자이크",
+        grpStyle:"모양", selBadge:"선택됨", lblColor:"색상", lblThickness:"두께", lblOpacity:"투명도",
+        lblFillStyle:"스타일", optStroke:"테두리 (비움)", optFill:"채우기 (채움)",
+        grpMarker:"숫자 마크", lblStartNum:"다음 번호", lblMarkerNum:"이 마크", lblTextColor:"글자 색상",
+        grpText:"텍스트", lblTextInput:"내용",
+        grpLayers:"레이어", layersEmpty:"아직 주석이 없습니다", tipUp:"앞으로", tipDown:"뒤로", tipDelete:"삭제",
+        btnUndo:"실행 취소", btnRedo:"다시 실행", btnClear:"모두 지우기",
+        grpExport:"내보내기", lblFileName:"파일 이름", lblFormat:"형식", lblQuality:"JPG 품질", btnDownload:"이미지 저장",
+        fileNamePlaceholder:"파일 이름 입력", noImageAlert:"먼저 이미지를 불러오세요.", textInputPlaceholder:"텍스트 입력...",
+        chipNoImage:"이미지가 없습니다", statusToolLabel:"현재 도구",
+        statusHint:"1–8 도구 전환 · Ctrl+휠 확대 · 스페이스+드래그 이동 · [ ] 이미지 전환 · 0 창에 맞춤 · Delete 선택 삭제",
+        tipZoomOut:"축소", tipZoomIn:"확대", tipZoomFit:"창에 맞춤 (0)", tipZoomOne:"실제 크기 100%",
+        btnCancel:"취소", btnOk:"확인", btnClose:"닫기",
+        limitTitle:"이미지 개수 제한", limitMsg:"한 번에 최대 {max}장까지 편집할 수 있어 {n}장을 건너뛰었습니다.",
+        closeTitle:"이미지 닫기", closeMsg:"“{name}”에 주석 {n}개가 있으며 함께 삭제됩니다. 계속할까요?",
+        tipAdd:"이미지 추가", tipCloseDoc:"이 이미지 닫기", btnDownloadAll:"전체 내보내기", filmCount:"{n} / {max}",
+        placeholderHtml:`
+            <h2 class="empty-title">주석 시작하기</h2>
+            <p class="empty-desc">위의 “이미지 열기”를 누르거나, 이 영역에 이미지를 끌어다 놓거나, <kbd>Ctrl</kbd><kbd>V</kbd> 로 스크린샷을 붙여넣으세요.</p>
+            <div class="tips">
+                <div class="tips-title">사용 팁</div>
+                <ul>
+                    <li>여러 이미지를 한 번에(최대 30장) 열 수 있습니다. 아래 필름스트립에서 전환하며, 주석과 실행 취소 기록은 이미지마다 따로 관리됩니다.</li>
+                    <li>숫자키 <kbd>1</kbd>–<kbd>8</kbd> 로 도구를 전환하고, 도구에 마우스를 올리면 이름이 보입니다.</li>
+                    <li><kbd>Ctrl</kbd> + 휠로 확대/축소, <kbd>스페이스</kbd> 를 누른 채 드래그하면 이동, <kbd>0</kbd> 은 창에 맞춤.</li>
+                    <li>개체를 선택하면 오른쪽에서 색상과 두께를 바로 바꾸고, 모서리 핸들로 크기를 조절할 수 있습니다.</li>
+                    <li>텍스트 도구로 이미지를 클릭하면 바로 입력할 수 있고, <b>더블 클릭</b> 으로 다시 편집합니다.</li>
+                </ul>
+            </div>`
+    },
+    "es": {
+        title:"PicMark — Mesa de marcado y anotación", tagline:"Mesa de anotación de capturas",
+        btnLoad:"Abrir imagen", lblTool:"Herramientas",
+        txtToolSelect:"Seleccionar y mover", txtToolMarker:"Marcador numérico", txtToolText:"Texto", txtToolRect:"Rectángulo",
+        txtToolCircle:"Círculo", txtToolArrow:"Flecha", txtToolLine:"Línea", txtToolBlur:"Mosaico",
+        grpStyle:"Apariencia", selBadge:"Seleccionado", lblColor:"Color", lblThickness:"Grosor", lblOpacity:"Opacidad",
+        lblFillStyle:"Estilo", optStroke:"Contorno (vacío)", optFill:"Relleno (sólido)",
+        grpMarker:"Marcador numérico", lblStartNum:"Siguiente n.º", lblMarkerNum:"Este marcador", lblTextColor:"Color de texto",
+        grpText:"Texto", lblTextInput:"Contenido",
+        grpLayers:"Capas", layersEmpty:"Todavía no hay anotaciones", tipUp:"Traer adelante", tipDown:"Enviar atrás", tipDelete:"Eliminar",
+        btnUndo:"Deshacer", btnRedo:"Rehacer", btnClear:"Borrar todo",
+        grpExport:"Exportar", lblFileName:"Nombre", lblFormat:"Formato", lblQuality:"Calidad JPG", btnDownload:"Descargar imagen",
+        fileNamePlaceholder:"Nombre de archivo", noImageAlert:"Cargue una imagen primero.", textInputPlaceholder:"Escriba un texto...",
+        chipNoImage:"Sin imagen cargada", statusToolLabel:"Herramienta actual",
+        statusHint:"1–8 cambia de herramienta · Ctrl+rueda zoom · Espacio+arrastrar mover · [ ] cambia de imagen · 0 ajustar · Supr elimina",
+        tipZoomOut:"Alejar", tipZoomIn:"Acercar", tipZoomFit:"Ajustar a la ventana (0)", tipZoomOne:"Tamaño real 100%",
+        btnCancel:"Cancelar", btnOk:"Entendido", btnClose:"Cerrar",
+        limitTitle:"Límite de imágenes", limitMsg:"Puede editar hasta {max} imágenes a la vez, así que se omitieron {n}.",
+        closeTitle:"Cerrar imagen", closeMsg:"“{name}” tiene {n} anotaciones que se eliminarán con ella. ¿Continuar?",
+        tipAdd:"Añadir más imágenes", tipCloseDoc:"Cerrar esta imagen", btnDownloadAll:"Exportar todo", filmCount:"{n} / {max}",
+        placeholderHtml:`
+            <h2 class="empty-title">Empiece a anotar</h2>
+            <p class="empty-desc">Use “Abrir imagen” arriba, arrastre una imagen a esta zona o pulse <kbd>Ctrl</kbd><kbd>V</kbd> para pegar una captura.</p>
+            <div class="tips">
+                <div class="tips-title">Consejos</div>
+                <ul>
+                    <li>Abra varias imágenes a la vez (hasta 30). Cámbielas en la tira inferior; cada una conserva sus anotaciones y su historial.</li>
+                    <li>Las teclas <kbd>1</kbd>–<kbd>8</kbd> cambian de herramienta; pase el ratón por encima para ver su nombre.</li>
+                    <li><kbd>Ctrl</kbd> + rueda para el zoom, <kbd>Espacio</kbd> + arrastrar para mover, <kbd>0</kbd> para ajustar.</li>
+                    <li>Seleccione un objeto para cambiar color y grosor al instante; arrastre los tiradores para redimensionar.</li>
+                    <li>Con la herramienta de texto, haga clic sobre la imagen y escriba. <b>Doble clic</b> para editarlo después.</li>
+                </ul>
+            </div>`
     }
+};
 
-    langSelect.addEventListener('change', function() { updateLanguage(this.value); });
-    updateLanguage(currentLang);
+/* =========================================================
+   Elements
+   ========================================================= */
+const langSelect = document.getElementById('langSelect');
+const imageLoader = document.getElementById('imageLoader');
+const loadBtn = document.getElementById('loadBtn');
+const canvas = document.getElementById('imageCanvas');
+const ctx = canvas.getContext('2d');
+const canvasWrapper = document.getElementById('canvasWrapper');
+const canvasPan = document.getElementById('canvasPan');
+const placeholder = document.getElementById('placeholder');
+const placeholderText = document.getElementById('placeholderText');
+const dropZone = document.getElementById('dropZone');
+const stage = dropZone;
+const textEditor = document.getElementById('textEditor');
 
-    // 粗細度雙向連動
-    brushSizeRange.addEventListener('input', function() {
-        brushSizeInput.value = this.value;
-    });
-    brushSizeInput.addEventListener('input', function() {
-        let val = parseInt(this.value, 10);
-        if (isNaN(val)) val = 2;
-        if (val > 100) val = 100;
-        if (val < 2) val = 2;
-        brushSizeRange.value = val;
-    });
+const startNumInput = document.getElementById('startNum');
+const markerNumInput = document.getElementById('markerNum');
+const nextNumField = document.getElementById('nextNumField');
+const markerNumField = document.getElementById('markerNumField');
+const brushSizeInput = document.getElementById('brushSize');
+const brushSizeRange = document.getElementById('brushSizeRange');
+const primaryColorInput = document.getElementById('primaryColor');
+const textColorInput = document.getElementById('textColor');
+const brushOpacityInput = document.getElementById('brushOpacity');
+const opacityVal = document.getElementById('opacityVal');
+const fillStyleSelect = document.getElementById('fillStyleSelect');
+const textToDrawInput = document.getElementById('textToDraw');
+const fileNameInput = document.getElementById('fileNameInput');
 
-    brushOpacityInput.addEventListener('input', function() {
-        opacityVal.innerText = this.value + '%';
-    });
+const numberParamsGroup = document.getElementById('numberParamsGroup');
+const textParamsGroup = document.getElementById('textParamsGroup');
+const selBadge = document.getElementById('selBadge');
+const layerList = document.getElementById('layerList');
+const layerCount = document.getElementById('layerCount');
 
-    // --- 工具切換 ---
-    const modeButtons = document.querySelectorAll('.mode-btn');
-    modeButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            modeButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentMode = this.getAttribute('data-mode');
+const undoBtn = document.getElementById('undoBtn');
+const redoBtn = document.getElementById('redoBtn');
+const clearBtn = document.getElementById('clearBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const exportFormat = document.getElementById('exportFormat');
+const qualityField = document.getElementById('qualityField');
+const jpgQuality = document.getElementById('jpgQuality');
+const qualityVal = document.getElementById('qualityVal');
 
-            numberParamsGroup.style.display = (currentMode === 'marker') ? 'flex' : 'none';
-            textParamsGroup.style.display = (currentMode === 'text') ? 'flex' : 'none';
-            
-            if (currentMode === 'arrow' || currentMode === 'line' || currentMode === 'blur') {
-                fillStyleSelect.disabled = true;
-            } else {
-                fillStyleSelect.disabled = false;
-            }
-            selectedObject = null;
-            drawAll();
-        });
-    });
+const fileChip = document.getElementById('fileChip');
+const chipName = document.getElementById('chipName');
+const chipDim = document.getElementById('chipDim');
+const statusTool = document.getElementById('statusTool');
+const statusDims = document.getElementById('statusDims');
 
-    // --- 圖片載入 ---
-    function handleImage(img) {
-        loadedImage = img;
-        placeholder.style.display = 'none';
-        canvasWrapper.style.display = 'inline-block';
-        
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        
-        objects = [];
-        redoStack = [];
-        baseStartNumber = 1;
-        startNumInput.value = 1;
-        saveHistory();
-        drawAll();
+const zoomBar = document.getElementById('zoomBar');
+const zoomLevelBtn = document.getElementById('zoomLevel');
+const floatTip = document.getElementById('floatTip');
+const floatTipText = document.getElementById('floatTipText');
+
+const modal = document.getElementById('modal');
+const modalTitleEl = document.getElementById('modalTitle');
+const modalMsgEl = document.getElementById('modalMsg');
+const modalActions = document.getElementById('modalActions');
+const filmstrip = document.getElementById('filmstrip');
+const chipIndex = document.getElementById('chipIndex');
+const downloadAllBtn = document.getElementById('downloadAllBtn');
+
+const CANVAS_FONT = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto';
+
+/* =========================================================
+   State
+   ========================================================= */
+let loadedImage = null;
+let objects = [];
+let redoStack = [];
+let history = [];
+
+let currentMode = 'select';
+let isDrawing = false;
+let dragStartX = 0, dragStartY = 0;
+
+let selectedObject = null;
+let isDraggingObject = false;
+let dragOffsetX = 0, dragOffsetY = 0;
+let activeHandle = null;
+let didModify = false;
+
+let nextNumber = 1;
+
+// multi-image documents
+const MAX_DOCS = 30;
+let docs = [];
+let activeIndex = -1;
+
+// view transform
+let zoom = 1, panX = 0, panY = 0, autoFit = true;
+const MIN_ZOOM = 0.05, MAX_ZOOM = 16;
+
+// panning
+let isSpaceDown = false, isPanning = false, panStartX = 0, panStartY = 0, panOriginX = 0, panOriginY = 0;
+
+// inline text editing
+let editingObj = null, editingIsNew = false;
+
+let currentLang = 'zh-TW';
+const dict = () => i18n[currentLang];
+
+/* =========================================================
+   i18n wiring
+   ========================================================= */
+function setText(id, value){ const el = document.getElementById(id); if (el && value !== undefined) el.textContent = value; }
+
+function updateLanguage(langCode){
+    currentLang = langCode;
+    const d = i18n[langCode];
+    if (!d) return;
+
+    document.title = d.title;
+    ['tagline','btnLoad','lblTool','txtToolSelect','txtToolMarker','txtToolText','txtToolRect','txtToolCircle',
+     'txtToolArrow','txtToolLine','txtToolBlur','grpStyle','selBadge','lblColor','lblThickness','lblOpacity',
+     'lblFillStyle','optStroke','optFill','grpMarker','lblStartNum','lblMarkerNum','lblTextColor','grpText','lblTextInput',
+     'grpLayers','btnUndo','btnRedo','btnClear','grpExport','lblFileName','lblFormat','lblQuality','btnDownload',
+     'statusToolLabel','statusHint','tipZoomOut','tipZoomIn','tipZoomFit','tipZoomOne',
+     'btnDownloadAll'].forEach(k => setText(k, d[k]));
+
+    fileNameInput.placeholder = d.fileNamePlaceholder;
+    textToDrawInput.placeholder = d.textInputPlaceholder;
+    textEditor.placeholder = d.textInputPlaceholder;
+
+    if (!loadedImage){
+        chipName.textContent = d.chipNoImage;
+        placeholderText.innerHTML = d.placeholderHtml;
     }
+    updateStatusTool();
+    renderLayers();
+    renderFilmstrip();
+    updateFileChip();
+}
 
-    imageLoader.addEventListener('change', function(e) {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() { handleImage(img); };
-            img.src = event.target.result;
-        };
-        if(e.target.files[0]) {
-            const fullFileName = e.target.files[0].name;
-            fileNameInput.value = fullFileName.substring(0, fullFileName.lastIndexOf('.')) + '_marked';
-            reader.readAsDataURL(e.target.files[0]);
-        }
-    });
+function updateStatusTool(){
+    const el = document.querySelector('.mode-btn.active .tool-tip');
+    if (el) statusTool.textContent = el.textContent;
+}
 
-    window.addEventListener('paste', function(e) {
-        const items = e.clipboardData.items;
-        for (let i = 0; i < items.length; i++) {
-            if (items[i].type.indexOf('image') !== -1) {
-                const blob = items[i].getAsFile();
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = function() { handleImage(img); };
-                    img.src = event.target.result;
-                };
-                fileNameInput.value = "picmark_" + new Date().toISOString().slice(0,10);
-                reader.readAsDataURL(blob);
-            }
-        }
-    });
+langSelect.addEventListener('change', function(){ updateLanguage(this.value); });
 
-    dropZone.addEventListener('dragover', (e) => e.preventDefault());
-    dropZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && files[0].type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() { handleImage(img); };
-                img.src = event.target.result;
-            };
-            const fullFileName = files[0].name;
-            fileNameInput.value = fullFileName.substring(0, fullFileName.lastIndexOf('.')) + '_marked';
-            reader.readAsDataURL(files[0]);
-        }
-    });
-
-    // --- 向量重繪系統核心 ---
-    function drawAll() {
-        if (!loadedImage) return;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(loadedImage, 0, 0);
-
-        objects.forEach(obj => {
-            ctx.save();
-            ctx.strokeStyle = obj.color;
-            ctx.fillStyle = obj.color;
-            ctx.lineWidth = obj.size;
-            ctx.globalAlpha = obj.opacity;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-
-            const isFill = obj.fillStyle === 'fill';
-
-            if (obj.type === 'rect') {
-                if (isFill) {
-                    ctx.fillRect(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1);
-                } else {
-                    ctx.strokeRect(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1);
-                }
-            } 
-            else if (obj.type === 'circle') {
-                const radiusX = Math.abs(obj.x2 - obj.x1) / 2;
-                const radiusY = Math.abs(obj.y2 - obj.y1) / 2;
-                const r = Math.max(radiusX, radiusY); 
-                
-                const centerX = obj.x1 + (obj.x2 > obj.x1 ? r : -r);
-                const centerY = obj.y1 + (obj.y2 > obj.y1 ? r : -r);
-
-                ctx.beginPath();
-                ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
-                if (isFill) ctx.fill(); else ctx.stroke();
-            } 
-            else if (obj.type === 'line') {
-                ctx.beginPath();
-                ctx.moveTo(obj.x1, obj.y1);
-                ctx.lineTo(obj.x2, obj.y2);
-                ctx.stroke();
-            } 
-            else if (obj.type === 'arrow') {
-                drawArrowHead(obj.x1, obj.y1, obj.x2, obj.y2, obj.size);
-            }
-            else if (obj.type === 'blur') {
-                drawMosaicPixel(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1, obj.size, obj.opacity);
-            }
-            else if (obj.type === 'marker') {
-                const radius = obj.size / 2;
-                ctx.beginPath();
-                ctx.arc(obj.x1, obj.y1, radius, 0, 2 * Math.PI);
-                ctx.fill();
-
-                ctx.fillStyle = obj.textColor;
-                ctx.font = `bold ${radius}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(obj.text, obj.x1, obj.y1 + (radius * 0.05));
-            }
-            else if (obj.type === 'text') {
-                ctx.font = `bold ${obj.size}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'top';
-                ctx.fillText(obj.text, obj.x1, obj.y1);
-            }
-
-            if (currentMode === 'select' && selectedObject === obj) {
-                ctx.globalAlpha = 1.0;
-                ctx.strokeStyle = '#3b82f6';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([6, 4]);
-                
-                if (obj.type === 'marker') {
-                    ctx.beginPath();
-                    ctx.arc(obj.x1, obj.y1, obj.size / 2 + 4, 0, 2 * Math.PI);
-                    ctx.stroke();
-                } else if (obj.type === 'text') {
-                    ctx.font = `bold ${obj.size}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
-                    const metrics = ctx.measureText(obj.text);
-                    const w = metrics.width;
-                    const h = obj.size;
-                    ctx.strokeRect(obj.x1 - 4, obj.y1 - 4, w + 8, h + 8);
-                } else if (obj.type === 'circle') {
-                    const radiusX = Math.abs(obj.x2 - obj.x1) / 2;
-                    const radiusY = Math.abs(obj.y2 - obj.y1) / 2;
-                    const r = Math.max(radiusX, radiusY);
-                    const centerX = obj.x1 + (obj.x2 > obj.x1 ? r : -r);
-                    const centerY = obj.y1 + (obj.y2 > obj.y1 ? r : -r);
-                    ctx.strokeRect(centerX - r - 4, centerY - r - 4, (r * 2) + 8, (r * 2) + 8);
-                } else {
-                    const minX = Math.min(obj.x1, obj.x2);
-                    const minY = Math.min(obj.y1, obj.y2);
-                    const maxX = Math.max(obj.x1, obj.x2);
-                    const maxY = Math.max(obj.y1, obj.y2);
-                    ctx.strokeRect(minX - 6, minY - 6, (maxX - minX) + 12, (maxY - minY) + 12);
-                }
-            }
-            ctx.restore();
-        });
+/* =========================================================
+   Floating tooltips (item 1)
+   ========================================================= */
+let tipTarget = null;
+function showTip(el){
+    const label = el.querySelector('.tool-tip');
+    if (!label) return;
+    tipTarget = el;
+    floatTipText.textContent = label.textContent;
+    const key = el.getAttribute('data-key');
+    const old = floatTip.querySelector('.tip-key');
+    if (old) old.remove();
+    if (key){
+        const k = document.createElement('span');
+        k.className = 'tip-key';
+        k.textContent = key;
+        floatTip.appendChild(k);
     }
+    floatTip.style.display = 'flex';
+    floatTip.style.visibility = 'hidden';
 
-    function saveHistory() {
-        history.push(JSON.stringify(objects));
-        redoStack = [];
-        updateButtons();
+    const r = el.getBoundingClientRect();
+    const t = floatTip.getBoundingClientRect();
+    const pos = el.getAttribute('data-tip-pos') || 'right';
+    let x, y;
+    if (pos === 'bottom'){ x = r.left + r.width/2 - t.width/2; y = r.bottom + 8; }
+    else if (pos === 'top'){ x = r.left + r.width/2 - t.width/2; y = r.top - t.height - 8; }
+    else { x = r.right + 12; y = r.top + r.height/2 - t.height/2; }
+    x = Math.max(8, Math.min(x, window.innerWidth - t.width - 8));
+    y = Math.max(8, Math.min(y, window.innerHeight - t.height - 8));
+    floatTip.style.left = x + 'px';
+    floatTip.style.top = y + 'px';
+    floatTip.style.visibility = 'visible';
+}
+function hideTip(){ floatTip.style.display = 'none'; tipTarget = null; }
+
+document.addEventListener('mouseover', function(e){
+    const el = e.target.closest ? e.target.closest('.has-tip') : null;
+    if (!el || el === tipTarget) return;
+    showTip(el);
+});
+document.addEventListener('mouseout', function(e){
+    const el = e.target.closest ? e.target.closest('.has-tip') : null;
+    if (el) hideTip();
+});
+window.addEventListener('scroll', hideTip, true);
+window.addEventListener('blur', hideTip);
+
+/* =========================================================
+   View transform: zoom & pan (items 2, 3)
+   ========================================================= */
+function applyTransform(){
+    canvasPan.style.transform = 'translate(' + panX + 'px,' + panY + 'px) scale(' + zoom + ')';
+    zoomLevelBtn.firstChild.nodeValue = Math.round(zoom * 100) + '%';
+    if (editingObj) positionTextEditor(editingObj);
+}
+function clampZoom(z){ return Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, z)); }
+
+function fitToView(){
+    if (!loadedImage) return;
+    const pad = 48;
+    const w = Math.max(50, stage.clientWidth - pad);
+    const h = Math.max(50, stage.clientHeight - pad);
+    zoom = clampZoom(Math.min(w / canvas.width, h / canvas.height));
+    panX = (stage.clientWidth - canvas.width * zoom) / 2;
+    panY = (stage.clientHeight - canvas.height * zoom) / 2;
+    autoFit = true;
+    applyTransform();
+    drawAll();
+}
+function zoomAt(clientX, clientY, factor){
+    const r = stage.getBoundingClientRect();
+    const mx = clientX - r.left, my = clientY - r.top;
+    const nz = clampZoom(zoom * factor);
+    if (nz === zoom) return;
+    panX = mx - (mx - panX) * (nz / zoom);
+    panY = my - (my - panY) * (nz / zoom);
+    zoom = nz;
+    autoFit = false;
+    applyTransform();
+    drawAll();
+}
+function zoomCenter(factor){
+    const r = stage.getBoundingClientRect();
+    zoomAt(r.left + r.width / 2, r.top + r.height / 2, factor);
+}
+function zoomTo(z){
+    const r = stage.getBoundingClientRect();
+    zoomAt(r.left + r.width / 2, r.top + r.height / 2, z / zoom);
+}
+
+document.getElementById('zoomInBtn').addEventListener('click', () => zoomCenter(1.25));
+document.getElementById('zoomOutBtn').addEventListener('click', () => zoomCenter(1 / 1.25));
+document.getElementById('zoomOneBtn').addEventListener('click', () => zoomTo(1));
+zoomLevelBtn.addEventListener('click', fitToView);
+
+stage.addEventListener('wheel', function(e){
+    if (!loadedImage) return;
+    e.preventDefault();
+    if (e.ctrlKey || e.metaKey){
+        zoomAt(e.clientX, e.clientY, Math.pow(0.9988, e.deltaY));
+    } else {
+        panX -= e.shiftKey ? e.deltaY : e.deltaX;
+        panY -= e.shiftKey ? 0 : e.deltaY;
+        autoFit = false;
+        applyTransform();
     }
+}, { passive:false });
 
-    function updateButtons() {
-        undoBtn.disabled = history.length <= 1;
-        redoBtn.disabled = redoStack.length === 0;
+// space / middle-button panning
+stage.addEventListener('pointerdown', function(e){
+    if (!loadedImage) return;
+    if (!(isSpaceDown || e.button === 1)) return;
+    e.preventDefault();
+    isPanning = true;
+    panStartX = e.clientX; panStartY = e.clientY;
+    panOriginX = panX; panOriginY = panY;
+    stage.setPointerCapture(e.pointerId);
+    stage.classList.add('is-panning');
+});
+stage.addEventListener('pointermove', function(e){
+    if (!isPanning) return;
+    panX = panOriginX + (e.clientX - panStartX);
+    panY = panOriginY + (e.clientY - panStartY);
+    autoFit = false;
+    applyTransform();
+});
+function endPan(){ isPanning = false; stage.classList.remove('is-panning'); }
+stage.addEventListener('pointerup', endPan);
+stage.addEventListener('pointercancel', endPan);
+
+window.addEventListener('resize', function(){ if (autoFit) fitToView(); });
+
+/* =========================================================
+   Inspector wiring (item 4: live edit of the selection)
+   ========================================================= */
+function isTypingTarget(t){
+    return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
+}
+
+brushSizeRange.addEventListener('input', function(){
+    brushSizeInput.value = this.value;
+    if (selectedObject){ selectedObject.size = parseInt(this.value, 10); drawAll(); }
+});
+brushSizeInput.addEventListener('input', function(){
+    let val = parseInt(this.value, 10);
+    if (isNaN(val)) val = 2;
+    if (val > 400) val = 400;
+    if (val < 2) val = 2;
+    brushSizeRange.value = Math.min(100, val);
+    if (selectedObject){ selectedObject.size = val; drawAll(); }
+});
+brushSizeRange.addEventListener('change', commitPropChange);
+brushSizeInput.addEventListener('change', commitPropChange);
+
+brushOpacityInput.addEventListener('input', function(){
+    opacityVal.textContent = this.value + '%';
+    if (selectedObject){ selectedObject.opacity = parseInt(this.value, 10) / 100; drawAll(); }
+});
+brushOpacityInput.addEventListener('change', commitPropChange);
+
+primaryColorInput.addEventListener('input', function(){
+    if (selectedObject){ selectedObject.color = this.value; drawAll(); renderLayers(); }
+});
+primaryColorInput.addEventListener('change', commitPropChange);
+
+textColorInput.addEventListener('input', function(){
+    if (selectedObject && selectedObject.type === 'marker'){ selectedObject.textColor = this.value; drawAll(); }
+});
+textColorInput.addEventListener('change', commitPropChange);
+
+fillStyleSelect.addEventListener('change', function(){
+    if (selectedObject && 'fillStyle' in selectedObject){ selectedObject.fillStyle = this.value; drawAll(); commitPropChange(); }
+});
+
+textToDrawInput.addEventListener('input', function(){
+    if (selectedObject && selectedObject.type === 'text'){ selectedObject.text = this.value; drawAll(); renderLayers(); }
+});
+textToDrawInput.addEventListener('change', commitPropChange);
+
+function commitPropChange(){ if (selectedObject){ saveHistory(); } }
+
+function syncInspectorFromSelection(){
+    const o = selectedObject;
+    selBadge.style.display = o ? '' : 'none';
+    if (!o) return;
+    if (o.color) primaryColorInput.value = o.color;
+    if (o.size){ brushSizeInput.value = o.size; brushSizeRange.value = Math.min(100, Math.max(2, o.size)); }
+    if (typeof o.opacity === 'number'){
+        brushOpacityInput.value = Math.round(o.opacity * 100);
+        opacityVal.textContent = Math.round(o.opacity * 100) + '%';
     }
+    if (o.fillStyle) fillStyleSelect.value = o.fillStyle;
+    if (o.textColor) textColorInput.value = o.textColor;
+    if (o.type === 'marker') markerNumInput.value = o.text;
+    if (o.type === 'text') textToDrawInput.value = o.text;
+}
 
-    function syncStartNumber() {
-        const markerCount = objects.filter(obj => obj.type === 'marker').length;
-        let currentIdx = 0;
-        objects.forEach(obj => {
-            if (obj.type === 'marker') {
-                obj.text = baseStartNumber + currentIdx;
-                currentIdx++;
-            }
-        });
-        startNumInput.value = baseStartNumber + markerCount;
+function updateContextGroups(){
+    const selType = selectedObject ? selectedObject.type : null;
+    numberParamsGroup.style.display = (currentMode === 'marker' || selType === 'marker') ? '' : 'none';
+    nextNumField.style.display = currentMode === 'marker' ? '' : 'none';
+    markerNumField.style.display = selType === 'marker' ? '' : 'none';
+    textParamsGroup.style.display = (selType === 'text') ? '' : 'none';
+    const noFill = (currentMode === 'arrow' || currentMode === 'line' || currentMode === 'blur');
+    const selNoFill = selType && !('fillStyle' in selectedObject);
+    fillStyleSelect.disabled = selectedObject ? selNoFill : noFill;
+}
+
+function setSelection(obj){
+    selectedObject = obj;
+    syncInspectorFromSelection();
+    updateContextGroups();
+    renderLayers();
+}
+
+function refreshUI(){
+    syncInspectorFromSelection();
+    updateContextGroups();
+    renderLayers();
+    updateButtons();
+    updateFilmCounts();
+}
+
+/* =========================================================
+   Layer list (item 5)
+   ========================================================= */
+const LAYER_ICONS = {
+    select:'<path d="M5.5 3.5l13 7.2-5.7 1.5-2.6 5.4z"/>',
+    marker:'<circle cx="12" cy="12" r="8.2"/><path d="M10.6 9.9L12.6 8.6V16"/>',
+    text:'<path d="M5 7V5h14v2M12 5v14M9.5 19h5"/>',
+    rect:'<rect x="4.2" y="6.2" width="15.6" height="11.6" rx="1.6"/>',
+    circle:'<circle cx="12" cy="12" r="7.8"/>',
+    arrow:'<path d="M5 19L18.5 5.5M18.5 5.5h-7.2M18.5 5.5v7.2"/>',
+    line:'<path d="M5 18.5L19 5.5"/>',
+    blur:'<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1" fill="currentColor" stroke="none"/><rect x="4" y="14" width="6" height="6" rx="1" fill="currentColor" stroke="none"/>'
+};
+const TYPE_KEY = { marker:'txtToolMarker', text:'txtToolText', rect:'txtToolRect', circle:'txtToolCircle', arrow:'txtToolArrow', line:'txtToolLine', blur:'txtToolBlur' };
+
+function layerName(obj){
+    const base = dict()[TYPE_KEY[obj.type]] || obj.type;
+    if (obj.type === 'marker') return base + ' #' + obj.text;
+    if (obj.type === 'text'){
+        const t = String(obj.text || '');
+        return base + ' · ' + (t.length > 14 ? t.slice(0, 14) + '…' : t);
     }
+    return base;
+}
 
-    function handleUndo() {
-        if (history.length > 1) {
-            history.pop();
-            objects = JSON.parse(history[history.length - 1]);
-            selectedObject = null;
-            syncStartNumber(); 
-            updateButtons();
-            drawAll();
-        }
+function svgBtn(path){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+}
+
+function renderLayers(){
+    layerCount.textContent = objects.length;
+    layerList.innerHTML = '';
+    if (!objects.length){
+        const e = document.createElement('div');
+        e.className = 'layers-empty';
+        e.textContent = dict().layersEmpty;
+        layerList.appendChild(e);
+        return;
     }
+    for (let i = objects.length - 1; i >= 0; i--){
+        const obj = objects[i];
+        const row = document.createElement('div');
+        row.className = 'layer' + (obj === selectedObject ? ' is-active' : '');
+        row.innerHTML =
+            '<span class="layer-swatch" style="background:' + (obj.color || '#999') + '"></span>' +
+            '<svg class="layer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">' + (LAYER_ICONS[obj.type] || '') + '</svg>' +
+            '<span class="layer-name"></span>' +
+            '<span class="layer-acts">' +
+                '<button class="layer-btn" data-act="up" title="' + dict().tipUp + '"' + (i === objects.length - 1 ? ' disabled' : '') + '>' + svgBtn('<path d="M12 19V6M6 12l6-6 6 6"/>') + '</button>' +
+                '<button class="layer-btn" data-act="down" title="' + dict().tipDown + '"' + (i === 0 ? ' disabled' : '') + '>' + svgBtn('<path d="M12 5v13M6 12l6 6 6-6"/>') + '</button>' +
+                '<button class="layer-btn is-danger" data-act="del" title="' + dict().tipDelete + '">' + svgBtn('<path d="M5 7h14M9 7V5h6v2M7 7l.8 12h8.4L17 7"/>') + '</button>' +
+            '</span>';
+        row.querySelector('.layer-name').textContent = layerName(obj);
 
-    function handleRedo() {
-        if (redoStack.length > 0) {
-            const next = redoStack.pop();
-            history.push(next);
-            objects = JSON.parse(next);
-            selectedObject = null;
-            syncStartNumber(); 
-            updateButtons();
-            drawAll();
-        }
-    }
-
-    undoBtn.addEventListener('click', handleUndo);
-    redoBtn.addEventListener('click', handleRedo);
-    clearBtn.addEventListener('click', function() {
-        if (!loadedImage) return;
-        objects = [];
-        selectedObject = null;
-        baseStartNumber = 1;
-        startNumInput.value = 1;
-        saveHistory();
-        drawAll();
-    });
-
-    startNumInput.addEventListener('input', function() {
-        const markerCount = objects.filter(obj => obj.type === 'marker').length;
-        const inputVal = parseInt(startNumInput.value, 10);
-        baseStartNumber = isNaN(inputVal) ? 1 : Math.max(0, inputVal - markerCount);
-        syncStartNumber();
-        drawAll();
-    });
-
-    window.addEventListener('keydown', function(e) {
-        const isCmdOrCtrl = e.metaKey || e.ctrlKey;
-        if (isCmdOrCtrl) {
-            if (e.key.toLowerCase() === 'z') {
-                e.preventDefault();
-                if (e.shiftKey) { handleRedo(); } else { handleUndo(); }
-            }
-            if (e.key.toLowerCase() === 'y') { e.preventDefault(); handleRedo(); }
-        }
-        if ((e.key === 'Delete' || e.key === 'Backspace') && currentMode === 'select' && selectedObject) {
-            e.preventDefault();
-            objects = objects.filter(o => o !== selectedObject);
-            selectedObject = null;
-            syncStartNumber(); 
-            saveHistory();
-            drawAll();
-        }
-    });
-
-    // --- 物件碰撞偵測 ---
-    function findObjectAt(x, y) {
-        for (let i = objects.length - 1; i >= 0; i--) {
-            const obj = objects[i];
-            
-            if (obj.type === 'marker') {
-                const dist = Math.sqrt(Math.pow(x - obj.x1, 2) + Math.pow(y - obj.y1, 2));
-                if (dist <= obj.size / 2) return obj;
-            } 
-            else if (obj.type === 'circle') {
-                const radiusX = Math.abs(obj.x2 - obj.x1) / 2;
-                const radiusY = Math.abs(obj.y2 - obj.y1) / 2;
-                const r = Math.max(radiusX, radiusY);
-                const centerX = obj.x1 + (obj.x2 > obj.x1 ? r : -r);
-                const centerY = obj.y1 + (obj.y2 > obj.y1 ? r : -r);
-
-                const distToCenter = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-                
-                if (obj.fillStyle === 'fill') {
-                    if (distToCenter <= r) return obj;
-                } else {
-                    if (Math.abs(distToCenter - r) <= Math.max(15, obj.size)) return obj;
-                }
-            }
-            else if (obj.type === 'text') {
-                ctx.save();
-                ctx.font = `bold ${obj.size}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`;
-                const metrics = ctx.measureText(obj.text);
-                const w = metrics.width;
-                const h = obj.size;
-                ctx.restore();
-                if (x >= obj.x1 && x <= obj.x1 + w && y >= obj.y1 && y <= obj.y1 + h) {
-                    return obj;
-                }
-            } 
-            else {
-                const minX = Math.min(obj.x1, obj.x2) - 10;
-                const minY = Math.min(obj.y1, obj.y2) - 10;
-                const maxX = Math.max(obj.x1, obj.x2) + 10;
-                const maxY = Math.max(obj.y1, obj.y2) + 10;
-                if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
-                    return obj;
-                }
-            }
-        }
-        return null;
-    }
-
-    // --- 💡 終極升級：萬用 PointerEvents 核心 💡 ---
-    function getPointerPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        return {
-            x: (e.clientX - rect.left) * scaleX,
-            y: (e.clientY - rect.top) * scaleY
-        };
-    }
-
-    function onPointerDown(e) {
-        if (!loadedImage) return;
-        // 如果是多點觸控手勢（例如兩隻手指在縮放圖片），不觸發畫筆
-        if (!e.isPrimary) return; 
-
-        canvas.setPointerCapture(e.pointerId); // 鎖定指標，防止滑出畫布失效
-
-        const pos = getPointerPos(e);
-        dragStartX = pos.x;
-        dragStartY = pos.y;
-        isDrawing = true;
-
-        if (currentMode === 'select') {
-            const target = findObjectAt(pos.x, pos.y);
-            if (target) {
-                selectedObject = target;
-                isDraggingObject = true;
-                dragOffsetX = pos.x - target.x1;
-                dragOffsetY = pos.y - target.y1;
-            } else {
-                selectedObject = null;
-                isDraggingObject = false;
-            }
-            drawAll();
-        } else if (currentMode === 'marker') {
-            const num = parseInt(startNumInput.value, 10);
-            objects.push({
-                type: 'marker',
-                x1: pos.x,
-                y1: pos.y,
-                x2: pos.x,
-                y2: pos.y,
-                color: primaryColorInput.value,
-                size: parseInt(brushSizeInput.value, 10) || 30,
-                opacity: (parseInt(brushOpacityInput.value, 10) || 100) / 100,
-                text: num,
-                textColor: textColorInput.value
-            });
-            syncStartNumber(); 
-            isDrawing = false;
-            saveHistory();
-            drawAll(); 
-        } else if (currentMode === 'text') {
-            objects.push({
-                type: 'text',
-                x1: pos.x,
-                y1: pos.y,
-                x2: pos.x,
-                y2: pos.y,
-                color: primaryColorInput.value,
-                size: parseInt(brushSizeInput.value, 10) || 20,
-                opacity: (parseInt(brushOpacityInput.value, 10) || 100) / 100,
-                text: textToDrawInput.value || "Text"
-            });
-            isDrawing = false;
-            saveHistory();
-            drawAll(); 
-        } else {
-            objects.push({
-                type: currentMode,
-                x1: pos.x,
-                y1: pos.y,
-                x2: pos.x,
-                y2: pos.y,
-                color: primaryColorInput.value,
-                size: parseInt(brushSizeInput.value, 10) || 5,
-                opacity: (parseInt(brushOpacityInput.value, 10) || 100) / 100,
-                fillStyle: fillStyleSelect.value
-            });
-            drawAll();
-        }
-    }
-
-    function onPointerMove(e) {
-        if (!isDrawing) return;
-        if (!e.isPrimary) return;
-
-        const pos = getPointerPos(e);
-
-        if (currentMode === 'select' && isDraggingObject && selectedObject) {
-            const dx = pos.x - dragStartX;
-            const dy = pos.y - dragStartY;
-            
-            selectedObject.x1 = pos.x - dragOffsetX;
-            selectedObject.y1 = pos.y - dragOffsetY;
-            
-            selectedObject.x2 += dx;
-            selectedObject.y2 += dy;
-            
-            dragStartX = pos.x;
-            dragStartY = pos.y;
-            drawAll();
-        } 
-        else if (currentMode !== 'select' && currentMode !== 'marker' && currentMode !== 'text') {
-            const currentObj = objects[objects.length - 1];
-            currentObj.x2 = pos.x;
-            currentObj.y2 = pos.y;
-            drawAll(); 
-        }
-    }
-
-    function onPointerUp(e) {
-        if (!isDrawing) return;
-        isDrawing = false;
-        isDraggingObject = false;
-        saveHistory();
-        drawAll(); 
-    }
-
-    // 💡 僅綁定 Pointer 萬用事件，徹底取代原本分開的 Mouse/Touch 監聽，消除衝突 💡
-    canvas.addEventListener('pointerdown', onPointerDown);
-    canvas.addEventListener('pointermove', onPointerMove);
-    canvas.addEventListener('pointerup', onPointerUp);
-    canvas.addEventListener('pointercancel', onPointerUp);
-
-    // 雙擊編輯文字
-    canvas.addEventListener('dblclick', function(e) {
-        if (!loadedImage || currentMode !== 'select') return;
-        const pos = getPointerPos(e);
-        const target = findObjectAt(pos.x, pos.y);
-        
-        if (target && target.type === 'text') {
-            const newText = prompt(i18n[currentLang].promptEditText, target.text);
-            if (newText !== null && newText.trim() !== "") {
-                target.text = newText;
+        row.addEventListener('click', function(e){
+            const btn = e.target.closest('.layer-btn');
+            const idx = objects.indexOf(obj);
+            if (btn){
+                const act = btn.getAttribute('data-act');
+                if (act === 'up' && idx < objects.length - 1){
+                    objects.splice(idx, 1); objects.splice(idx + 1, 0, obj);
+                } else if (act === 'down' && idx > 0){
+                    objects.splice(idx, 1); objects.splice(idx - 1, 0, obj);
+                } else if (act === 'del'){
+                    objects.splice(idx, 1);
+                    if (selectedObject === obj) selectedObject = null;
+                } else { return; }
                 saveHistory();
+                refreshUI();
                 drawAll();
+                return;
             }
-        }
+            if (currentMode !== 'select') setMode('select');
+            setSelection(obj);
+            drawAll();
+        });
+
+        layerList.appendChild(row);
+    }
+}
+
+/* =========================================================
+   Tool switching (item 6)
+   ========================================================= */
+const modeButtons = document.querySelectorAll('.mode-btn');
+function setMode(mode){
+    modeButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-mode') === mode));
+    currentMode = mode;
+    if (mode !== 'select') selectedObject = null;
+    updateContextGroups();
+    syncInspectorFromSelection();
+    updateStatusTool();
+    renderLayers();
+    updateCanvasCursor();
+    drawAll();
+}
+modeButtons.forEach(btn => {
+    btn.addEventListener('click', function(){ commitTextEditor(false); setMode(this.getAttribute('data-mode')); });
+});
+
+const KEY_TO_MODE = { '1':'select','2':'marker','3':'text','4':'rect','5':'circle','6':'arrow','7':'line','8':'blur' };
+
+/* =========================================================
+   Image documents (up to 30 at a time)
+   ========================================================= */
+loadBtn.addEventListener('click', function(){ imageLoader.click(); });
+
+function updateFileChip(){
+    if (!loadedImage){
+        chipName.textContent = dict().chipNoImage;
+        chipDim.textContent = '';
+        chipIndex.textContent = '';
+        statusDims.textContent = '';
+        fileChip.classList.remove('is-loaded');
+        return;
+    }
+    chipName.textContent = fileNameInput.value || dict().fileNamePlaceholder;
+    chipDim.textContent = loadedImage.naturalWidth + '\u00d7' + loadedImage.naturalHeight;
+    chipIndex.textContent = docs.length > 1 ? (activeIndex + 1) + '/' + docs.length : '';
+    statusDims.textContent = loadedImage.naturalWidth + ' \u00d7 ' + loadedImage.naturalHeight + ' px';
+    fileChip.classList.add('is-loaded');
+}
+fileNameInput.addEventListener('input', function(){
+    if (activeIndex >= 0) docs[activeIndex].fileName = fileNameInput.value;
+    updateFileChip();
+    renderFilmstrip();
+});
+
+/* ---------- document switching ---------- */
+function syncActiveDoc(){
+    const doc = docs[activeIndex];
+    if (!doc) return;
+    doc.objects = objects;
+    doc.history = history;
+    doc.redoStack = redoStack;
+    doc.nextNumber = nextNumber;
+    doc.zoom = zoom; doc.panX = panX; doc.panY = panY; doc.autoFit = autoFit;
+    doc.fileName = fileNameInput.value;
+}
+
+function activateDoc(i){
+    if (i < 0 || i >= docs.length) return;
+    commitTextEditor(false);
+    syncActiveDoc();
+
+    activeIndex = i;
+    const doc = docs[i];
+
+    loadedImage = doc.img;
+    objects = doc.objects;
+    history = doc.history;
+    redoStack = doc.redoStack;
+    nextNumber = doc.nextNumber;
+    zoom = doc.zoom; panX = doc.panX; panY = doc.panY; autoFit = doc.autoFit;
+    selectedObject = null;
+
+    canvas.width = doc.img.naturalWidth;
+    canvas.height = doc.img.naturalHeight;
+    canvas.style.width = doc.img.naturalWidth + 'px';
+    canvas.style.height = doc.img.naturalHeight + 'px';
+
+    fileNameInput.value = doc.fileName;
+    placeholder.style.display = 'none';
+    canvasWrapper.style.display = 'block';
+    zoomBar.classList.add('is-on');
+
+    updateNextNumberInput();
+    updateFileChip();
+
+    if (doc.needFit){ doc.needFit = false; fitToView(); }
+    else { applyTransform(); drawAll(); }
+
+    refreshUI();
+    renderFilmstrip();
+}
+
+function addDocument(img, name){
+    docs.push({
+        img: img,
+        fileName: name,
+        objects: [],
+        history: [JSON.stringify({ o: [], n: 1 })],
+        redoStack: [],
+        nextNumber: 1,
+        zoom: 1, panX: 0, panY: 0, autoFit: true,
+        needFit: true
     });
+    activateDoc(docs.length - 1);
+}
 
-    // --- 形狀與特製物件渲染細節 ---
-    function drawArrowHead(x1, y1, x2, y2, thickness) {
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        if (distance < 5) return;
+function baseNameOf(fileName){
+    if (!fileName) return 'picmark_image';
+    const dot = fileName.lastIndexOf('.');
+    return (dot > 0 ? fileName.substring(0, dot) : fileName) + '_marked';
+}
 
-        const headLength = thickness * 2.5 + 12; 
-        const angle = Math.atan2(dy, dx);
+function addImages(fileList){
+    const list = Array.prototype.slice.call(fileList).filter(function(f){ return f.type && f.type.indexOf('image/') === 0; });
+    if (!list.length) return;
 
-        const shrinkLength = Math.min(distance * 0.5, headLength * 0.7);
-        const lineEndX = x2 - shrinkLength * Math.cos(angle);
-        const lineEndY = y2 - shrinkLength * Math.sin(angle);
+    const room = Math.max(0, MAX_DOCS - docs.length);
+    const take = list.slice(0, room);
+    const skipped = list.length - take.length;
 
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(lineEndX, lineEndY);
-        ctx.stroke();
-
-        ctx.save();
-        ctx.lineJoin = 'miter'; 
-        ctx.miterLimit = 4;
-        
-        ctx.beginPath();
-        ctx.moveTo(x2, y2);
-        const leftX = x2 - headLength * Math.cos(angle - Math.PI / 6);
-        const leftY = y2 - headLength * Math.sin(angle - Math.PI / 6);
-        const rightX = x2 - headLength * Math.cos(angle + Math.PI / 6);
-        const rightY = y2 - headLength * Math.sin(angle + Math.PI / 6);
-        
-        ctx.lineTo(leftX, leftY);
-        ctx.lineTo(rightX, rightY);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-    }
-
-    function drawMosaicPixel(sx, sy, w, h, size, opacity) {
-        if (w === 0 || h === 0) return;
-        const x = w < 0 ? sx + w : sx;
-        const y = h < 0 ? sy + h : sy;
-        const absW = Math.abs(w);
-        const absH = Math.abs(h);
-
-        const tempCanvas = document.createElement('canvas');
-        const tempCtx = tempCanvas.getContext('2d');
-        const grainSize = Math.max(5, size / 2);
-        
-        tempCanvas.width = Math.max(1, absW / grainSize);
-        tempCanvas.height = Math.max(1, absH / grainSize);
-        
-        tempCtx.drawImage(canvas, x, y, absW, absH, 0, 0, tempCanvas.width, tempCanvas.height);
-        
-        ctx.save();
-        ctx.imageSmoothingEnabled = false;
-        ctx.globalAlpha = opacity;
-        ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, x, y, absW, absH);
-        ctx.restore();
-    }
-
-    downloadBtn.addEventListener('click', function() {
-        if (!loadedImage) {
-            alert(i18n[currentLang].noImageAlert);
+    let i = 0;
+    (function next(){
+        if (i >= take.length){
+            if (skipped > 0){
+                openDialog(dict().limitTitle,
+                    dict().limitMsg.replace('{max}', MAX_DOCS).replace('{n}', skipped),
+                    [{ label: dict().btnOk, primary: true }]);
+            }
             return;
         }
+        const file = take[i++];
+        const reader = new FileReader();
+        reader.onload = function(ev){
+            const img = new Image();
+            img.onload = function(){ addDocument(img, baseNameOf(file.name)); next(); };
+            img.onerror = next;
+            img.src = ev.target.result;
+        };
+        reader.onerror = next;
+        reader.readAsDataURL(file);
+    })();
+}
 
-        const format = exportFormat.value;
-        const fileExt = format === 'image/jpeg' ? 'jpg' : 'png';
-        
-        let customName = fileNameInput.value.trim();
-        if (!customName) {
-            customName = `picmark_export_${Date.now()}`;
-        }
+function closeDoc(i){
+    if (i < 0 || i >= docs.length) return;
+    syncActiveDoc();
+    const doc = docs[i];
+    if (doc.objects.length){
+        openDialog(dict().closeTitle,
+            dict().closeMsg.replace('{name}', doc.fileName).replace('{n}', doc.objects.length),
+            [{ label: dict().btnCancel }, { label: dict().btnClose, primary: true, cb: function(){ removeDoc(i); } }]);
+    } else {
+        removeDoc(i);
+    }
+}
 
-        const tempSelected = selectedObject;
-        selectedObject = null;
-        drawAll();
+function removeDoc(i){
+    docs.splice(i, 1);
+    if (!docs.length){ resetToEmpty(); return; }
+    const target = Math.min(i, docs.length - 1);
+    activeIndex = -1;               // nothing to stash back into
+    activateDoc(target);
+}
 
-        const link = document.createElement('a');
-        link.download = `${customName}.${fileExt}`;
-        link.href = canvas.toDataURL(format, 0.9);
-        link.click();
+function resetToEmpty(){
+    activeIndex = -1;
+    loadedImage = null;
+    objects = []; history = []; redoStack = [];
+    selectedObject = null;
+    nextNumber = 1;
+    startNumInput.value = 1;
+    canvasWrapper.style.display = 'none';
+    placeholder.style.display = '';
+    zoomBar.classList.remove('is-on');
+    fileNameInput.value = 'picmark_image';
+    updateFileChip();
+    refreshUI();
+    renderFilmstrip();
+}
 
-        selectedObject = tempSelected;
-        drawAll();
+/* ---------- filmstrip ---------- */
+function docCount(i){
+    if (i === activeIndex) return objects.length;
+    return docs[i] ? docs[i].objects.length : 0;
+}
+
+function renderFilmstrip(){
+    syncActiveDoc();
+    filmstrip.innerHTML = '';
+    downloadAllBtn.style.display = docs.length > 1 ? '' : 'none';
+    setText('btnDownloadAll', dict().btnDownloadAll + ' (' + docs.length + ')');
+
+    if (!docs.length){ filmstrip.classList.remove('is-on'); return; }
+    filmstrip.classList.add('is-on');
+
+    docs.forEach(function(doc, i){
+        const item = document.createElement('div');
+        item.className = 'film-item has-tip' + (i === activeIndex ? ' is-active' : '');
+        item.setAttribute('data-tip-pos', 'top');
+
+        const im = document.createElement('img');
+        im.src = doc.img.src;
+        im.alt = '';
+        item.appendChild(im);
+
+        const idx = document.createElement('span');
+        idx.className = 'film-idx';
+        idx.textContent = i + 1;
+        item.appendChild(idx);
+
+        const badge = document.createElement('span');
+        badge.className = 'film-badge';
+        const n = docCount(i);
+        badge.textContent = n ? n : '';
+        item.appendChild(badge);
+
+        const close = document.createElement('button');
+        close.className = 'film-close';
+        close.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+        close.title = dict().tipCloseDoc;
+        close.addEventListener('click', function(e){ e.stopPropagation(); hideTip(); closeDoc(i); });
+        item.appendChild(close);
+
+        const tip = document.createElement('span');
+        tip.className = 'tool-tip';
+        tip.textContent = doc.fileName;
+        item.appendChild(tip);
+
+        item.addEventListener('click', function(){ if (i !== activeIndex) activateDoc(i); });
+        filmstrip.appendChild(item);
     });
+
+    const add = document.createElement('button');
+    add.className = 'film-add has-tip';
+    add.setAttribute('data-tip-pos', 'top');
+    add.disabled = docs.length >= MAX_DOCS;
+    add.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+    const addTip = document.createElement('span');
+    addTip.className = 'tool-tip';
+    addTip.textContent = dict().tipAdd;
+    add.appendChild(addTip);
+    add.addEventListener('click', function(){ imageLoader.click(); });
+    filmstrip.appendChild(add);
+
+    const count = document.createElement('span');
+    count.className = 'film-count';
+    count.textContent = dict().filmCount.replace('{n}', docs.length).replace('{max}', MAX_DOCS);
+    filmstrip.appendChild(count);
+}
+
+function updateFilmCounts(){
+    const items = filmstrip.querySelectorAll('.film-item');
+    if (items.length !== docs.length) return;   // strip is about to be rebuilt
+    for (let i = 0; i < items.length; i++){
+        const b = items[i].querySelector('.film-badge');
+        const n = docCount(i);
+        if (b) b.textContent = n ? n : '';
+    }
+}
+
+imageLoader.addEventListener('change', function(e){
+    addImages(e.target.files);
+    e.target.value = '';
+});
+
+window.addEventListener('paste', function(e){
+    if (isTypingTarget(document.activeElement)) return;
+    const items = e.clipboardData.items;
+    const files = [];
+    for (let i = 0; i < items.length; i++){
+        if (items[i].type.indexOf('image') !== -1){
+            const f = items[i].getAsFile();
+            if (f) files.push(f);
+        }
+    }
+    if (!files.length) return;
+    if (docs.length >= MAX_DOCS){
+        openDialog(dict().limitTitle,
+            dict().limitMsg.replace('{max}', MAX_DOCS).replace('{n}', files.length),
+            [{ label: dict().btnOk, primary: true }]);
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(ev){
+        const img = new Image();
+        img.onload = function(){ addDocument(img, 'picmark_' + new Date().toISOString().slice(0, 10)); };
+        img.src = ev.target.result;
+    };
+    reader.readAsDataURL(files[0]);
+});
+
+dropZone.addEventListener('dragover', function(e){ e.preventDefault(); dropZone.classList.add('is-dragover'); });
+dropZone.addEventListener('dragleave', function(e){ if (e.target === dropZone) dropZone.classList.remove('is-dragover'); });
+dropZone.addEventListener('drop', function(e){
+    e.preventDefault();
+    dropZone.classList.remove('is-dragover');
+    addImages(e.dataTransfer.files);
+});
+filmstrip.addEventListener('dragover', function(e){ e.preventDefault(); });
+filmstrip.addEventListener('drop', function(e){ e.preventDefault(); addImages(e.dataTransfer.files); });
+
+/* ---------- dialog ---------- */
+function openDialog(title, msg, buttons){
+    modalTitleEl.textContent = title;
+    modalMsgEl.textContent = msg;
+    modalActions.innerHTML = '';
+    buttons.forEach(function(b){
+        const el = document.createElement('button');
+        el.className = 'btn' + (b.primary ? ' btn-primary' : '');
+        el.textContent = b.label;
+        el.addEventListener('click', function(){ closeModal(); if (b.cb) b.cb(); });
+        modalActions.appendChild(el);
+    });
+    modal.classList.add('is-open');
+}
+function closeModal(){ modal.classList.remove('is-open'); }
+modal.addEventListener('click', function(e){ if (e.target === modal) closeModal(); });
+
+/* =========================================================
+   Rendering
+   ========================================================= */
+function textMetrics(obj){
+    ctx.save();
+    ctx.font = 'bold ' + obj.size + 'px ' + CANVAS_FONT;
+    const w = ctx.measureText(String(obj.text || ' ')).width;
+    ctx.restore();
+    return { w: w, h: obj.size };
+}
+
+function circleBBox(obj){
+    const r = Math.max(Math.abs(obj.x2 - obj.x1), Math.abs(obj.y2 - obj.y1)) / 2;
+    const cx = obj.x1 + (obj.x2 > obj.x1 ? r : -r);
+    const cy = obj.y1 + (obj.y2 > obj.y1 ? r : -r);
+    return { minX: cx - r, minY: cy - r, maxX: cx + r, maxY: cy + r, cx: cx, cy: cy, r: r };
+}
+
+function drawAll(){
+    if (!loadedImage) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(loadedImage, 0, 0);
+
+    objects.forEach(obj => {
+        if (obj === editingObj) return;
+
+        ctx.save();
+        ctx.strokeStyle = obj.color;
+        ctx.fillStyle = obj.color;
+        ctx.lineWidth = obj.size;
+        ctx.globalAlpha = obj.opacity;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        const isFill = obj.fillStyle === 'fill';
+
+        if (obj.type === 'rect'){
+            if (isFill) ctx.fillRect(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1);
+            else ctx.strokeRect(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1);
+        }
+        else if (obj.type === 'circle'){
+            const b = circleBBox(obj);
+            ctx.beginPath();
+            ctx.arc(b.cx, b.cy, b.r, 0, 2 * Math.PI);
+            if (isFill) ctx.fill(); else ctx.stroke();
+        }
+        else if (obj.type === 'line'){
+            ctx.beginPath();
+            ctx.moveTo(obj.x1, obj.y1);
+            ctx.lineTo(obj.x2, obj.y2);
+            ctx.stroke();
+        }
+        else if (obj.type === 'arrow'){
+            drawArrowHead(obj.x1, obj.y1, obj.x2, obj.y2, obj.size);
+        }
+        else if (obj.type === 'blur'){
+            drawMosaicPixel(obj.x1, obj.y1, obj.x2 - obj.x1, obj.y2 - obj.y1, obj.size, obj.opacity);
+        }
+        else if (obj.type === 'marker'){
+            const radius = obj.size / 2;
+            ctx.beginPath();
+            ctx.arc(obj.x1, obj.y1, radius, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.fillStyle = obj.textColor;
+            ctx.font = 'bold ' + radius + 'px ' + CANVAS_FONT;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(obj.text, obj.x1, obj.y1 + (radius * 0.05));
+        }
+        else if (obj.type === 'text'){
+            ctx.font = 'bold ' + obj.size + 'px ' + CANVAS_FONT;
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.fillText(obj.text, obj.x1, obj.y1);
+        }
+        ctx.restore();
+    });
+
+    if (currentMode === 'select' && selectedObject && objects.indexOf(selectedObject) !== -1 && selectedObject !== editingObj){
+        drawSelection(selectedObject);
+    }
+}
+
+function drawSelection(obj){
+    const k = 1 / zoom;
+    ctx.save();
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = '#3b82f6';
+    ctx.lineWidth = 1.6 * k;
+    ctx.setLineDash([6 * k, 4 * k]);
+
+    if (obj.type === 'marker'){
+        ctx.beginPath();
+        ctx.arc(obj.x1, obj.y1, obj.size / 2 + 4 * k, 0, 2 * Math.PI);
+        ctx.stroke();
+    } else if (obj.type === 'text'){
+        const m = textMetrics(obj);
+        ctx.strokeRect(obj.x1 - 4 * k, obj.y1 - 4 * k, m.w + 8 * k, m.h + 8 * k);
+    } else if (obj.type === 'circle'){
+        const b = circleBBox(obj);
+        ctx.strokeRect(b.minX - 4 * k, b.minY - 4 * k, (b.maxX - b.minX) + 8 * k, (b.maxY - b.minY) + 8 * k);
+    } else {
+        const minX = Math.min(obj.x1, obj.x2), minY = Math.min(obj.y1, obj.y2);
+        const maxX = Math.max(obj.x1, obj.x2), maxY = Math.max(obj.y1, obj.y2);
+        ctx.strokeRect(minX - 5 * k, minY - 5 * k, (maxX - minX) + 10 * k, (maxY - minY) + 10 * k);
+    }
+
+    // resize handles (item 7)
+    ctx.setLineDash([]);
+    ctx.lineWidth = 1.4 * k;
+    ctx.strokeStyle = '#1d4ed8';
+    ctx.fillStyle = '#ffffff';
+    const s = 4.5 * k;
+    getHandles(obj).forEach(h => {
+        ctx.beginPath();
+        ctx.rect(h.x - s, h.y - s, s * 2, s * 2);
+        ctx.fill();
+        ctx.stroke();
+    });
+    ctx.restore();
+}
+
+/* =========================================================
+   Handles (item 7)
+   ========================================================= */
+function getHandles(obj){
+    if (obj.type === 'line' || obj.type === 'arrow'){
+        return [{ n:'p1', x:obj.x1, y:obj.y1 }, { n:'p2', x:obj.x2, y:obj.y2 }];
+    }
+    if (obj.type === 'marker'){
+        const r = obj.size / 2;
+        return [{ n:'size', x:obj.x1 + r * 0.7071, y:obj.y1 + r * 0.7071 }];
+    }
+    if (obj.type === 'text'){
+        const m = textMetrics(obj);
+        return [{ n:'size', x:obj.x1 + m.w, y:obj.y1 + m.h }];
+    }
+    let b;
+    if (obj.type === 'circle') b = circleBBox(obj);
+    else b = {
+        minX: Math.min(obj.x1, obj.x2), maxX: Math.max(obj.x1, obj.x2),
+        minY: Math.min(obj.y1, obj.y2), maxY: Math.max(obj.y1, obj.y2)
+    };
+    return [
+        { n:'nw', x:b.minX, y:b.minY }, { n:'ne', x:b.maxX, y:b.minY },
+        { n:'sw', x:b.minX, y:b.maxY }, { n:'se', x:b.maxX, y:b.maxY }
+    ];
+}
+
+function findHandleAt(x, y){
+    if (currentMode !== 'select' || !selectedObject) return null;
+    const t = 7 / zoom;
+    const hs = getHandles(selectedObject);
+    for (let i = 0; i < hs.length; i++){
+        if (Math.abs(x - hs[i].x) <= t && Math.abs(y - hs[i].y) <= t) return hs[i].n;
+    }
+    return null;
+}
+
+function resizeObject(obj, h, pos){
+    if (h === 'p1'){ obj.x1 = pos.x; obj.y1 = pos.y; return; }
+    if (h === 'p2'){ obj.x2 = pos.x; obj.y2 = pos.y; return; }
+    if (obj.type === 'marker'){
+        const d = Math.sqrt(Math.pow(pos.x - obj.x1, 2) + Math.pow(pos.y - obj.y1, 2));
+        obj.size = Math.max(6, Math.round(d * 2));
+        return;
+    }
+    if (obj.type === 'text'){
+        obj.size = Math.max(6, Math.round(pos.y - obj.y1));
+        return;
+    }
+    if (obj.type === 'circle'){
+        const b = circleBBox(obj);
+        const fx = h.indexOf('w') !== -1 ? b.maxX : b.minX;
+        const fy = h.charAt(0) === 'n' ? b.maxY : b.minY;
+        const s = Math.max(Math.abs(pos.x - fx), Math.abs(pos.y - fy));
+        obj.x1 = fx; obj.y1 = fy;
+        obj.x2 = fx + (pos.x >= fx ? s : -s);
+        obj.y2 = fy + (pos.y >= fy ? s : -s);
+        return;
+    }
+    let minX = Math.min(obj.x1, obj.x2), maxX = Math.max(obj.x1, obj.x2);
+    let minY = Math.min(obj.y1, obj.y2), maxY = Math.max(obj.y1, obj.y2);
+    if (h.indexOf('w') !== -1) minX = pos.x; else maxX = pos.x;
+    if (h.charAt(0) === 'n') minY = pos.y; else maxY = pos.y;
+    obj.x1 = Math.min(minX, maxX); obj.x2 = Math.max(minX, maxX);
+    obj.y1 = Math.min(minY, maxY); obj.y2 = Math.max(minY, maxY);
+}
+
+/* =========================================================
+   History
+   ========================================================= */
+function snapshot(){ return JSON.stringify({ o: objects, n: nextNumber }); }
+function restoreSnapshot(str){
+    const state = JSON.parse(str);
+    objects = state.o || [];
+    nextNumber = typeof state.n === 'number' ? state.n : 1;
+    startNumInput.value = nextNumber;
+}
+
+function saveHistory(){
+    history.push(snapshot());
+    if (history.length > 80) history.shift();
+    redoStack = [];
+    updateButtons();
+    renderLayers();
+    updateFilmCounts();
+}
+function updateButtons(){
+    undoBtn.disabled = history.length <= 1;
+    redoBtn.disabled = redoStack.length === 0;
+}
+// Markers keep whatever number they were given; nothing is renumbered
+// behind the user's back. This is what allows two markers to share a number.
+function updateNextNumberInput(){ startNumInput.value = nextNumber; }
+function handleUndo(){
+    if (history.length > 1){
+        redoStack.push(history.pop());
+        restoreSnapshot(history[history.length - 1]);
+        selectedObject = null;
+        refreshUI();
+        drawAll();
+    }
+}
+function handleRedo(){
+    if (redoStack.length > 0){
+        const next = redoStack.pop();
+        history.push(next);
+        restoreSnapshot(next);
+        selectedObject = null;
+        refreshUI();
+        drawAll();
+    }
+}
+undoBtn.addEventListener('click', handleUndo);
+redoBtn.addEventListener('click', handleRedo);
+clearBtn.addEventListener('click', function(){
+    if (!loadedImage || !objects.length) return;
+    objects = [];
+    selectedObject = null;
+    nextNumber = 1;
+    startNumInput.value = 1;
+    saveHistory();
+    refreshUI();
+    drawAll();
+});
+
+// 1) the number the NEXT marker will get; left alone it just keeps counting up
+startNumInput.addEventListener('input', function(){
+    const v = parseInt(startNumInput.value, 10);
+    if (isNaN(v)) return;
+    nextNumber = v;
+    // the counter is part of the saved state, so keep the current history
+    // entry in step — otherwise undo would jump back to an older counter
+    if (history.length) history[history.length - 1] = snapshot();
+});
+
+// 2) the number of the marker that is currently selected — duplicates allowed
+markerNumInput.addEventListener('input', function(){
+    if (!selectedObject || selectedObject.type !== 'marker') return;
+    const v = parseInt(markerNumInput.value, 10);
+    if (isNaN(v)) return;
+    selectedObject.text = v;
+    drawAll();
+    renderLayers();
+});
+markerNumInput.addEventListener('change', commitPropChange);
+
+/* =========================================================
+   Keyboard
+   ========================================================= */
+window.addEventListener('keydown', function(e){
+    if (e.code === 'Space' && !isTypingTarget(e.target)){
+        if (!isSpaceDown){ isSpaceDown = true; stage.classList.add('can-pan'); updateCanvasCursor(); }
+        e.preventDefault();
+        return;
+    }
+
+    if (isTypingTarget(e.target)) return;
+
+    const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+    if (isCmdOrCtrl){
+        if (e.key.toLowerCase() === 'z'){
+            e.preventDefault();
+            if (e.shiftKey) handleRedo(); else handleUndo();
+            return;
+        }
+        if (e.key.toLowerCase() === 'y'){ e.preventDefault(); handleRedo(); return; }
+        if (e.key === '0'){ e.preventDefault(); fitToView(); return; }
+    }
+
+    if (KEY_TO_MODE[e.key]){ e.preventDefault(); setMode(KEY_TO_MODE[e.key]); return; }
+    if (e.key === '0'){ e.preventDefault(); fitToView(); return; }
+    if (e.key === '+' || e.key === '='){ e.preventDefault(); zoomCenter(1.25); return; }
+    if (e.key === '-' || e.key === '_'){ e.preventDefault(); zoomCenter(1 / 1.25); return; }
+
+    if (e.key === '[' || e.key === ']'){
+        if (docs.length > 1){
+            e.preventDefault();
+            const step = e.key === ']' ? 1 : -1;
+            activateDoc((activeIndex + step + docs.length) % docs.length);
+        }
+        return;
+    }
+
+    if (e.key === 'Escape'){
+        if (modal.classList.contains('is-open')){ closeModal(); return; }
+        setSelection(null); drawAll(); return;
+    }
+
+    if ((e.key === 'Delete' || e.key === 'Backspace') && currentMode === 'select' && selectedObject){
+        e.preventDefault();
+        objects = objects.filter(o => o !== selectedObject);
+        selectedObject = null;
+        saveHistory();
+        refreshUI();
+        drawAll();
+    }
+});
+window.addEventListener('keyup', function(e){
+    if (e.code === 'Space'){ isSpaceDown = false; stage.classList.remove('can-pan'); updateCanvasCursor(); }
+});
+
+/* =========================================================
+   Hit testing
+   ========================================================= */
+function findObjectAt(x, y){
+    for (let i = objects.length - 1; i >= 0; i--){
+        const obj = objects[i];
+
+        if (obj.type === 'marker'){
+            const dist = Math.sqrt(Math.pow(x - obj.x1, 2) + Math.pow(y - obj.y1, 2));
+            if (dist <= obj.size / 2) return obj;
+        }
+        else if (obj.type === 'circle'){
+            const b = circleBBox(obj);
+            const distToCenter = Math.sqrt(Math.pow(x - b.cx, 2) + Math.pow(y - b.cy, 2));
+            if (obj.fillStyle === 'fill'){
+                if (distToCenter <= b.r) return obj;
+            } else {
+                if (Math.abs(distToCenter - b.r) <= Math.max(15, obj.size)) return obj;
+            }
+        }
+        else if (obj.type === 'text'){
+            const m = textMetrics(obj);
+            if (x >= obj.x1 && x <= obj.x1 + m.w && y >= obj.y1 && y <= obj.y1 + m.h) return obj;
+        }
+        else {
+            const minX = Math.min(obj.x1, obj.x2) - 10;
+            const minY = Math.min(obj.y1, obj.y2) - 10;
+            const maxX = Math.max(obj.x1, obj.x2) + 10;
+            const maxY = Math.max(obj.y1, obj.y2) + 10;
+            if (x >= minX && x <= maxX && y >= minY && y <= maxY) return obj;
+        }
+    }
+    return null;
+}
+
+/* =========================================================
+   Pointer interaction
+   ========================================================= */
+function getPointerPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return { x:(e.clientX - rect.left) * scaleX, y:(e.clientY - rect.top) * scaleY };
+}
+
+const HANDLE_CURSOR = { nw:'nwse-resize', se:'nwse-resize', ne:'nesw-resize', sw:'nesw-resize', p1:'move', p2:'move', size:'nwse-resize' };
+function updateCanvasCursor(pos){
+    if (isSpaceDown){ canvas.style.cursor = 'grab'; return; }
+    if (currentMode === 'select'){
+        if (pos){
+            const h = findHandleAt(pos.x, pos.y);
+            if (h){ canvas.style.cursor = HANDLE_CURSOR[h] || 'pointer'; return; }
+            if (findObjectAt(pos.x, pos.y)){ canvas.style.cursor = 'move'; return; }
+        }
+        canvas.style.cursor = 'default';
+    } else {
+        canvas.style.cursor = 'crosshair';
+    }
+}
+
+function onPointerDown(e){
+    if (!loadedImage) return;
+    if (!e.isPrimary) return;
+    if (isSpaceDown || e.button === 1) return;
+    if (editingObj) { commitTextEditor(false); }
+
+    canvas.setPointerCapture(e.pointerId);
+
+    const pos = getPointerPos(e);
+    dragStartX = pos.x;
+    dragStartY = pos.y;
+    isDrawing = true;
+    didModify = false;
+
+    if (currentMode === 'select'){
+        const h = findHandleAt(pos.x, pos.y);
+        if (h){
+            activeHandle = h;
+            isDraggingObject = false;
+            return;
+        }
+        const target = findObjectAt(pos.x, pos.y);
+        if (target){
+            isDraggingObject = true;
+            dragOffsetX = pos.x - target.x1;
+            dragOffsetY = pos.y - target.y1;
+            setSelection(target);
+        } else {
+            isDraggingObject = false;
+            setSelection(null);
+        }
+        drawAll();
+    }
+    else if (currentMode === 'marker'){
+        const typed = parseInt(startNumInput.value, 10);
+        const num = isNaN(typed) ? nextNumber : typed;
+        objects.push({
+            type:'marker', x1:pos.x, y1:pos.y, x2:pos.x, y2:pos.y,
+            color:primaryColorInput.value,
+            size:parseInt(brushSizeInput.value, 10) || 30,
+            opacity:(parseInt(brushOpacityInput.value, 10) || 100) / 100,
+            text:num, textColor:textColorInput.value
+        });
+        nextNumber = num + 1;
+        updateNextNumberInput();
+        isDrawing = false;
+        saveHistory();
+        refreshUI();
+        drawAll();
+    }
+    else if (currentMode === 'text'){
+        // item 10: type straight on the canvas
+        const obj = {
+            type:'text', x1:pos.x, y1:pos.y, x2:pos.x, y2:pos.y,
+            color:primaryColorInput.value,
+            size:parseInt(brushSizeInput.value, 10) || 20,
+            opacity:(parseInt(brushOpacityInput.value, 10) || 100) / 100,
+            text:''
+        };
+        objects.push(obj);
+        isDrawing = false;
+        openTextEditor(obj, true);
+    }
+    else {
+        objects.push({
+            type:currentMode, x1:pos.x, y1:pos.y, x2:pos.x, y2:pos.y,
+            color:primaryColorInput.value,
+            size:parseInt(brushSizeInput.value, 10) || 5,
+            opacity:(parseInt(brushOpacityInput.value, 10) || 100) / 100,
+            fillStyle:fillStyleSelect.value
+        });
+        drawAll();
+    }
+}
+
+function onPointerMove(e){
+    if (!e.isPrimary) return;
+
+    if (!isDrawing){
+        if (loadedImage) updateCanvasCursor(getPointerPos(e));
+        return;
+    }
+
+    const pos = getPointerPos(e);
+
+    if (currentMode === 'select' && activeHandle && selectedObject){
+        resizeObject(selectedObject, activeHandle, pos);
+        didModify = true;
+        drawAll();
+    }
+    else if (currentMode === 'select' && isDraggingObject && selectedObject){
+        const dx = pos.x - dragStartX;
+        const dy = pos.y - dragStartY;
+        selectedObject.x1 = pos.x - dragOffsetX;
+        selectedObject.y1 = pos.y - dragOffsetY;
+        selectedObject.x2 += dx;
+        selectedObject.y2 += dy;
+        dragStartX = pos.x;
+        dragStartY = pos.y;
+        didModify = true;
+        drawAll();
+    }
+    else if (currentMode !== 'select' && currentMode !== 'marker' && currentMode !== 'text'){
+        const currentObj = objects[objects.length - 1];
+        if (!currentObj) return;
+        currentObj.x2 = pos.x;
+        currentObj.y2 = pos.y;
+        didModify = true;
+        drawAll();
+    }
+}
+
+function onPointerUp(e){
+    if (!isDrawing) return;
+    isDrawing = false;
+    activeHandle = null;
+    isDraggingObject = false;
+
+    // drop degenerate shapes created by an accidental click
+    if (!didModify && currentMode !== 'select' && currentMode !== 'marker' && currentMode !== 'text'){
+        objects.pop();
+        drawAll();
+        renderLayers();
+        return;
+    }
+
+    if (didModify){
+        saveHistory();
+        refreshUI();
+    }
+    drawAll();
+}
+
+canvas.addEventListener('pointerdown', onPointerDown);
+canvas.addEventListener('pointermove', onPointerMove);
+canvas.addEventListener('pointerup', onPointerUp);
+canvas.addEventListener('pointercancel', onPointerUp);
+
+canvas.addEventListener('dblclick', function(e){
+    if (!loadedImage || currentMode !== 'select') return;
+    const pos = getPointerPos(e);
+    const target = findObjectAt(pos.x, pos.y);
+    if (target && target.type === 'text') openTextEditor(target, false);
+});
+
+/* =========================================================
+   Inline text editor (item 10)
+   ========================================================= */
+function positionTextEditor(obj){
+    textEditor.style.left = obj.x1 + 'px';
+    textEditor.style.top = obj.y1 + 'px';
+    textEditor.style.fontSize = obj.size + 'px';
+    textEditor.style.fontFamily = CANVAS_FONT;
+    textEditor.style.fontWeight = 'bold';
+    textEditor.style.color = obj.color;
+    const m = textMetrics({ text: textEditor.value || 'M', size: obj.size });
+    textEditor.style.width = Math.max(obj.size * 3, m.w + obj.size) + 'px';
+    textEditor.style.height = (obj.size * 1.25) + 'px';
+}
+
+function openTextEditor(obj, isNew){
+    editingObj = obj;
+    editingIsNew = isNew;
+    setSelection(obj);
+    textEditor.value = isNew ? '' : String(obj.text || '');
+    positionTextEditor(obj);
+    textEditor.style.display = 'block';
+    drawAll();
+    setTimeout(function(){ textEditor.focus(); textEditor.select(); }, 0);
+}
+
+textEditor.addEventListener('input', function(){ if (editingObj) positionTextEditor(editingObj); });
+textEditor.addEventListener('keydown', function(e){
+    e.stopPropagation();
+    if (e.key === 'Enter'){ e.preventDefault(); commitTextEditor(false); }
+    if (e.key === 'Escape'){ e.preventDefault(); commitTextEditor(true); }
+});
+textEditor.addEventListener('blur', function(){ commitTextEditor(false); });
+
+function commitTextEditor(cancel){
+    if (!editingObj) return;
+    const obj = editingObj;
+    const wasNew = editingIsNew;
+    const val = textEditor.value.trim();
+    editingObj = null;
+    editingIsNew = false;
+    textEditor.style.display = 'none';
+
+    let changed = false;
+    if (cancel || !val){
+        // a brand new object was never committed to history, so dropping it
+        // simply restores the last saved state — no new history entry needed
+        if (wasNew){
+            const i = objects.indexOf(obj);
+            if (i !== -1) objects.splice(i, 1);
+            if (selectedObject === obj) selectedObject = null;
+        }
+    } else if (obj.text !== val || wasNew){
+        obj.text = val;
+        changed = true;
+    }
+
+    if (changed) saveHistory();
+    refreshUI();
+    drawAll();
+}
+
+/* =========================================================
+   Shape drawing helpers
+   ========================================================= */
+function drawArrowHead(x1, y1, x2, y2, thickness){
+    const dx = x2 - x1, dy = y2 - y1;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance < 5) return;
+
+    const headLength = thickness * 2.5 + 12;
+    const angle = Math.atan2(dy, dx);
+    const shrinkLength = Math.min(distance * 0.5, headLength * 0.7);
+    const lineEndX = x2 - shrinkLength * Math.cos(angle);
+    const lineEndY = y2 - shrinkLength * Math.sin(angle);
+
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(lineEndX, lineEndY);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.lineJoin = 'miter';
+    ctx.miterLimit = 4;
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - headLength * Math.cos(angle - Math.PI / 6), y2 - headLength * Math.sin(angle - Math.PI / 6));
+    ctx.lineTo(x2 - headLength * Math.cos(angle + Math.PI / 6), y2 - headLength * Math.sin(angle + Math.PI / 6));
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+}
+
+function drawMosaicPixel(sx, sy, w, h, size, opacity){
+    if (w === 0 || h === 0) return;
+    const x = w < 0 ? sx + w : sx;
+    const y = h < 0 ? sy + h : sy;
+    const absW = Math.abs(w), absH = Math.abs(h);
+
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    const grainSize = Math.max(5, size / 2);
+
+    tempCanvas.width = Math.max(1, absW / grainSize);
+    tempCanvas.height = Math.max(1, absH / grainSize);
+    tempCtx.drawImage(canvas, x, y, absW, absH, 0, 0, tempCanvas.width, tempCanvas.height);
+
+    ctx.save();
+    ctx.imageSmoothingEnabled = false;
+    ctx.globalAlpha = opacity;
+    ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, x, y, absW, absH);
+    ctx.restore();
+}
+
+/* =========================================================
+   Export (item 9)
+   ========================================================= */
+exportFormat.addEventListener('change', function(){
+    qualityField.style.display = this.value === 'image/jpeg' ? '' : 'none';
+});
+jpgQuality.addEventListener('input', function(){ qualityVal.textContent = this.value + '%'; });
+
+
+function buildDataUrl(){
+    const format = exportFormat.value;
+    if (format === 'image/jpeg'){
+        const t = document.createElement('canvas');
+        t.width = canvas.width;
+        t.height = canvas.height;
+        const tc = t.getContext('2d');
+        tc.fillStyle = '#ffffff';          // transparent areas would turn black in JPG
+        tc.fillRect(0, 0, t.width, t.height);
+        tc.drawImage(canvas, 0, 0);
+        return t.toDataURL('image/jpeg', (parseInt(jpgQuality.value, 10) || 90) / 100);
+    }
+    return canvas.toDataURL('image/png');
+}
+
+function saveCurrent(name){
+    const fileExt = exportFormat.value === 'image/jpeg' ? 'jpg' : 'png';
+    let customName = (name || '').trim();
+    if (!customName) customName = 'picmark_export_' + Date.now();
+
+    const tempSelected = selectedObject;
+    selectedObject = null;
+    drawAll();
+
+    const link = document.createElement('a');
+    link.download = customName + '.' + fileExt;
+    link.href = buildDataUrl();
+    link.click();
+
+    selectedObject = tempSelected;
+    drawAll();
+}
+
+downloadBtn.addEventListener('click', function(){
+    if (!loadedImage){ alert(dict().noImageAlert); return; }
+    commitTextEditor(false);
+    saveCurrent(fileNameInput.value);
+});
+
+downloadAllBtn.addEventListener('click', function(){
+    if (docs.length < 2) return;
+    commitTextEditor(false);
+    syncActiveDoc();
+    const startedAt = activeIndex;
+    downloadAllBtn.disabled = true;
+    let i = 0;
+    (function step(){
+        if (i >= docs.length){
+            activateDoc(startedAt);
+            downloadAllBtn.disabled = false;
+            return;
+        }
+        const idx = i++;
+        activateDoc(idx);
+        saveCurrent(docs[idx].fileName);
+        setTimeout(step, 400);   // browsers throttle rapid consecutive downloads
+    })();
+});
+
+/* =========================================================
+   Boot
+   ========================================================= */
+updateLanguage(currentLang);
+resetToEmpty();
+updateCanvasCursor();
+applyTransform();
 </script>
 
 </body>
