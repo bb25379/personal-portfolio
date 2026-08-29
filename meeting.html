@@ -214,22 +214,42 @@ input:focus, select:focus {
 .mode-btn.active[data-m="1"] { background: var(--maybe); color: #fff; border-color: var(--maybe); }
 .mode-btn.active[data-m="0"] { background: var(--no); color: #fff; }
 
-/* Grid Table Alignment Fix */
-.grid-wrapper { overflow-x: auto; padding-bottom: 8px; flex: 1; }
+/* Grid Table Alignment Fix
+ * min-width:0 很重要：flex/grid 子元素預設 min-width:auto，
+ * 網格比容器寬時會把整個版面撐開（手機上就是「切版」的元凶）。 */
+.grid-wrapper {
+  overflow: auto; padding-bottom: 8px; flex: 1;
+  min-width: 0; overscroll-behavior: contain;
+}
 .grid-table {
   display: grid; gap: 3px;
-  user-select: none; touch-action: none;
+  user-select: none; -webkit-user-select: none;
   width: max-content; min-width: 100%;
 }
-.grid-header { font-size: 11px; font-weight: 600; text-align: center; color: var(--text-sub); padding: 4px 0; }
-.grid-time { font-size: 11px; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; }
+.grid-header {
+  font-size: 11px; font-weight: 600; text-align: center; color: var(--text-sub); padding: 4px 0;
+  position: sticky; top: 0; z-index: 2; background: var(--surface);
+}
+.grid-time {
+  font-size: 11px; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 6px;
+  position: sticky; left: 0; z-index: 3; background: var(--surface);
+}
+/* 左上角那一格要同時壓住左邊與上面 */
+.grid-corner { position: sticky; left: 0; top: 0; z-index: 4; background: var(--surface); }
 .cell {
   height: 26px; background: var(--no); border-radius: 3px;
   cursor: pointer; transition: background 0.05s;
   min-width: 48px;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700; color: #fff;
+  -webkit-tap-highlight-color: transparent;
 }
+/* 可填寫的格子吃掉觸控手勢 → 手指拖曳＝畫格子，不會變成捲動 */
+.grid-table.pick .cell { touch-action: none; }
+/* 熱區圖不用拖曳，保留垂直捲動，點一下仍可查看 */
+.grid-table.heat .cell { touch-action: pan-y; cursor: default; }
+.grid-table.heat .cell.picked { outline: 2px solid var(--primary); outline-offset: -2px; }
 
 /* 換算時區後沒有對應時段的空格（例如跨日的邊緣） */
 .cell.empty {
@@ -327,6 +347,85 @@ input:focus, select:focus {
   .form-group.full { grid-column: span 1; }
   .user-info-row { flex-direction: column; gap: 0.8rem; }
 }
+
+/* 操作提示：預設藏起來，手機版才顯示（要寫在媒體查詢前面，
+   否則同樣權重下後面的規則會蓋掉媒體查詢裡的 display:block） */
+.grid-hint {
+  display: none; font-size: 12px; color: var(--text-muted);
+  margin-top: 8px; line-height: 1.6;
+}
+
+/* ============================================================
+ *  手機版（≤ 700px）
+ *  重點：1. 不再被網格撐破版面  2. 手指拖曳可以選時段
+ *        3. 觸控目標放大到可以按得到  4. iOS 不要自動放大
+ * ========================================================== */
+@media (max-width: 700px) {
+  html { -webkit-text-size-adjust: 100%; }
+  body { overflow-x: hidden; }
+  .container { padding: 1rem 0.9rem 2rem; }
+
+  /* 導覽列：品牌縮小，兩個下拉並排成一列，不要吃掉三行高度 */
+  .navbar { padding: 8px 0.9rem; gap: 8px; }
+  .brand { font-size: 15px; gap: 8px; }
+  .brand-icon { width: 26px; height: 26px; font-size: 13px; }
+  .nav-right { flex: 1 1 100%; gap: 8px; flex-wrap: nowrap; }
+  .nav-tz-wrap { flex: 1 1 auto; min-width: 0; }
+  .tz-select { flex: 1 1 auto; min-width: 0; width: 100%; font-size: 12px; padding: 8px 6px; }
+  /* 基底樣式對所有 select 設了 width:100%，這裡要收回來，
+     不然語言選單會把整列吃掉、時區選單被擠成 0 寬 */
+  .lang-select { flex: 0 0 auto; width: auto; max-width: 42%; font-size: 12px; padding: 8px 6px; }
+
+  /* 分頁：三個一列剛好塞得下，字不要被截斷 */
+  .tab-bar { gap: 6px; padding-bottom: 0.8rem; margin-bottom: 1.1rem; }
+  .tab-btn {
+    flex: 1 1 0; min-width: 0; padding: 11px 4px;
+    font-size: 13px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
+  }
+
+  .notice-banner { font-size: 12px; padding: 9px 12px; margin-bottom: 1.1rem; }
+  .card, .panel-box { padding: 1.1rem; border-radius: 14px; }
+  .card-title { font-size: 19px; }
+  .card-subtitle { font-size: 13px; margin-bottom: 1.2rem; }
+
+  /* iOS 在 font-size < 16px 的輸入框上會自動放大整頁，很惱人 */
+  input[type="text"], input[type="password"], input[type="date"], select { font-size: 16px; padding: 11px 12px; }
+  .btn { min-height: 44px; padding: 11px 16px; }
+  .btn-sm { min-height: 36px; }
+
+  /* 版面不被網格撐開的關鍵 */
+  .workspace { gap: 1.1rem; }
+  .panel-box { min-width: 0; }
+  .panel-head { flex-wrap: wrap; gap: 6px; }
+
+  /* 時段網格 */
+  .grid-wrapper {
+    max-height: 56vh;
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 0 6px 6px; background: #0B0F19;
+  }
+  .grid-header { padding: 8px 0 6px; font-size: 12px; background: #0B0F19; }
+  .grid-time { font-size: 12px; padding-right: 8px; background: #0B0F19; }
+  .grid-corner { background: #0B0F19; }
+  .cell { height: 38px; min-width: 46px; border-radius: 4px; font-size: 12px; }
+
+  /* 狀態選擇：獨立一行、按鈕加大 */
+  .mode-row { flex-direction: column; align-items: stretch !important; gap: 8px; }
+  .mode-selector { gap: 8px; }
+  .mode-btn { flex: 1; padding: 10px 8px; font-size: 13px; min-height: 42px; }
+
+  /* 操作提示 */
+  .grid-hint { display: block; }
+
+  .info-tooltip { font-size: 13px; }
+  .modal-card { padding: 1.3rem; width: 94%; border-radius: 14px; }
+  .modal-title { font-size: 18px; }
+  .code-box-row { flex-wrap: wrap; }
+  .code-display { flex: 1 1 100%; font-size: 12px; }
+  .code-box-row .btn { flex: 1 1 auto; }
+  .admin-table th, .admin-table td { padding: 9px 8px; font-size: 13px; }
+}
+
 </style>
 </head>
 <body>
@@ -443,7 +542,7 @@ input:focus, select:focus {
           </div>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="mode-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <label data-i18n="lbl_state">選擇填寫狀態：</label>
           <div class="mode-selector">
             <button class="mode-btn active" data-m="2" onclick="setMode(2)" data-i18n="mode_yes">可以</button>
@@ -453,10 +552,11 @@ input:focus, select:focus {
         </div>
 
         <div class="grid-wrapper">
-          <div class="grid-table" id="my-grid"></div>
+          <div class="grid-table pick" id="my-grid"></div>
         </div>
+        <p class="grid-hint" data-i18n="hint_pick">👆 手指按住格子拖曳，可以一次選一整段；在左側時間軸上滑動可以捲動。</p>
 
-        <button class="btn btn-primary" style="width:100%; margin-top:1rem;" onclick="saveResponse()" data-i18n="btn_save">儲存我的時段</button>
+        <button class="btn btn-primary save-btn" style="width:100%; margin-top:1rem;" onclick="saveResponse()" data-i18n="btn_save">儲存我的時段</button>
       </div>
 
       <!-- 右面板：全體交集 -->
@@ -467,7 +567,7 @@ input:focus, select:focus {
         </div>
 
         <div class="grid-wrapper">
-          <div class="grid-table" id="heat-grid"></div>
+          <div class="grid-table heat" id="heat-grid"></div>
         </div>
 
         <div class="info-tooltip" id="tooltip-box" data-i18n="tip_hover">
@@ -612,6 +712,7 @@ const I18N = {
     lbl_your_name: "您的姓名：", lbl_your_pin: "密碼 (修改憑證)：", lbl_state: "選擇填寫狀態：",
     mode_yes: "可以", mode_maybe: "勉強", mode_clear: "清除", btn_save: "儲存我的時段",
     heat_title: "全體重疊時段 (Heatmap)", tip_hover: "💡 請將滑鼠懸停在右側網格上，可查看該時段所有人出席狀況。",
+    hint_pick: "👆 手指按住格子拖曳，可以一次選一整段；在左側時間軸上滑動可以捲動。", tip_touch: "💡 點一下（或滑鼠移到）格子，可查看該時段所有人的出席狀況。",
     admin_auth_title: "管理員驗證登入", admin_auth_sub: "請輸入 32 碼會議代碼與該會議的 8 碼管理員金鑰。", btn_admin_login: "登入後台",
     my_polls_title: "本機建立過的會議歷史", my_polls_sub: "以下為您在此裝置上發起過的會議記錄與管理員金鑰。",
     th_name: "會議名稱", th_code: "代碼 (32碼)", th_key: "管理員金鑰 (8碼)", th_end: "截止日期", th_action: "操作",
@@ -633,6 +734,7 @@ const I18N = {
     lbl_your_name: "Your Name:", lbl_your_pin: "Password (PIN):", lbl_state: "Selection Mode:",
     mode_yes: "Available", mode_maybe: "If Needed", mode_clear: "Clear", btn_save: "Save My Availability",
     heat_title: "Group Availability (Heatmap)", tip_hover: "💡 Hover over slots to view detailed attendee status.",
+    hint_pick: "👆 Press and drag across the grid to select a whole block. Slide on the time axis to scroll.", tip_touch: "💡 Tap (or hover over) a slot to see everyone's availability.",
     admin_auth_title: "Admin Login", admin_auth_sub: "Enter 32-char code & 8-char admin key.", btn_admin_login: "Login to Admin Console",
     my_polls_title: "Created Meetings History", my_polls_sub: "Meetings generated on this device with admin keys.",
     th_name: "Title", th_code: "Code (32 chars)", th_key: "Admin Key (8 chars)", th_end: "End Date", th_action: "Action",
@@ -654,6 +756,7 @@ const I18N = {
     lbl_your_name: "お名前:", lbl_your_pin: "パスワード:", lbl_state: "選択モード:",
     mode_yes: "可能", mode_maybe: "調整可能", mode_clear: "クリア", btn_save: "回答を保存",
     heat_title: "全体候補時間 (Heatmap)", tip_hover: "💡 マスにホバーして参加者の状況を確認できます。",
+    hint_pick: "👆 マスを長押ししてドラッグすると、まとめて選択できます。左の時間軸をなぞるとスクロールします。", tip_touch: "💡 マスをタップ（またはホバー）すると参加者の状況が見られます。",
     admin_auth_title: "管理者ログイン", admin_auth_sub: "32桁のコードと8桁の管理者キーを入力してください。", btn_admin_login: "ログイン",
     my_polls_title: "作成履歴", my_polls_sub: "この端末で作成された調整ツール履歴。",
     th_name: "会議名", th_code: "コード", th_key: "管理者キー", th_end: "終了日", th_action: "操作",
@@ -675,6 +778,7 @@ const I18N = {
     lbl_your_name: "이름:", lbl_your_pin: "비밀번호:", lbl_state: "상태 선택:",
     mode_yes: "가능", mode_maybe: "글쎄요", mode_clear: "지우기", btn_save: "내 시간 저장",
     heat_title: "전체 가능 시간 (Heatmap)", tip_hover: "💡 마우스를 올려 참석자 현황을 확인하세요.",
+    hint_pick: "👆 칸을 누른 채 끌면 여러 시간대를 한 번에 선택할 수 있어요. 왼쪽 시간축을 문지르면 스크롤됩니다.", tip_touch: "💡 칸을 탭하거나 마우스를 올리면 참석자 현황을 볼 수 있어요.",
     admin_auth_title: "관리자 로그인", admin_auth_sub: "32자리 코드와 8자리 관리자 키를 입력하세요.", btn_admin_login: "로그인",
     my_polls_title: "생성된 회의 기록", my_polls_sub: "이 기기에서 생성된 회의 목록입니다.",
     th_name: "제목", th_code: "코드", th_key: "관리자 키", th_end: "종료일", th_action: "작업",
@@ -696,6 +800,7 @@ const I18N = {
     lbl_your_name: "Tu Nombre:", lbl_your_pin: "Contraseña:", lbl_state: "Estado:",
     mode_yes: "Disponible", mode_maybe: "Tal vez", mode_clear: "Borrar", btn_save: "Guardar Disponibilidad",
     heat_title: "Disponibilidad del Grupo", tip_hover: "💡 Pasa el ratón sobre una casilla para ver los asistentes.",
+    hint_pick: "👆 Mantén pulsado y arrastra para seleccionar un bloque entero. Desliza sobre el eje horario para desplazarte.", tip_touch: "💡 Toca (o pasa el ratón por) una casilla para ver la disponibilidad de todos.",
     admin_auth_title: "Acceso Administrador", admin_auth_sub: "Introduce código de 32 chars y clave admin de 8 chars.", btn_admin_login: "Iniciar Sesión",
     my_polls_title: "Historial de Reuniones", my_polls_sub: "Reuniones creadas en este dispositivo.",
     th_name: "Título", th_code: "Código", th_key: "Clave Admin", th_end: "Fecha Fin", th_action: "Acción",
@@ -717,6 +822,7 @@ const I18N = {
     lbl_your_name: "ชื่อของคุณ:", lbl_your_pin: "รหัสผ่าน:", lbl_state: "สถานะ:",
     mode_yes: "สะดวก", mode_maybe: "อาจจะ", mode_clear: "ล้าง", btn_save: "บันทึกเวลา",
     heat_title: "เวลาที่ทุกคนว่าง (Heatmap)", tip_hover: "💡 วางเมาส์เหนือช่องเพื่อดูผู้เข้าร่วม",
+    hint_pick: "👆 กดค้างแล้วลากเพื่อเลือกหลายช่วงเวลาพร้อมกัน เลื่อนบนแกนเวลาด้านซ้ายเพื่อเลื่อนหน้าจอ", tip_touch: "💡 แตะ (หรือวางเมาส์) ที่ช่องเพื่อดูสถานะของผู้เข้าร่วม",
     admin_auth_title: "เข้าสู่ระบบผู้ดูแล", admin_auth_sub: "กรอกรหัส 32 หลัก และ รหัสผ่าน Admin 8 หลัก", btn_admin_login: "เข้าสู่ระบบ",
     my_polls_title: "ประวัติการสร้างประชุม", my_polls_sub: "รายการประชุมที่สร้างในอุปกรณ์นี้",
     th_name: "หัวข้อ", th_code: "รหัส 32 หลัก", th_key: "รหัส Admin", th_end: "วันที่สิ้นสุด", th_action: "จัดการ",
@@ -1001,6 +1107,16 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   document.addEventListener('mouseup', () => isMouseDown = false);
+
+  /* 沒有滑鼠的裝置（手機、平板）→ 熱區圖的說明文字換成「點一下」的版本 */
+  if (window.matchMedia && window.matchMedia('(hover: none)').matches) {
+    const tb = document.getElementById('tooltip-box');
+    if (tb) {
+      tb.setAttribute('data-i18n', 'tip_touch');
+      const dict = I18N[currentLang] || I18N['zh-TW'];
+      if (dict.tip_touch) tb.textContent = dict.tip_touch;
+    }
+  }
   document.addEventListener('dragstart', (e) => e.preventDefault());
 
   // 按下 Esc 關閉所有 Modal
@@ -1348,7 +1464,9 @@ function renderMyGrid() {
 
   container.style.gridTemplateColumns = `56px repeat(${vm.cols.length}, minmax(50px, 1fr))`;
 
-  container.appendChild(document.createElement('div'));
+  const corner = document.createElement('div');
+  corner.className = 'grid-corner';
+  container.appendChild(corner);
   vm.cols.forEach(d => {
     const h = document.createElement('div');
     h.className = 'grid-header';
@@ -1356,13 +1474,13 @@ function renderMyGrid() {
     container.appendChild(h);
   });
 
-  vm.rows.forEach(t => {
+  vm.rows.forEach((t, ri) => {
     const timeLbl = document.createElement('div');
     timeLbl.className = 'grid-time';
     timeLbl.textContent = t;
     container.appendChild(timeLbl);
 
-    vm.cols.forEach(d => {
+    vm.cols.forEach((d, ci) => {
       const hit = vm.map[`${d}|${t}`];
       const cell = document.createElement('div');
 
@@ -1376,41 +1494,137 @@ function renderMyGrid() {
       const slotId = hit.slotId;
       cell.className = 'cell';
       cell.title = `${d} ${t}`;
+      cell.dataset.slot = slotId;          // 拖曳時靠這個認格子
+      cell.dataset.r = ri;                 // 列（時間）
+      cell.dataset.c = ci;                 // 欄（日期）
 
       const st = myDraft[slotId] || 0;
       if (st > 0) cell.classList.add(`st-${st}`);
 
-      cell.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        // 🌟 點擊時檢查：未填寫姓名與密碼則禁止點選
-        if (!validateUserIdentity()) return;
-        isMouseDown = true;
-        applyCellMode(slotId, cell);
-      });
-      cell.addEventListener('mouseenter', () => {
-        if (isMouseDown) {
-          // 🌟 拖曳滑過時檢查：未填寫姓名與密碼則中斷拖曳
-          if (!validateUserIdentity()) {
-            isMouseDown = false;
-            return;
-          }
-          applyCellMode(slotId, cell);
-        }
-      });
-
       container.appendChild(cell);
     });
   });
+
+  bindPainting(container);
 }
 
-function applyCellMode(slotId, cell) {
-  if (myDraft[slotId] === currentMode || currentMode === 0) {
-    delete myDraft[slotId];
-    cell.className = 'cell';
-  } else {
-    myDraft[slotId] = currentMode;
-    cell.className = `cell st-${currentMode}`;
+/* ============================================================
+ *  拖曳選取（滑鼠與手指共用一套 Pointer Events）
+ *
+ *  · 按下的那一格決定方向：已經是目前狀態 → 這一筆是「擦掉」，
+ *    否則就是「塗上」。拖過去的格子一律跟著第一格走，不會一路反覆切換。
+ *  · 手指拖曳時 touchmove 的 target 永遠是最初那一格，
+ *    所以要用 elementFromPoint 換算現在指到哪一格。
+ *  · 拖到網格上下緣會自動捲動，長時段不用先捲再選。
+ * ========================================================== */
+function bindPainting(container) {
+  if (container._paintBound) return;   // 同一個容器只綁一次，避免重繪時疊加監聽
+  container._paintBound = true;
+
+  const wrapper = container.parentElement;
+  let painting = false;
+  let paintVal = 0;         // 這一次拖曳是要「塗上」哪個狀態（0 = 擦掉）
+  let anchor = null;        // 起點格子的 (列, 欄)
+  let last = null;          // 最後一次指到的格子，手指離開網格時沿用
+  let base = null;          // 拖曳開始時的狀態快照，用來還原被拖出範圍的格子
+  let grid = null;          // 二維查表：grid[列][欄] = 格子元素
+  let autoTimer = null;
+
+  function buildIndex() {
+    grid = {};
+    container.querySelectorAll('.cell[data-slot]').forEach((c) => {
+      const r = +c.dataset.r, k = +c.dataset.c;
+      (grid[r] = grid[r] || {})[k] = c;
+    });
   }
+
+  /* 手指可能滑出網格或滑出畫面，先把座標夾回「看得見的網格範圍」再做命中測試 */
+  function cellAt(x, y) {
+    const r = wrapper.getBoundingClientRect();
+    const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
+    const cx = Math.min(Math.max(x, Math.max(r.left, 0) + 2), Math.min(r.right, vw) - 2);
+    const cy = Math.min(Math.max(y, Math.max(r.top, 0) + 2), Math.min(r.bottom, vh) - 2);
+    const el = document.elementFromPoint(cx, cy);
+    const c = el && el.closest ? el.closest('.cell[data-slot]') : null;
+    return (c && container.contains(c)) ? c : null;
+  }
+
+  function setCell(cell, val) {
+    const slotId = cell.dataset.slot;
+    if (val) { myDraft[slotId] = val; cell.className = 'cell st-' + val; }
+    else { delete myDraft[slotId]; cell.className = 'cell'; }
+  }
+
+  /* 把「起點 → 目前位置」這個矩形塗成 paintVal，矩形外的還原成拖曳前的樣子。
+   * 這樣往回拖就會縮小選取範圍，跟一般表格的框選一致，也不怕手指移太快跳過格子。 */
+  function applyRect(to) {
+    const r1 = Math.min(anchor.r, to.r), r2 = Math.max(anchor.r, to.r);
+    const c1 = Math.min(anchor.c, to.c), c2 = Math.max(anchor.c, to.c);
+    Object.keys(grid).forEach((rk) => {
+      Object.keys(grid[rk]).forEach((ck) => {
+        const cell = grid[rk][ck];
+        const inside = rk >= r1 && rk <= r2 && ck >= c1 && ck <= c2;
+        const want = inside ? paintVal : (base[cell.dataset.slot] || 0);
+        if ((myDraft[cell.dataset.slot] || 0) !== want) setCell(cell, want);
+      });
+    });
+  }
+
+  /* 拖到網格上下緣時自動捲動，長時段不用先捲再選 */
+  function edgeScroll(y) {
+    clearInterval(autoTimer);
+    if (!wrapper || !painting) return;
+    const r = wrapper.getBoundingClientRect();
+    const EDGE = 44;
+    const dir = y < r.top + EDGE ? -1 : (y > r.bottom - EDGE ? 1 : 0);
+    if (!dir) return;
+    autoTimer = setInterval(() => {
+      if (!painting) { clearInterval(autoTimer); return; }
+      const before = wrapper.scrollTop;
+      wrapper.scrollTop += dir * 10;
+      if (wrapper.scrollTop === before) { clearInterval(autoTimer); return; }
+      const c = cellAt(lastXY.x, lastXY.y);
+      if (c) { last = { r: +c.dataset.r, c: +c.dataset.c }; applyRect(last); }
+    }, 16);
+  }
+
+  let lastXY = { x: 0, y: 0 };
+
+  container.addEventListener('pointerdown', (e) => {
+    const cell = e.target.closest ? e.target.closest('.cell[data-slot]') : null;
+    if (!cell) return;                       // 按在時間軸或日期列上 → 讓它正常捲動
+    if (!validateUserIdentity()) return;
+    e.preventDefault();
+
+    buildIndex();
+    base = Object.assign({}, myDraft);
+    anchor = { r: +cell.dataset.r, c: +cell.dataset.c };
+    last = anchor;
+    const cur = myDraft[cell.dataset.slot] || 0;
+    // 目前模式是「清除」，或這一格已經是這個狀態 → 這一整筆拖曳都是擦掉
+    paintVal = (currentMode === 0 || cur === currentMode) ? 0 : currentMode;
+    painting = true;
+    lastXY = { x: e.clientX, y: e.clientY };
+    try { container.setPointerCapture(e.pointerId); } catch (err) {}
+    applyRect(anchor);
+  });
+
+  container.addEventListener('pointermove', (e) => {
+    if (!painting) return;
+    e.preventDefault();
+    lastXY = { x: e.clientX, y: e.clientY };
+    const cell = cellAt(e.clientX, e.clientY);
+    if (cell) last = { r: +cell.dataset.r, c: +cell.dataset.c };
+    applyRect(last);
+    edgeScroll(e.clientY);
+  });
+
+  const stop = () => { painting = false; clearInterval(autoTimer); };
+  container.addEventListener('pointerup', stop);
+  container.addEventListener('pointercancel', stop);
+  container.addEventListener('lostpointercapture', stop);
+  window.addEventListener('blur', stop);
 }
 
 function renderHeatGrid() {
@@ -1433,7 +1647,9 @@ function renderHeatGrid() {
 
   container.style.gridTemplateColumns = `56px repeat(${vm.cols.length}, minmax(50px, 1fr))`;
 
-  container.appendChild(document.createElement('div'));
+  const corner2 = document.createElement('div');
+  corner2.className = 'grid-corner';
+  container.appendChild(corner2);
   vm.cols.forEach(d => {
     const h = document.createElement('div');
     h.className = 'grid-header';
@@ -1483,7 +1699,8 @@ function renderHeatGrid() {
         else cell.classList.add('h-1');
       }
 
-      cell.addEventListener('mouseenter', () => {
+      /* 滑鼠移過去、或用手指點一下，都會在下方顯示這一格的詳情 */
+      const showInfo = () => {
         const tooltip = document.getElementById('tooltip-box');
         // 換了時區時，同時標出這一格在會議基準時區是幾點，避免對不上
         const baseNote = showBase
@@ -1492,7 +1709,12 @@ function renderHeatGrid() {
         tooltip.innerHTML = `<strong>${d} ${t}</strong> ${baseNote} (${yesList.length}/${total})：` +
           `<div class="grp"><span class="lab-yes">${modeYesText}：</span> ${yesList.join(', ') || noneText}</div>` +
           `<div class="grp"><span class="lab-maybe">${modeMaybeText}：</span> ${maybeList.join(', ') || noneText}</div>`;
-      });
+        const prev = container.querySelector('.cell.picked');
+        if (prev) prev.classList.remove('picked');
+        cell.classList.add('picked');
+      };
+      cell.addEventListener('mouseenter', showInfo);
+      cell.addEventListener('click', showInfo);
 
       container.appendChild(cell);
     });
