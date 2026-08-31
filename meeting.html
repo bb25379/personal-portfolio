@@ -102,6 +102,11 @@ body {
   max-width: 1240px; width: 100%;
   margin: 0 auto; padding: 2rem 1.5rem;
   flex: 1;
+  transition: max-width 0.2s ease;
+}
+/* 填寫／查看時段這頁要放兩張時段網格，大螢幕時給它更寬的畫布 */
+@media (min-width: 1400px) {
+  .container.wide { max-width: 1600px; }
 }
 
 /* Alert Banner */
@@ -149,20 +154,96 @@ body {
 
 .form-grid {
   display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem; margin-bottom: 1.5rem;
+  gap: 1.2rem; margin-bottom: 1.2rem;
+}
+.form-grid.one { grid-template-columns: 1fr; }
+
+/* ---------- 填寫頁的代碼列：手機疊、桌機一整排 ---------- */
+.code-row { display: flex; flex-direction: column; gap: 10px; }
+.code-row input { width: 100%; }
+@media (min-width: 860px) {
+  .code-row { flex-direction: row; align-items: center; }
+  .code-row input { flex: 1 1 auto; min-width: 0; }
+  .code-row .btn { flex: 0 0 auto; }
+}
+
+/* ---------- 管理員登入：手機疊、桌機兩欄＋按鈕同一列 ---------- */
+.admin-auth-row { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.admin-auth-row .btn { width: 100%; }
+@media (min-width: 860px) {
+  .admin-auth-row {
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) auto;
+    align-items: end; gap: 1.2rem;
+  }
+  .admin-auth-row .btn { width: auto; min-width: 9rem; }
+}
+
+/* ---------- 建立會議：手機是一欄疊下來（預設） ---------- */
+.create-cols { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+.cc-left, .cc-right { display: flex; flex-direction: column; gap: 1.2rem; min-width: 0; }
+.cc-pair { display: grid; grid-template-columns: 1fr; gap: 1.2rem; min-width: 0; }
+.cc-submit { display: flex; margin-top: 0.3rem; }
+.cc-submit .btn { width: 100%; }
+
+/* 標題區：手機在卡片最上面，桌機收進左欄 */
+.cc-intro { display: none; }
+.cc-intro .card-title { margin-bottom: 4px; }
+.cc-intro .card-subtitle { margin-bottom: 0; }
+.cc-right > .form-group { flex: 1; }
+
+/* ---------- 建立會議：桌機＝左邊表單、右邊月曆，中間一條細分隔線 ---------- */
+@media (min-width: 900px) {
+  /* 標題搬到左欄裡，讓「候選日期」與標題同一條起跑線 */
+  .create-card > .card-title, .create-card > .card-subtitle { display: none; }
+  .cc-intro { display: block; margin-bottom: 0.4rem; }
+
+  .create-cols {
+    /* 左欄跟著版面伸縮，但不超過好讀的寬度；剩下的都給月曆 */
+    grid-template-columns: clamp(18rem, 32%, 25rem) minmax(0, 1fr);
+    grid-template-areas: "left right" "submit right";
+    grid-template-rows: 1fr auto;
+    column-gap: 2.4rem;
+    row-gap: 1.6rem;
+    align-items: stretch;
+  }
+  /* 左欄拉到與月曆同高、欄位平均分布 → 中間不會出現一大塊空白 */
+  .cc-left   { grid-area: left; justify-content: space-between; gap: 1.25rem; }
+  .cc-right  { grid-area: right; border-left: 1px solid var(--border); padding-left: 2.4rem; }
+  .cc-submit { grid-area: submit; align-items: end; margin-top: 0; }
+  .cc-submit .btn { padding: 13px 20px; font-size: 15px; }
+  .cc-pair { gap: 1.25rem; }
+
+  /* 月曆在寬欄位裡放大成好按的尺寸 */
+  .cal { padding: 1.1rem 1.2rem; border-radius: 14px; }
+  .cal-head { margin-bottom: 14px; }
+  .cal-title { font-size: 16px; }
+  .cal-btn { width: 36px; height: 36px; }
+  .cal-grid { gap: 5px; }
+  .cal-wds div { font-size: 12px; padding: 7px 0; }
+  .cal-day { height: 40px; font-size: 13.5px; border-radius: 9px; }
+  .cal-hint { font-size: 12px; margin-top: 14px; }
+  .cal-foot { margin-top: 14px; }
+}
+/* 版面再寬一點時，日期格子跟著長大（維持接近正方形的手感） */
+@media (min-width: 1180px) {
+  .cal-grid { gap: 6px; }
+  .cal-day { height: 46px; font-size: 14px; }
 }
 .form-group { display: flex; flex-direction: column; gap: 6px; }
 .form-group.full { grid-column: span 2; }
-label { font-size: 13px; font-weight: 600; color: var(--text-sub); }
+label { font-size: 13px; font-weight: 600; color: var(--text-sub); letter-spacing: 0.01em; }
 
 input[type="text"], input[type="password"], input[type="date"], select {
   background: #0B0F19;
   border: 1px solid var(--border);
-  border-radius: 8px; padding: 10px 14px;
+  border-radius: 9px; padding: 11px 14px;
   color: var(--text-main); font-family: inherit; font-size: 14px;
-  outline: none; transition: all 0.2s;
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
   color-scheme: dark;
   width: 100%;
+}
+@media (hover: hover) {
+  input[type="text"]:hover, input[type="password"]:hover, select:hover { border-color: #3A4256; }
 }
 input:focus, select:focus {
   border-color: var(--primary);
@@ -185,7 +266,7 @@ input:focus, select:focus {
 
 /* Workspace Duo Panel */
 .workspace {
-  display: grid; grid-template-columns: 1fr 1fr;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 1.5rem; align-items: stretch;
 }
 .panel-box {
@@ -193,6 +274,7 @@ input:focus, select:focus {
   border: 1px solid var(--border);
   border-radius: 16px; padding: 1.5rem;
   display: flex; flex-direction: column;
+  min-width: 0;   /* 沒有這行，網格會把面板連同整頁一起撐寬 */
 }
 .panel-head {
   display: flex; justify-content: space-between; align-items: center;
@@ -217,30 +299,58 @@ input:focus, select:focus {
 /* Grid Table Alignment Fix
  * min-width:0 很重要：flex/grid 子元素預設 min-width:auto，
  * 網格比容器寬時會把整個版面撐開（手機上就是「切版」的元凶）。 */
+/* 網格一律在面板裡自己捲動：14 天以上也不會把整頁撐出橫向捲軸 */
 .grid-wrapper {
-  overflow: auto; padding-bottom: 8px; flex: 1;
+  overflow: auto; flex: 1;
   min-width: 0; overscroll-behavior: contain;
+  max-height: 62vh;
+  border: 1px solid var(--border); border-radius: 10px;
+  padding: 0 8px 8px; background: #0B0F19;
+  scrollbar-width: thin;
 }
+.grid-wrapper::-webkit-scrollbar { width: 10px; height: 10px; }
+.grid-wrapper::-webkit-scrollbar-thumb { background: #2A3145; border-radius: 99px; border: 3px solid #0B0F19; }
+.grid-wrapper::-webkit-scrollbar-thumb:hover { background: #39415A; }
 .grid-table {
   display: grid; gap: 3px;
   user-select: none; -webkit-user-select: none;
   width: max-content; min-width: 100%;
 }
 .grid-header {
-  font-size: 11px; font-weight: 600; text-align: center; color: var(--text-sub); padding: 4px 0;
-  position: sticky; top: 0; z-index: 2; background: var(--surface);
+  font-size: 11.5px; font-weight: 600; text-align: center; color: var(--text-sub);
+  padding: 8px 0 6px;
+  position: sticky; top: 0; z-index: 2; background: #0B0F19;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  line-height: 1.25;
 }
+.grid-header .gh-wd { font-size: 10px; font-weight: 600; color: var(--text-muted); }
+/* 六、日用假日色，一眼分得出週末 */
+.grid-header.we { color: var(--maybe); }
+.grid-header.we .gh-wd { color: var(--maybe); opacity: 0.8; }
 .grid-time {
-  font-size: 11px; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end;
-  padding-right: 6px;
-  position: sticky; left: 0; z-index: 3; background: var(--surface);
+  font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 8px;
+  position: sticky; left: 0; z-index: 3; background: #0B0F19;
 }
 /* 左上角那一格要同時壓住左邊與上面 */
-.grid-corner { position: sticky; left: 0; top: 0; z-index: 4; background: var(--surface); }
+.grid-corner { position: sticky; left: 0; top: 0; z-index: 4; background: #0B0F19; }
+
+/* 跨週的分隔軌道：中間一條細線，表示這裡開始是下一週 */
+.grid-table { --col-sep-w: 18px; }
+.grid-sep { position: relative; }
+.grid-sep::after {
+  content: ''; position: absolute; top: 0; bottom: 0; left: 50%;
+  width: 0; border-left: 1px solid #333B52;
+}
+.grid-sep.head {
+  position: sticky; top: 0; z-index: 2; background: #0B0F19;
+  cursor: help;
+}
+.grid-sep.head::after { top: 8px; bottom: 4px; border-left-color: #454E68; }
 .cell {
   height: 26px; background: var(--no); border-radius: 3px;
   cursor: pointer; transition: background 0.05s;
-  min-width: 48px;
+  min-width: 44px;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; font-weight: 700; color: #fff;
   -webkit-tap-highlight-color: transparent;
@@ -284,8 +394,24 @@ input:focus, select:focus {
 }
 .admin-table th, .admin-table td {
   padding: 12px; text-align: left; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
 }
-.admin-table th { color: var(--text-sub); font-weight: 600; font-size: 12px; }
+.admin-table th {
+  color: var(--text-sub); font-weight: 600; font-size: 12px;
+  white-space: nowrap; letter-spacing: 0.02em;
+}
+.admin-table tbody tr:last-child td { border-bottom: none; }
+@media (hover: hover) { .admin-table tbody tr:hover td { background: rgba(255,255,255,0.02); } }
+.admin-table .c-code { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-sub); word-break: break-all; }
+.admin-table .c-key  { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--maybe); }
+.admin-table .c-date { white-space: nowrap; color: var(--text-sub); }
+.admin-table .c-act  { text-align: right; white-space: nowrap; }
+.admin-table .c-act .btn + .btn { margin-left: 6px; }
+.pin-tag {
+  font-family: 'IBM Plex Mono', monospace; color: var(--maybe);
+  background: #0B0F19; border: 1px solid var(--border);
+  padding: 4px 8px; border-radius: 6px;
+}
 
 /* Modal Custom Box */
 .modal-overlay {
@@ -348,6 +474,156 @@ input:focus, select:focus {
   .user-info-row { flex-direction: column; gap: 0.8rem; }
 }
 
+/* ---------- 自製下拉選單（取代原生 select 的選單） ---------- */
+.sel { position: relative; }
+/* 原生 select 留著當狀態來源：看不到、也不吃點擊，但程式仍可設定值 */
+.sel-native {
+  position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  opacity: 0; pointer-events: none; z-index: -1;
+}
+.sel-btn {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: #0B0F19; border: 1px solid var(--border); border-radius: 9px;
+  padding: 11px 14px; color: var(--text-main);
+  font-family: inherit; font-size: 14px; text-align: left; cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+@media (hover: hover) { .sel-btn:hover { border-color: #3A4256; } }
+.sel-btn[aria-expanded="true"], .sel-btn:focus-visible {
+  border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); outline: none;
+}
+.sel-caret { color: var(--text-muted); font-size: 11px; flex: 0 0 auto; }
+.sel-pop {
+  position: absolute; z-index: 30; left: 0; right: 0; top: calc(100% + 6px);
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 6px; box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+  display: flex; flex-direction: column; gap: 2px;
+  max-height: 320px; overflow: auto; overscroll-behavior: contain;
+}
+.sel-pop[hidden] { display: none; }
+.sel-opt {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; text-align: left; cursor: pointer;
+  background: none; border: none; border-radius: 8px;
+  padding: 11px 12px; color: var(--text-main);
+  font-family: inherit; font-size: 14px; line-height: 1.4;
+}
+.sel-opt:hover, .sel-opt.active { background: var(--surface-hover); }
+.sel-opt.on { color: #fff; font-weight: 600; }
+.sel-opt.on::after { content: '✓'; color: var(--primary); font-size: 13px; }
+
+/* ---------- 自訂時段 ---------- */
+.range-custom {
+  margin-top: 10px; background: #0B0F19; border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px;
+}
+.range-custom { position: relative; }
+.rc-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.rc-lb { font-size: 12px; color: var(--text-sub); font-weight: 600; }
+.rc-sep { color: var(--text-muted); font-size: 14px; }
+
+/* 小時欄位＝可以打字的輸入框 ＋ 右側上下箭頭 */
+.hh-wrap {
+  display: inline-flex; align-items: stretch;
+  border: 1px solid var(--border); border-radius: 8px; background: #0B0F19;
+  overflow: hidden;
+}
+.hh-wrap:focus-within, .hh-wrap.editing { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+input.hh {
+  width: 56px; flex: 0 0 auto; text-align: center; cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace; font-size: 16px; letter-spacing: 2px;
+  border: none; border-radius: 0; background: transparent; padding: 9px 4px;
+}
+input.hh:focus { box-shadow: none; }
+.hh-spin { display: flex; flex-direction: column; border-left: 1px solid var(--border); }
+.hh-step {
+  flex: 1; width: 26px; min-height: 20px; padding: 0;
+  border: none; background: var(--surface); color: var(--text-sub);
+  font-size: 9px; line-height: 1; cursor: pointer; touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.hh-step:first-child { border-bottom: 1px solid var(--border); }
+.hh-step:hover { background: var(--surface-hover); color: var(--text-main); }
+.hh-step:active { background: var(--primary); color: #fff; }
+
+/* 點欄位跳出來的 00–23 快選 */
+.hh-pop {
+  position: absolute; z-index: 20; left: 12px; right: 12px; top: 56px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+  padding: 8px; box-shadow: 0 12px 28px rgba(0,0,0,0.55);
+  display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;
+}
+.hh-pop[hidden] { display: none; }
+.hh-pop button {
+  padding: 9px 0; border-radius: 6px; cursor: pointer;
+  border: 1px solid transparent; background: var(--bg); color: var(--text-main);
+  font-family: 'IBM Plex Mono', monospace; font-size: 13px;
+}
+.hh-pop button:hover { background: var(--surface-hover); }
+.hh-pop button.now { background: var(--yes); border-color: var(--yes); color: #fff; font-weight: 700; }
+.rc-preview { margin: 10px 0 0; font-size: 13px; font-weight: 600; color: var(--yes); }
+.rc-preview.bad { color: var(--danger); }
+.rc-hint { margin: 6px 0 0; font-size: 11.5px; color: var(--text-muted); line-height: 1.6; }
+
+/* ---------- 候選日期月曆（when2meet 式的點選／拖曳） ---------- */
+.cal {
+  background: #0B0F19; border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px;
+  overflow-anchor: none;   /* 拖曳時內容長高不要讓瀏覽器自動調整捲動位置 */
+  max-width: 100%;
+}
+.cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.cal-title { font-size: 14px; font-weight: 700; }
+.cal-btn {
+  width: 34px; height: 34px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-main);
+  font-size: 16px; line-height: 1;
+}
+.cal-btn:hover { background: var(--surface-hover); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; user-select: none; -webkit-user-select: none; }
+.cal-wds div {
+  text-align: center; font-size: 11px; font-weight: 600; color: var(--text-sub);
+  padding: 5px 0; border-radius: 5px; cursor: pointer;
+}
+.cal-wds div:hover { background: var(--surface-hover); color: var(--text-main); }
+.cal-wds div.we { color: var(--maybe); }
+.cal-day {
+  height: 38px; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; border-radius: 7px; cursor: pointer;
+  background: var(--surface); border: 1px solid transparent; color: var(--text-main);
+  touch-action: none; -webkit-tap-highlight-color: transparent;
+  transition: background 0.05s;
+}
+.cal-day.pad { visibility: hidden; }
+/* 滑鼠移過去要有反應：分得出「可以點」與「已過期」 */
+@media (hover: hover) {
+  .cal-day:not(.pad):not(.past):not(.on):hover { background: var(--surface-hover); border-color: var(--border); }
+  .cal-day.on:hover { filter: brightness(1.08); }
+}
+.cal-day:focus-visible, .cal-btn:focus-visible, .tab-btn:focus-visible,
+.btn:focus-visible, .date-chip button:focus-visible {
+  outline: 2px solid var(--primary); outline-offset: 2px;
+}
+.cal-day.we { color: var(--maybe); }
+.cal-day.past { opacity: 0.28; cursor: default; }
+.cal-day.today { border-color: var(--primary); }
+.cal-day.on { background: var(--yes); border-color: var(--yes); color: #fff; font-weight: 700; }
+.cal-hint { font-size: 11.5px; color: var(--text-muted); margin: 10px 0 0; line-height: 1.6; }
+.cal-foot { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.cal-count { font-size: 12px; color: var(--text-sub); margin-right: auto; }
+.date-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; overflow-anchor: none; }
+.date-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 999px; padding: 4px 6px 4px 10px; color: var(--text-sub);
+}
+.date-chip.we { color: var(--maybe); }
+.date-chip button {
+  background: none; border: none; color: var(--text-muted); cursor: pointer;
+  font-size: 14px; line-height: 1; padding: 0 3px; border-radius: 4px;
+}
+.date-chip button:hover { color: var(--danger); }
+
 /* 操作提示：預設藏起來，手機版才顯示（要寫在媒體查詢前面，
    否則同樣權重下後面的規則會蓋掉媒體查詢裡的 display:block） */
 .grid-hint {
@@ -399,15 +675,21 @@ input:focus, select:focus {
   .panel-head { flex-wrap: wrap; gap: 6px; }
 
   /* 時段網格 */
-  .grid-wrapper {
-    max-height: 56vh;
-    border: 1px solid var(--border); border-radius: 10px;
-    padding: 0 6px 6px; background: #0B0F19;
-  }
-  .grid-header { padding: 8px 0 6px; font-size: 12px; background: #0B0F19; }
-  .grid-time { font-size: 12px; padding-right: 8px; background: #0B0F19; }
-  .grid-corner { background: #0B0F19; }
+  .grid-wrapper { max-height: 56vh; padding: 0 6px 6px; }
+  .grid-header { font-size: 12px; }
+  .grid-time { font-size: 12px; }
   .cell { height: 38px; min-width: 46px; border-radius: 4px; font-size: 12px; }
+  /* 手機：開始／結束要並排在同一列，不要被擠到換行 */
+  .rc-row { gap: 6px; }
+  .rc-lb { font-size: 11px; }
+  .rc-sep { font-size: 13px; }
+  input.hh { width: 52px; font-size: 16px; padding: 12px 2px; letter-spacing: 1px; }
+  .hh-step { width: 28px; min-height: 24px; font-size: 10px; }
+  .hh-pop { grid-template-columns: repeat(4, 1fr); top: 62px; }
+  .hh-pop button { padding: 13px 0; font-size: 15px; }
+  .cal { padding: 10px 8px; }
+  .cal-day { height: 44px; font-size: 14px; }
+  .cal-grid { gap: 3px; }
 
   /* 狀態選擇：獨立一行、按鈕加大 */
   .mode-row { flex-direction: column; align-items: stretch !important; gap: 8px; }
@@ -423,7 +705,44 @@ input:focus, select:focus {
   .code-box-row { flex-wrap: wrap; }
   .code-display { flex: 1 1 100%; font-size: 12px; }
   .code-box-row .btn { flex: 1 1 auto; }
-  .admin-table th, .admin-table td { padding: 9px 8px; font-size: 13px; }
+  /* 後台清單：表格在手機上一定擠成一團，改成一筆一張卡 */
+  .admin-table, .admin-table tbody, .admin-table tr, .admin-table td { display: block; width: 100%; }
+  .admin-table { margin-top: 0.9rem; }
+  .admin-table thead { display: none; }
+  .admin-table tr {
+    background: #0B0F19; border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .admin-table td {
+    border: none; padding: 7px 0; font-size: 13px;
+    display: grid; grid-template-columns: 6.6rem minmax(0, 1fr); gap: 10px; align-items: center;
+  }
+  .admin-table td::before {
+    content: attr(data-label);
+    color: var(--text-muted); font-size: 12px; font-weight: 600;
+  }
+  .admin-table td.c-title {
+    display: block; font-size: 15px; line-height: 1.5;
+    padding: 0 0 10px; margin-bottom: 4px; border-bottom: 1px solid var(--border);
+  }
+  .admin-table td.c-act {
+    display: flex; gap: 8px; padding-top: 12px;
+  }
+  .admin-table td.c-title::before, .admin-table td.c-act::before, .admin-table td.c-empty::before { content: none; }
+  .admin-table td.c-act .btn { flex: 1; margin-left: 0 !important; }
+  .admin-table td.c-act .btn-x { flex: 0 0 4.2rem; }
+  .admin-table td.c-empty { display: block; text-align: center; padding: 1.2rem 0; }
+  .admin-table tr.is-empty { background: none; border: none; padding: 0; }
+}
+
+/* ---------- 很窄的手機（320px 級） ----------
+   開始／結束硬塞在同一列會擠到換行，這裡改成一行一個 */
+@media (max-width: 360px) {
+  .rc-row { display: grid; grid-template-columns: auto 1fr; gap: 8px 10px; }
+  .rc-sep { display: none; }
+  .rc-lb { align-self: center; }
+  .hh-wrap { justify-self: start; }
+  .hh-pop { top: 108px; grid-template-columns: repeat(4, 1fr); }
 }
 
 </style>
@@ -465,51 +784,114 @@ input:focus, select:focus {
   </div>
 
   <!-- View 1: 建立會議 -->
-  <div id="view-create" class="card">
+  <div id="view-create" class="card create-card">
     <h1 class="card-title" data-i18n="create_title">建立新的會議預約調查</h1>
     <p class="card-subtitle" data-i18n="create_sub">填寫會議資訊並設定開放時間，系統將自動產生 32 碼識別碼與連結。</p>
 
     <form onsubmit="handleCreatePoll(event)">
-      <div class="form-grid">
-        <div class="form-group full">
-          <label data-i18n="lbl_title">會議名稱 / 主題</label>
-          <input type="text" id="input-title" placeholder="例如：跨部門 Q3 專案進度討論" required>
+      <!-- 桌機：左邊是設定＋送出、右邊是月曆；手機：整個往下疊 -->
+      <div class="create-cols">
+        <div class="cc-left">
+          <div class="cc-intro">
+            <h1 class="card-title" data-i18n="create_title">建立新的會議預約調查</h1>
+            <p class="card-subtitle" data-i18n="create_sub">填寫會議資訊並設定開放時間，系統將自動產生 32 碼識別碼與連結。</p>
+          </div>
+          <div class="form-group">
+                    <label data-i18n="lbl_title">會議名稱 / 主題</label>
+                    <input type="text" id="input-title" placeholder="例如：跨部門 Q3 專案進度討論" required>
+                  </div>
+          <div class="cc-pair">
+            <div class="form-group">
+                      <label data-i18n="lbl_organizer">主辦單位 / 主辦人</label>
+                      <input type="text" id="input-organizer" placeholder="例如：黃小鴨" required>
+                    </div>
+            <div class="form-group">
+                      <label data-i18n="lbl_timezone">會議基準時區</label>
+                      <select id="input-timezone"></select>
+                    </div>
+          </div>
+          <div class="form-group">
+                    <label id="lbl-range" data-i18n="lbl_range">每日開放時段範圍（依基準時區）</label>
+                    <!-- 自製下拉：原生 select 的選單在手機／模擬器上會浮到錯誤的位置，
+                         這裡用一顆按鈕＋錨定在欄位正下方的清單取代。
+                         原生 select 仍留著當狀態來源，既有程式與外部腳本不受影響。 -->
+                    <div class="sel" id="range-sel">
+                      <select id="input-time-range" class="sel-native" tabindex="-1" aria-hidden="true">
+                        <option value="0-24" data-i18n="opt_24h">全時段 24 Hours (00:00 - 24:00)</option>
+                        <option value="9-18" selected data-i18n="opt_work">09:00 - 18:00 (標準工時)</option>
+                        <option value="8-22" data-i18n="opt_flex">08:00 - 22:00 (全天彈性)</option>
+                        <option value="13-21" data-i18n="opt_eve">13:00 - 21:00 (下午至晚上)</option>
+                        <option value="custom" data-i18n="opt_custom">自訂時段…</option>
+                      </select>
+                      <button type="button" class="sel-btn" id="range-sel-btn"
+                              aria-haspopup="listbox" aria-expanded="false" aria-labelledby="lbl-range range-sel-label">
+                        <span id="range-sel-label">09:00 - 18:00 (標準工時)</span>
+                        <span class="sel-caret" aria-hidden="true">▾</span>
+                      </button>
+                      <div class="sel-pop" id="range-sel-pop" role="listbox" hidden></div>
+                    </div>
+
+                    <div class="range-custom" id="range-custom" style="display:none;">
+                      <div class="rc-row">
+                        <label class="rc-lb" for="range-from" data-i18n="lbl_from">開始</label>
+                        <div class="hh-wrap">
+                          <input type="text" id="range-from" class="hh" inputmode="numeric" maxlength="2"
+                                 autocomplete="off" placeholder="09">
+                          <span class="hh-spin">
+                            <button type="button" class="hh-step" data-t="from" data-d="1" aria-label="+1 小時">▲</button>
+                            <button type="button" class="hh-step" data-t="from" data-d="-1" aria-label="-1 小時">▼</button>
+                          </span>
+                        </div>
+                        <span class="rc-sep">→</span>
+                        <label class="rc-lb" for="range-to" data-i18n="lbl_to">結束</label>
+                        <div class="hh-wrap">
+                          <input type="text" id="range-to" class="hh" inputmode="numeric" maxlength="2"
+                                 autocomplete="off" placeholder="18">
+                          <span class="hh-spin">
+                            <button type="button" class="hh-step" data-t="to" data-d="1" aria-label="+1 小時">▲</button>
+                            <button type="button" class="hh-step" data-t="to" data-d="-1" aria-label="-1 小時">▼</button>
+                          </span>
+                        </div>
+                      </div>
+                      <div class="hh-pop" id="hh-pop" hidden></div>
+                      <p class="rc-preview" id="range-preview">--</p>
+                      <p class="rc-hint" data-i18n="hint_custom">填兩位數的整點（00–23）。填 24 會自動變成 00；結束填 00 表示到午夜。跨午夜也可以，例如 22 → 02。</p>
+                    </div>
+                  </div>
         </div>
-        <div class="form-group">
-          <label data-i18n="lbl_organizer">主辦單位 / 主辦人</label>
-          <input type="text" id="input-organizer" placeholder="例如：黃小鴨" required>
+        <div class="cc-right">
+          <div class="form-group full">
+                    <label data-i18n="lbl_dates">候選日期</label>
+                    <div class="cal" id="cal">
+                      <div class="cal-head">
+                        <button type="button" class="cal-btn" id="cal-prev" aria-label="上個月">‹</button>
+                        <div class="cal-title" id="cal-title">--</div>
+                        <button type="button" class="cal-btn" id="cal-next" aria-label="下個月">›</button>
+                      </div>
+                      <div class="cal-grid cal-wds" id="cal-wd"></div>
+                      <div class="cal-grid" id="cal-days"></div>
+                      <p class="cal-hint" data-i18n="hint_dates">點選或拖曳可一次選好幾天；點上方的星期可以整欄加選／取消（例如整排週六）。</p>
+                      <div class="cal-foot">
+                        <span class="cal-count" id="cal-count">已選 0 天</span>
+                        <button type="button" class="btn btn-secondary btn-sm" id="cal-weekdays" data-i18n="btn_weekdays">本月平日</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="cal-clear" data-i18n="btn_clear_dates">清除</button>
+                      </div>
+                      <div class="date-chips" id="cal-chips"></div>
+                    </div>
+                  </div>
         </div>
-        <div class="form-group">
-          <label data-i18n="lbl_timezone">會議基準時區</label>
-          <select id="input-timezone"></select>
-        </div>
-        <div class="form-group">
-          <label data-i18n="lbl_range">每日開放時段範圍（依基準時區）</label>
-          <select id="input-time-range">
-            <option value="0-24">全時段 24 Hours (00:00 - 24:00)</option>
-            <option value="9-18" selected>09:00 - 18:00 (標準工時)</option>
-            <option value="8-22">08:00 - 22:00 (全天彈性)</option>
-            <option value="13-21">13:00 - 21:00 (下午至晚上)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label data-i18n="lbl_start">開始日期</label>
-          <input type="date" id="input-start-date" required>
-        </div>
-        <div class="form-group">
-          <label data-i18n="lbl_end">結束日期（最長保存 60 天）</label>
-          <input type="date" id="input-end-date" required>
+        <div class="cc-submit">
+          <button type="submit" class="btn btn-primary" data-i18n="btn_submit_create">建立並取得預約連結</button>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary" style="width:100%;" data-i18n="btn_submit_create">建立並取得預約連結</button>
     </form>
   </div>
 
   <!-- View 2: 填寫 / 查看時段 -->
   <div id="view-respond" style="display:none;">
     <div class="card" id="code-input-box" style="margin-bottom: 1.5rem;">
-      <div style="display:flex; gap:10px; max-width:880px; flex-wrap:wrap;">
-        <input type="text" id="input-code" style="flex:1; min-width:240px;" placeholder="請貼上 32 碼會議代碼">
+      <div class="code-row">
+        <input type="text" id="input-code" placeholder="請貼上 32 碼會議代碼">
         <button class="btn btn-primary" onclick="loadPollFromInput()" data-i18n="btn_load">載入會議</button>
         <button class="btn btn-secondary" onclick="copyCode()" data-i18n="btn_copy">複製代碼</button>
         <button class="btn btn-secondary" onclick="copyOnlyUrl()" data-i18n="btn_copy_url">複製 URL 網址</button>
@@ -582,19 +964,21 @@ input:focus, select:focus {
   <div id="view-admin" style="display:none;">
     
     <!-- 管理員驗證登入卡片 -->
-    <div class="card" id="admin-auth-card" style="margin-bottom:1.5rem; max-width:600px;">
+    <div class="card" id="admin-auth-card" style="margin-bottom:1.5rem;">
       <h2 class="card-title" data-i18n="admin_auth_title">管理員驗證登入</h2>
       <p class="card-subtitle" data-i18n="admin_auth_sub">請輸入 32 碼會議代碼與該會議的 8 碼管理員金鑰。</p>
       
-      <div class="form-group" style="margin-bottom:1rem;">
-        <label>32 碼會議代碼 (Code)</label>
-        <input type="text" id="admin-input-code" placeholder="請輸入 32 碼會議代碼">
+      <div class="admin-auth-row">
+        <div class="form-group">
+          <label>32 碼會議代碼 (Code)</label>
+          <input type="text" id="admin-input-code" placeholder="請輸入 32 碼會議代碼">
+        </div>
+        <div class="form-group">
+          <label>8 碼管理員金鑰 (Admin Key)</label>
+          <input type="password" id="admin-input-key" placeholder="包含大小寫字母與數字">
+        </div>
+        <button class="btn btn-primary" onclick="verifyAdminAuth()" data-i18n="btn_admin_login">登入後台</button>
       </div>
-      <div class="form-group" style="margin-bottom:1.5rem;">
-        <label>8 碼管理員金鑰 (Admin Key)</label>
-        <input type="password" id="admin-input-key" placeholder="包含大小寫字母與數字">
-      </div>
-      <button class="btn btn-primary" style="width:100%;" onclick="verifyAdminAuth()" data-i18n="btn_admin_login">登入後台</button>
     </div>
 
     <!-- 本機建立過的會議清單 -->
@@ -614,7 +998,7 @@ input:focus, select:focus {
             </tr>
           </thead>
           <tbody id="my-created-polls-list">
-            <tr><td colspan="5" style="text-align:center; color:var(--text-muted);" data-i18n="no_record">尚無建立記錄</td></tr>
+            <tr class="is-empty"><td class="c-empty" colspan="5" style="text-align:center; color:var(--text-muted);" data-i18n="no_record">尚無建立記錄</td></tr>
           </tbody>
         </table>
       </div>
@@ -675,7 +1059,7 @@ input:focus, select:focus {
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; padding-right:2rem;">
       <div>
         <h2 class="modal-title" id="admin-poll-title">會議名稱</h2>
-        <p class="modal-sub" style="margin-bottom:0;" data-i18n="admin_user_sub">參與者名單、修改密碼 (PIN) 查詢與管理</p>
+        <p class="modal-sub" style="margin-bottom:0;" data-i18n="admin_user_sub">參與者名單、修改用密碼 (PIN) 查詢與管理</p>
       </div>
       <button class="btn btn-danger btn-sm" onclick="deleteCurrentPoll()" data-i18n="btn_del_poll">刪除此會議</button>
     </div>
@@ -685,13 +1069,13 @@ input:focus, select:focus {
         <thead>
           <tr>
             <th data-i18n="th_user">參與者姓名</th>
-            <th data-i18n="th_pin">修改密碼 (PIN)</th>
+            <th data-i18n="th_pin">修改用密碼 (PIN)</th>
             <th data-i18n="th_slots">已選擇格數</th>
             <th data-i18n="th_action">管理操作</th>
           </tr>
         </thead>
         <tbody id="admin-user-list">
-          <tr><td colspan="4" style="text-align:center; color:var(--text-muted);" data-i18n="no_response">尚無人填寫</td></tr>
+          <tr class="is-empty"><td class="c-empty" colspan="4" style="text-align:center; color:var(--text-muted);" data-i18n="no_response">尚無人填寫</td></tr>
         </tbody>
       </table>
     </div>
@@ -707,7 +1091,9 @@ const I18N = {
     notice_retention: "⏱️ 提示：為維持系統輕量安全，會議資料建立後將保留 60 天，逾期資料將自動進行銷毀清空。",
     tab_create: "建立新會議", tab_respond: "填寫 / 查看時段", tab_admin: "管理員後台",
     create_title: "建立新的會議預約調查", create_sub: "填寫會議資訊並設定開放時間，系統將自動產生 32 碼識別碼與連結。",
-    lbl_title: "會議名稱 / 主題", lbl_organizer: "主辦單位 / 主辦人", lbl_range: "每日開放時段範圍（依基準時區）", lbl_start: "開始日期", lbl_end: "結束日期（最長保存 60 天）",
+    lbl_title: "會議名稱 / 主題", lbl_organizer: "主辦單位 / 主辦人", lbl_range: "每日開放時段範圍（依基準時區）", lbl_start: "開始日期", lbl_end: "結束日期",
+    opt_custom: "自訂時段…", opt_24h: "全時段 24 Hours (00:00 - 24:00)", opt_work: "09:00 - 18:00 (標準工時)", opt_flex: "08:00 - 22:00 (全天彈性)", opt_eve: "13:00 - 21:00 (下午至晚上)", lbl_from: "開始", lbl_to: "結束", hint_custom: "填兩位數的整點（00–23）。填 24 會自動變成 00；結束填 00 表示到午夜。跨午夜也可以，例如 22 → 02。", preview_slots: "{a}:00 → {b}:00，共 {n} 個時段", err_range: "請填入兩位數的整點，例如 09 與 18。",
+    lbl_dates: "候選日期", hint_dates: "點選或拖曳可一次選好幾天；點上方的星期可以整欄加選／取消（例如一次拿掉所有週六）。", btn_weekdays: "本月平日", btn_clear_dates: "清除", sel_count: "已選 {n} 天", gap_days: "中間跳過 {n} 天", week_break: "這裡開始是下一週", err_no_dates: "請先在月曆上選至少一天候選日期。", err_too_many: "候選日期最多 {n} 天。",
     btn_submit_create: "建立並取得預約連結", btn_load: "載入會議", btn_copy: "複製代碼", btn_copy_url: "複製 URL 網址", btn_copy_info: "一鍵複製會議資訊",
     lbl_your_name: "您的姓名：", lbl_your_pin: "密碼 (修改憑證)：", lbl_state: "選擇填寫狀態：",
     mode_yes: "可以", mode_maybe: "勉強", mode_clear: "清除", btn_save: "儲存我的時段",
@@ -715,9 +1101,9 @@ const I18N = {
     hint_pick: "👆 手指按住格子拖曳，可以一次選一整段；在左側時間軸上滑動可以捲動。", tip_touch: "💡 點一下（或滑鼠移到）格子，可查看該時段所有人的出席狀況。",
     admin_auth_title: "管理員驗證登入", admin_auth_sub: "請輸入 32 碼會議代碼與該會議的 8 碼管理員金鑰。", btn_admin_login: "登入後台",
     my_polls_title: "本機建立過的會議歷史", my_polls_sub: "以下為您在此裝置上發起過的會議記錄與管理員金鑰。",
-    th_name: "會議名稱", th_code: "代碼 (32碼)", th_key: "管理員金鑰 (8碼)", th_end: "截止日期", th_action: "操作",
-    admin_user_sub: "參與者名單、修改密碼 (PIN) 查詢與管理", btn_del_poll: "刪除此會議",
-    th_user: "參與者姓名", th_pin: "修改密碼 (PIN)", th_slots: "已選擇格數",
+    th_name: "會議名稱", th_code: "代碼 (32碼)", th_key: "管理員金鑰 (8碼)", th_end: "截止日期", th_action: "操作", btn_manage: "管理", btn_del_user: "刪除此 User",
+    admin_user_sub: "參與者名單、修改用密碼 (PIN) 查詢與管理", btn_del_poll: "刪除此會議",
+    th_user: "參與者姓名", th_pin: "修改用密碼 (PIN)", th_slots: "已選擇格數",
     modal_created_title: "🎉 會議建立成功！", modal_created_sub: "請妥善保存以下資訊，並可點擊右側按鈕進行快速複製：",
     btn_copy_code: "複製代碼", btn_copy_key: "複製金鑰", btn_copy_all_info: "一鍵複製完整資訊", btn_close: "關閉視窗",
     disp_organizer_prefix: "主辦人：", responded_suffix: "人已填寫", none_str: "無",
@@ -729,7 +1115,9 @@ const I18N = {
     notice_retention: "⏱️ Note: Meeting records are retained for 60 days max before being automatically cleaned up.",
     tab_create: "New Meeting", tab_respond: "Respond / View", tab_admin: "Admin Console",
     create_title: "Create Meeting Poll", create_sub: "Fill in meeting info to generate a unique 32-character code.",
-    lbl_title: "Meeting Title", lbl_organizer: "Organizer", lbl_range: "Daily Time Range (in meeting time zone)", lbl_start: "Start Date", lbl_end: "End Date (Max 60 days)",
+    lbl_title: "Meeting Title", lbl_organizer: "Organizer", lbl_range: "Daily Time Range (in meeting time zone)", lbl_start: "Start Date", lbl_end: "End Date",
+    opt_custom: "Custom hours…", opt_24h: "All day (00:00 - 24:00)", opt_work: "09:00 - 18:00 (office hours)", opt_flex: "08:00 - 22:00 (extended)", opt_eve: "13:00 - 21:00 (afternoon - evening)", lbl_from: "From", lbl_to: "To", hint_custom: "Enter two-digit hours (00–23). 24 becomes 00; an end of 00 means midnight. Crossing midnight works too, e.g. 22 → 02.", preview_slots: "{a}:00 → {b}:00 · {n} slots", err_range: "Please enter two-digit hours, e.g. 09 and 18.",
+    lbl_dates: "Candidate dates", hint_dates: "Tap or drag to pick several days at once. Tap a weekday header to add or remove that whole column (e.g. drop every Saturday).", btn_weekdays: "Weekdays this month", btn_clear_dates: "Clear", sel_count: "{n} day(s) selected", gap_days: "{n} day(s) skipped here", week_break: "Next week starts here", err_no_dates: "Please pick at least one candidate date on the calendar.", err_too_many: "At most {n} candidate dates.",
     btn_submit_create: "Create & Get Link", btn_load: "Load Poll", btn_copy: "Copy Code", btn_copy_url: "Copy URL", btn_copy_info: "Copy Meeting Info",
     lbl_your_name: "Your Name:", lbl_your_pin: "Password (PIN):", lbl_state: "Selection Mode:",
     mode_yes: "Available", mode_maybe: "If Needed", mode_clear: "Clear", btn_save: "Save My Availability",
@@ -737,7 +1125,7 @@ const I18N = {
     hint_pick: "👆 Press and drag across the grid to select a whole block. Slide on the time axis to scroll.", tip_touch: "💡 Tap (or hover over) a slot to see everyone's availability.",
     admin_auth_title: "Admin Login", admin_auth_sub: "Enter 32-char code & 8-char admin key.", btn_admin_login: "Login to Admin Console",
     my_polls_title: "Created Meetings History", my_polls_sub: "Meetings generated on this device with admin keys.",
-    th_name: "Title", th_code: "Code (32 chars)", th_key: "Admin Key (8 chars)", th_end: "End Date", th_action: "Action",
+    th_name: "Title", th_code: "Code (32 chars)", th_key: "Admin Key (8 chars)", th_end: "End Date", th_action: "Action", btn_manage: "Manage", btn_del_user: "Remove user",
     admin_user_sub: "Attendee list, password (PIN) lookup & management", btn_del_poll: "Delete Poll",
     th_user: "Attendee Name", th_pin: "Password (PIN)", th_slots: "Selected Slots",
     modal_created_title: "🎉 Meeting Created Successfully!", modal_created_sub: "Please save the credentials below and click to copy:",
@@ -751,7 +1139,9 @@ const I18N = {
     notice_retention: "⏱️ 注意: データは最大60日間保持され、その後自動削除されます。",
     tab_create: "新規作成", tab_respond: "回答 / 閲覧", tab_admin: "管理者",
     create_title: "日程調整を作成", create_sub: "会議情報を入力して32桁のコードを生成します。",
-    lbl_title: "会議名", lbl_organizer: "主催者", lbl_range: "時間帯（基準タイムゾーン基準）", lbl_start: "開始日", lbl_end: "終了日 (最長60日)",
+    lbl_title: "会議名", lbl_organizer: "主催者", lbl_range: "時間帯（基準タイムゾーン基準）", lbl_start: "開始日", lbl_end: "終了日",
+    opt_custom: "時間帯をカスタム…", opt_24h: "終日 (00:00 - 24:00)", opt_work: "09:00 - 18:00（標準勤務）", opt_flex: "08:00 - 22:00（拡大）", opt_eve: "13:00 - 21:00（午後〜夜）", lbl_from: "開始", lbl_to: "終了", hint_custom: "2 桁の時（00–23）を入力してください。24 は 00 になります。終了に 00 を入れると深夜 0 時までです。22 → 02 のように日をまたいでも構いません。", preview_slots: "{a}:00 → {b}:00・{n} コマ", err_range: "2 桁の時を入力してください（例：09 と 18）。",
+    lbl_dates: "候補日", hint_dates: "タップまたはドラッグで複数日をまとめて選べます。上の曜日をタップすると、その曜日をまとめて追加／解除できます（土曜だけ外すなど）。", btn_weekdays: "今月の平日", btn_clear_dates: "クリア", sel_count: "{n} 日を選択中", gap_days: "ここで {n} 日スキップ", week_break: "ここから翌週です", err_no_dates: "カレンダーで候補日を 1 日以上選んでください。", err_too_many: "候補日は最大 {n} 日までです。",
     btn_submit_create: "作成してリンクを取得", btn_load: "読み込み", btn_copy: "コードをコピー", btn_copy_url: "URLをコピー", btn_copy_info: "詳細情報をコピー",
     lbl_your_name: "お名前:", lbl_your_pin: "パスワード:", lbl_state: "選択モード:",
     mode_yes: "可能", mode_maybe: "調整可能", mode_clear: "クリア", btn_save: "回答を保存",
@@ -759,7 +1149,7 @@ const I18N = {
     hint_pick: "👆 マスを長押ししてドラッグすると、まとめて選択できます。左の時間軸をなぞるとスクロールします。", tip_touch: "💡 マスをタップ（またはホバー）すると参加者の状況が見られます。",
     admin_auth_title: "管理者ログイン", admin_auth_sub: "32桁のコードと8桁の管理者キーを入力してください。", btn_admin_login: "ログイン",
     my_polls_title: "作成履歴", my_polls_sub: "この端末で作成された調整ツール履歴。",
-    th_name: "会議名", th_code: "コード", th_key: "管理者キー", th_end: "終了日", th_action: "操作",
+    th_name: "会議名", th_code: "コード", th_key: "管理者キー", th_end: "終了日", th_action: "操作", btn_manage: "管理", btn_del_user: "このユーザーを削除",
     admin_user_sub: "参加者一覧とパスワード管理", btn_del_poll: "削除",
     th_user: "参加者", th_pin: "パスワード", th_slots: "選択コマ数",
     modal_created_title: "🎉 作成が完了しました！", modal_created_sub: "以下の情報を保存・コピーしてください：",
@@ -773,7 +1163,9 @@ const I18N = {
     notice_retention: "⏱️ 안내: 회의 데이터는 최대 60일간 보관된 후 자동 삭제됩니다.",
     tab_create: "새 회의", tab_respond: "응답 / 보기", tab_admin: "관리자",
     create_title: "회의 일정 조사 생성", create_sub: "정보를 입력하여 32자리 코드를 생성합니다.",
-    lbl_title: "회의 제목", lbl_organizer: "주최자", lbl_range: "시간 범위 (기준 시간대)", lbl_start: "시작일", lbl_end: "종료일 (최대 60일)",
+    lbl_title: "회의 제목", lbl_organizer: "주최자", lbl_range: "시간 범위 (기준 시간대)", lbl_start: "시작일", lbl_end: "종료일",
+    opt_custom: "시간대 직접 입력…", opt_24h: "종일 (00:00 - 24:00)", opt_work: "09:00 - 18:00 (근무시간)", opt_flex: "08:00 - 22:00 (확장)", opt_eve: "13:00 - 21:00 (오후~저녁)", lbl_from: "시작", lbl_to: "종료", hint_custom: "두 자리 정시(00–23)를 입력하세요. 24는 00으로 바뀝니다. 종료에 00을 넣으면 자정까지입니다. 22 → 02처럼 자정을 넘겨도 됩니다.", preview_slots: "{a}:00 → {b}:00 · {n}개 구간", err_range: "두 자리 정시를 입력하세요. 예: 09, 18",
+    lbl_dates: "후보 날짜", hint_dates: "탭하거나 끌어서 여러 날을 한 번에 선택할 수 있어요. 위쪽 요일을 탭하면 그 요일 전체를 추가／해제합니다(예: 토요일 전부 제외).", btn_weekdays: "이번 달 평일", btn_clear_dates: "지우기", sel_count: "{n}일 선택", gap_days: "여기서 {n}일 건너뜀", week_break: "여기부터 다음 주", err_no_dates: "달력에서 후보 날짜를 최소 하루는 선택해 주세요.", err_too_many: "후보 날짜는 최대 {n}일까지입니다.",
     btn_submit_create: "생성 및 링크 복사", btn_load: "불러오기", btn_copy: "코드 복사", btn_copy_url: "URL 복사", btn_copy_info: "회의 정보 복사",
     lbl_your_name: "이름:", lbl_your_pin: "비밀번호:", lbl_state: "상태 선택:",
     mode_yes: "가능", mode_maybe: "글쎄요", mode_clear: "지우기", btn_save: "내 시간 저장",
@@ -781,7 +1173,7 @@ const I18N = {
     hint_pick: "👆 칸을 누른 채 끌면 여러 시간대를 한 번에 선택할 수 있어요. 왼쪽 시간축을 문지르면 스크롤됩니다.", tip_touch: "💡 칸을 탭하거나 마우스를 올리면 참석자 현황을 볼 수 있어요.",
     admin_auth_title: "관리자 로그인", admin_auth_sub: "32자리 코드와 8자리 관리자 키를 입력하세요.", btn_admin_login: "로그인",
     my_polls_title: "생성된 회의 기록", my_polls_sub: "이 기기에서 생성된 회의 목록입니다.",
-    th_name: "제목", th_code: "코드", th_key: "관리자 키", th_end: "종료일", th_action: "작업",
+    th_name: "제목", th_code: "코드", th_key: "관리자 키", th_end: "종료일", th_action: "작업", btn_manage: "관리", btn_del_user: "이 사용자 삭제",
     admin_user_sub: "참석자 목록 및 비밀번호 관리", btn_del_poll: "회의 삭제",
     th_user: "참석자 이름", th_pin: "비밀번호", th_slots: "선택한 시간",
     modal_created_title: "🎉 회의 생성 완료!", modal_created_sub: "아래 정보를 저장하거나 클릭하여 복사하세요:",
@@ -795,7 +1187,9 @@ const I18N = {
     notice_retention: "⏱️ Nota: Los datos de la reunión se conservan un máximo de 60 días.",
     tab_create: "Nueva Reunión", tab_respond: "Responder / Ver", tab_admin: "Consola Admin",
     create_title: "Crear Encuesta de Reunión", create_sub: "Rellena la información para generar un código de 32 caracteres.",
-    lbl_title: "Título", lbl_organizer: "Organizador", lbl_range: "Rango Horario (en la zona de la reunión)", lbl_start: "Fecha Inicio", lbl_end: "Fecha Fin (Máx 60 días)",
+    lbl_title: "Título", lbl_organizer: "Organizador", lbl_range: "Rango Horario (en la zona de la reunión)", lbl_start: "Fecha Inicio", lbl_end: "Fecha Fin",
+    opt_custom: "Horario personalizado…", opt_24h: "Todo el día (00:00 - 24:00)", opt_work: "09:00 - 18:00 (horario laboral)", opt_flex: "08:00 - 22:00 (ampliado)", opt_eve: "13:00 - 21:00 (tarde y noche)", lbl_from: "Desde", lbl_to: "Hasta", hint_custom: "Introduce horas de dos dígitos (00–23). El 24 se convierte en 00; un final de 00 significa medianoche. También puedes cruzar la medianoche, p. ej. 22 → 02.", preview_slots: "{a}:00 → {b}:00 · {n} franjas", err_range: "Introduce horas de dos dígitos, p. ej. 09 y 18.",
+    lbl_dates: "Fechas candidatas", hint_dates: "Toca o arrastra para elegir varios días a la vez. Toca un día de la semana arriba para añadir o quitar toda la columna (por ejemplo, quitar todos los sábados).", btn_weekdays: "Días hábiles del mes", btn_clear_dates: "Borrar", sel_count: "{n} día(s) seleccionados", gap_days: "{n} día(s) omitidos aquí", week_break: "Aquí empieza otra semana", err_no_dates: "Elige al menos una fecha candidata en el calendario.", err_too_many: "Máximo {n} fechas candidatas.",
     btn_submit_create: "Crear y Obtener Enlace", btn_load: "Cargar", btn_copy: "Copiar Código", btn_copy_url: "Copiar URL", btn_copy_info: "Copiar Info Reunión",
     lbl_your_name: "Tu Nombre:", lbl_your_pin: "Contraseña:", lbl_state: "Estado:",
     mode_yes: "Disponible", mode_maybe: "Tal vez", mode_clear: "Borrar", btn_save: "Guardar Disponibilidad",
@@ -803,7 +1197,7 @@ const I18N = {
     hint_pick: "👆 Mantén pulsado y arrastra para seleccionar un bloque entero. Desliza sobre el eje horario para desplazarte.", tip_touch: "💡 Toca (o pasa el ratón por) una casilla para ver la disponibilidad de todos.",
     admin_auth_title: "Acceso Administrador", admin_auth_sub: "Introduce código de 32 chars y clave admin de 8 chars.", btn_admin_login: "Iniciar Sesión",
     my_polls_title: "Historial de Reuniones", my_polls_sub: "Reuniones creadas en este dispositivo.",
-    th_name: "Título", th_code: "Código", th_key: "Clave Admin", th_end: "Fecha Fin", th_action: "Acción",
+    th_name: "Título", th_code: "Código", th_key: "Clave Admin", th_end: "Fecha Fin", th_action: "Acción", btn_manage: "Gestionar", btn_del_user: "Eliminar usuario",
     admin_user_sub: "Lista de asistentes y gestión de contraseñas", btn_del_poll: "Eliminar",
     th_user: "Asistente", th_pin: "Contraseña", th_slots: "Casillas",
     modal_created_title: "🎉 ¡Reunión Creada con Éxito!", modal_created_sub: "Guarda la información a continuación:",
@@ -817,7 +1211,9 @@ const I18N = {
     notice_retention: "⏱️ หมายเหตุ: ข้อมูลการประชุมจะถูกเก็บไว้นานสูงสุด 60 วัน",
     tab_create: "สร้างการประชุม", tab_respond: "ตอบกลับ / ดู", tab_admin: "ผู้ดูแลระบบ",
     create_title: "สร้างการนัดหมายประชุม", create_sub: "กรอกข้อมูลเพื่อสร้างรหัส 32 หลัก",
-    lbl_title: "หัวข้อประชุม", lbl_organizer: "ผู้จัด", lbl_range: "ช่วงเวลา (ตามโซนเวลาหลัก)", lbl_start: "วันที่เริ่มต้น", lbl_end: "วันที่สิ้นสุด (สูงสุด 60 วัน)",
+    lbl_title: "หัวข้อประชุม", lbl_organizer: "ผู้จัด", lbl_range: "ช่วงเวลา (ตามโซนเวลาหลัก)", lbl_start: "วันที่เริ่มต้น", lbl_end: "วันที่สิ้นสุด",
+    opt_custom: "กำหนดช่วงเวลาเอง…", opt_24h: "ทั้งวัน (00:00 - 24:00)", opt_work: "09:00 - 18:00 (เวลาทำงาน)", opt_flex: "08:00 - 22:00 (ขยายเวลา)", opt_eve: "13:00 - 21:00 (บ่าย-ค่ำ)", lbl_from: "เริ่ม", lbl_to: "สิ้นสุด", hint_custom: "กรอกชั่วโมงสองหลัก (00–23) หากกรอก 24 จะเปลี่ยนเป็น 00 และถ้าสิ้นสุดเป็น 00 หมายถึงเที่ยงคืน ข้ามเที่ยงคืนได้ เช่น 22 → 02", preview_slots: "{a}:00 → {b}:00 · {n} ช่วง", err_range: "กรุณากรอกชั่วโมงสองหลัก เช่น 09 และ 18",
+    lbl_dates: "วันที่ต้องการ", hint_dates: "แตะหรือลากเพื่อเลือกหลายวันพร้อมกัน แตะชื่อวันด้านบนเพื่อเพิ่ม/ยกเลิกทั้งคอลัมน์ (เช่น ตัดวันเสาร์ออกทั้งหมด)", btn_weekdays: "วันทำงานเดือนนี้", btn_clear_dates: "ล้าง", sel_count: "เลือกแล้ว {n} วัน", gap_days: "ข้ามไป {n} วัน", week_break: "เริ่มสัปดาห์ถัดไปที่นี่", err_no_dates: "กรุณาเลือกวันที่ต้องการอย่างน้อย 1 วันในปฏิทิน", err_too_many: "เลือกได้มากที่สุด {n} วัน",
     btn_submit_create: "สร้างและคัดลอกลิงก์", btn_load: "โหลด", btn_copy: "คัดลอกรหัส", btn_copy_url: "คัดลอก URL", btn_copy_info: "คัดลอกข้อมูลประชุม",
     lbl_your_name: "ชื่อของคุณ:", lbl_your_pin: "รหัสผ่าน:", lbl_state: "สถานะ:",
     mode_yes: "สะดวก", mode_maybe: "อาจจะ", mode_clear: "ล้าง", btn_save: "บันทึกเวลา",
@@ -825,7 +1221,7 @@ const I18N = {
     hint_pick: "👆 กดค้างแล้วลากเพื่อเลือกหลายช่วงเวลาพร้อมกัน เลื่อนบนแกนเวลาด้านซ้ายเพื่อเลื่อนหน้าจอ", tip_touch: "💡 แตะ (หรือวางเมาส์) ที่ช่องเพื่อดูสถานะของผู้เข้าร่วม",
     admin_auth_title: "เข้าสู่ระบบผู้ดูแล", admin_auth_sub: "กรอกรหัส 32 หลัก และ รหัสผ่าน Admin 8 หลัก", btn_admin_login: "เข้าสู่ระบบ",
     my_polls_title: "ประวัติการสร้างประชุม", my_polls_sub: "รายการประชุมที่สร้างในอุปกรณ์นี้",
-    th_name: "หัวข้อ", th_code: "รหัส 32 หลัก", th_key: "รหัส Admin", th_end: "วันที่สิ้นสุด", th_action: "จัดการ",
+    th_name: "หัวข้อ", th_code: "รหัส 32 หลัก", th_key: "รหัส Admin", th_end: "วันที่สิ้นสุด", th_action: "จัดการ", btn_manage: "จัดการ", btn_del_user: "ลบผู้ใช้นี้",
     admin_user_sub: "รายชื่อผู้เข้าร่วมและการจัดการรหัสผ่าน", btn_del_poll: "ลบการประชุม",
     th_user: "ชื่อผู้เข้าร่วม", th_pin: "รหัสผ่าน", th_slots: "จำนวนช่องที่เลือก",
     modal_created_title: "🎉 สร้างการประชุมสำเร็จ!", modal_created_sub: "โปรดบันทึกข้อมูลและคลิกคัดลอก:",
@@ -1036,9 +1432,15 @@ function useBaseTz() {
  *  回傳：欄（顯示時區的日期）、列（顯示時區的時間）、
  *        以及每個 (欄,列) 對應到哪一個原始 slotId
  * ========================================================== */
+/* 這場會議的候選日期。新版存 dates[]；舊資料只有起訖，就把中間每一天展開 */
+function pollDates(m) {
+  if (m && Array.isArray(m.dates) && m.dates.length) return m.dates.slice().sort();
+  return getDateArray(m.startDate, m.endDate);
+}
+
 function buildViewModel() {
   const baseTz = pollBaseTz();
-  const dates = getDateArray(currentPoll.startDate, currentPoll.endDate);
+  const dates = pollDates(currentPoll);
   const times = getTimeSlots(currentPoll.timeRange);
 
   const cols = [], rows = [], map = {};
@@ -1076,6 +1478,13 @@ function changeLang(lang) {
     if (dict[key]) el.textContent = dict[key];
   });
 
+  // 月曆的星期、月份名稱與日期標籤也要跟著換語言
+  if (calMonth) renderCalendar();
+  updateRangePreview();
+  refreshSelects();          // 自製下拉的選項文字
+  if (typeof renderMyCreatedPolls === 'function' &&
+      document.getElementById('view-admin').style.display !== 'none') renderMyCreatedPolls();
+
   // 時區選單裡的分組標題也要跟著換語言
   buildTzOptions(document.getElementById('input-timezone'), document.getElementById('input-timezone').value || localTz());
   buildTzOptions(document.getElementById('displayTzSelect'), displayTz);
@@ -1083,6 +1492,7 @@ function changeLang(lang) {
   if (currentPoll) {
     document.getElementById('disp-organizer').innerHTML = `<span data-i18n="disp_organizer_prefix">${dict['disp_organizer_prefix'] || '主辦人：'}</span><span id="disp-organizer-val">${currentPoll.organizer}</span>`;
     renderTzNotice();
+    renderMyGrid();      // 左邊的填寫網格也要換語言（星期標註），已填的格子從 myDraft 重畫回來
     renderHeatGrid();
   }
 }
@@ -1096,6 +1506,7 @@ let isMouseDown = false;
 window.addEventListener('DOMContentLoaded', () => {
   cleanupExpiredPolls();
   initDates();
+  initCustomRange();
   initTimezones();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -1136,12 +1547,521 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+/* ============================================================
+ *  候選日期月曆
+ *
+ *  以前是「開始日期 ~ 結束日期」，中間的六日、假日、自己沒空的日子
+ *  都被迫算進去。現在改成一天一天點：點一下切換、拖曳連選一片、
+ *  點上方星期可整欄切換（例如一次把所有週六拿掉）。
+ *  資料存成 dates: ['2026-09-01', ...]，同時保留 startDate / endDate
+ *  （= 最早 / 最晚那天）讓舊的清理排程與後台清單照樣讀得到。
+ * ========================================================== */
+
+let selectedDates = new Set();   // 'YYYY-MM-DD'
+let calMonth = null;             // 目前顯示的月份（指向該月 1 號）
+const MAX_DATES = 31;
+
+function ymd(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') +
+         '-' + String(d.getDate()).padStart(2, '0');
+}
+function todayYmd() { return ymd(new Date()); }
+
 function initDates() {
-  const today = new Date();
-  const nextWeek = new Date();
-  nextWeek.setDate(today.getDate() + 6);
-  document.getElementById('input-start-date').value = today.toISOString().split('T')[0];
-  document.getElementById('input-end-date').value = nextWeek.toISOString().split('T')[0];
+  const t = new Date();
+
+  // 預設：從明天開始，往後抓 5 個工作日，省得每次都要從零點起
+  selectedDates = new Set();
+  const d = new Date(t);
+  d.setDate(d.getDate() + 1);
+  let n = 0;
+  while (n < 5) {
+    if (d.getDay() !== 0 && d.getDay() !== 6) { selectedDates.add(ymd(d)); n++; }
+    d.setDate(d.getDate() + 1);
+  }
+
+  // 月曆打開在「第一個預設日期」那個月。月底建立會議時很重要——
+  // 否則會停在只剩一兩天可點的當月，看起來像壞掉。
+  const first = [...selectedDates].sort()[0] || todayYmd();
+  const [fy, fm] = first.split('-').map(Number);
+  calMonth = new Date(fy, fm - 1, 1);
+  renderCalendar();
+
+  document.getElementById('cal-prev').onclick = () => { calMonth.setMonth(calMonth.getMonth() - 1); renderCalendar(); };
+  document.getElementById('cal-next').onclick = () => { calMonth.setMonth(calMonth.getMonth() + 1); renderCalendar(); };
+  document.getElementById('cal-clear').onclick = () => { selectedDates.clear(); renderCalendar(); };
+  document.getElementById('cal-weekdays').onclick = pickWeekdaysOfMonth;
+}
+
+/* 一次選好本月（今天以後）的所有平日 */
+function pickWeekdaysOfMonth() {
+  const y = calMonth.getFullYear(), m = calMonth.getMonth();
+  const last = new Date(y, m + 1, 0).getDate();
+  const today = todayYmd();
+  for (let i = 1; i <= last; i++) {
+    const d = new Date(y, m, i);
+    const key = ymd(d);
+    if (key < today) continue;
+    if (d.getDay() === 0 || d.getDay() === 6) continue;
+    if (selectedDates.size >= MAX_DATES) break;
+    selectedDates.add(key);
+  }
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const dict = I18N[currentLang] || I18N['zh-TW'];
+  const lang = currentLang;
+  const y = calMonth.getFullYear(), m = calMonth.getMonth();
+
+  document.getElementById('cal-title').textContent =
+    new Intl.DateTimeFormat(lang, { year: 'numeric', month: 'long' }).format(new Date(y, m, 1));
+
+  /* 星期表頭：點一下把該欄（本月、今天以後）整批加選或取消 */
+  const wdBox = document.getElementById('cal-wd');
+  wdBox.innerHTML = '';
+  const fmtWd = new Intl.DateTimeFormat(lang, { weekday: 'short' });
+  for (let w = 0; w < 7; w++) {
+    const el = document.createElement('div');
+    const ref = new Date(2026, 1, 1 + w);          // 2026-02-01 是週日
+    el.textContent = fmtWd.format(ref).replace(/^週|曜日$/g, '') || String(w);
+    if (w === 0 || w === 6) el.className = 'we';
+    el.onclick = () => toggleWeekday(w);
+    wdBox.appendChild(el);
+  }
+
+  /* 日期格 */
+  const box = document.getElementById('cal-days');
+  box.innerHTML = '';
+  const first = new Date(y, m, 1).getDay();
+  const last = new Date(y, m + 1, 0).getDate();
+  const today = todayYmd();
+
+  for (let i = 0; i < first; i++) {
+    const pad = document.createElement('div');
+    pad.className = 'cal-day pad';
+    box.appendChild(pad);
+  }
+  for (let i = 1; i <= last; i++) {
+    const d = new Date(y, m, i);
+    const key = ymd(d);
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    cell.textContent = i;
+    if (d.getDay() === 0 || d.getDay() === 6) cell.classList.add('we');
+    if (key === today) cell.classList.add('today');
+    if (key < today) cell.classList.add('past');
+    else cell.dataset.d = key;                    // 只有今天以後才可以點
+    if (selectedDates.has(key)) cell.classList.add('on');
+    box.appendChild(cell);
+  }
+
+  bindCalPainting(box);
+  renderDateChips();
+}
+
+function toggleWeekday(w) {
+  const y = calMonth.getFullYear(), m = calMonth.getMonth();
+  const last = new Date(y, m + 1, 0).getDate();
+  const today = todayYmd();
+  const keys = [];
+  for (let i = 1; i <= last; i++) {
+    const d = new Date(y, m, i);
+    if (d.getDay() !== w) continue;
+    const key = ymd(d);
+    if (key >= today) keys.push(key);
+  }
+  if (!keys.length) return;
+  // 只要有一天還沒選 → 全部選起來；已經全選 → 全部取消
+  const someOff = keys.some(k => !selectedDates.has(k));
+  keys.forEach(k => {
+    if (someOff) { if (selectedDates.size < MAX_DATES) selectedDates.add(k); }
+    else selectedDates.delete(k);
+  });
+  renderCalendar();
+}
+
+function updateDateCount() {
+  const dict = I18N[currentLang] || I18N['zh-TW'];
+  const cnt = document.getElementById('cal-count');
+  if (!cnt) return;
+  cnt.textContent = (dict.sel_count || '已選 {n} 天').replace('{n}', selectedDates.size);
+  cnt.style.color = selectedDates.size ? 'var(--yes)' : 'var(--text-sub)';
+}
+
+function renderDateChips() {
+  const list = [...selectedDates].sort();
+  updateDateCount();
+
+  const box = document.getElementById('cal-chips');
+  box.innerHTML = '';
+  const fmt = new Intl.DateTimeFormat(currentLang, { month: 'numeric', day: 'numeric', weekday: 'short' });
+  list.forEach(key => {
+    const [Y, M, D] = key.split('-').map(Number);
+    const d = new Date(Y, M - 1, D);
+    const chip = document.createElement('span');
+    chip.className = 'date-chip' + (d.getDay() === 0 || d.getDay() === 6 ? ' we' : '');
+    chip.appendChild(document.createTextNode(fmt.format(d)));
+    const x = document.createElement('button');
+    x.type = 'button';
+    x.textContent = '×';
+    x.title = '移除';
+    x.onclick = () => { selectedDates.delete(key); renderCalendar(); };
+    chip.appendChild(x);
+    box.appendChild(chip);
+  });
+}
+
+/* 月曆的點選 / 拖曳：跟時段網格同一套邏輯（框選 + 起點決定方向） */
+function bindCalPainting(box) {
+  if (box._paintBound) return;
+  box._paintBound = true;
+
+  let painting = false, addMode = true, anchor = null, last = null, base = null;
+
+  const idxOf = (el) => {
+    const kids = [...box.children];
+    const i = kids.indexOf(el);
+    return i < 0 ? null : { r: Math.floor(i / 7), c: i % 7 };
+  };
+  const cellAt = (x, y) => {
+    const el = document.elementFromPoint(x, y);
+    const c = el && el.closest ? el.closest('.cal-day') : null;
+    return (c && c.dataset.d && box.contains(c)) ? c : null;
+  };
+
+  function applyRect(to) {
+    const r1 = Math.min(anchor.r, to.r), r2 = Math.max(anchor.r, to.r);
+    const c1 = Math.min(anchor.c, to.c), c2 = Math.max(anchor.c, to.c);
+    [...box.children].forEach((cell, i) => {
+      const key = cell.dataset.d;
+      if (!key) return;                                  // 補位格與過去的日子不動
+      const r = Math.floor(i / 7), c = i % 7;
+      const inside = r >= r1 && r <= r2 && c >= c1 && c <= c2;
+      const want = inside ? addMode : base.has(key);
+      if (want && !selectedDates.has(key)) {
+        if (selectedDates.size >= MAX_DATES) return;
+        selectedDates.add(key);
+      } else if (!want && selectedDates.has(key)) {
+        selectedDates.delete(key);
+      }
+      cell.classList.toggle('on', selectedDates.has(key));
+    });
+    updateDateCount();
+  }
+
+  box.addEventListener('pointerdown', (e) => {
+    const cell = e.target.closest ? e.target.closest('.cal-day') : null;
+    if (!cell || !cell.dataset.d) return;
+    e.preventDefault();
+    anchor = last = idxOf(cell);
+    base = new Set(selectedDates);
+    addMode = !selectedDates.has(cell.dataset.d);       // 按在已選的日子 → 這一筆是取消
+    painting = true;
+    try { box.setPointerCapture(e.pointerId); } catch (err) {}
+    applyRect(anchor);
+  });
+
+  box.addEventListener('pointermove', (e) => {
+    if (!painting) return;
+    e.preventDefault();
+    const cell = cellAt(e.clientX, e.clientY);
+    if (cell) last = idxOf(cell);
+    applyRect(last);
+  });
+
+  const stop = () => {
+    if (!painting) return;
+    painting = false;
+    renderDateChips();          // 放手之後才更新下方清單，拖曳中不動版面
+  };
+  box.addEventListener('pointerup', stop);
+  box.addEventListener('pointercancel', stop);
+  box.addEventListener('lostpointercapture', stop);
+}
+
+/* ============================================================
+ *  自訂時段（每日開放時段範圍選「自訂」時出現）
+ *
+ *  只收兩位數的整點。24 一律折成 00（凌晨 12 點就是 00:00），
+ *  結束填 00 代表「到午夜」，起訖跨午夜（22 → 02）也可以。
+ * ========================================================== */
+/* ============================================================
+ *  自製下拉選單
+ *  原生 <select> 的選單由瀏覽器繪製，在手機／裝置模擬器上常常
+ *  浮到畫面左上角而不是欄位下方。這裡改用一顆按鈕加一張錨定在
+ *  欄位正下方的清單，位置自己控制，觸控目標也做得夠大。
+ *  值仍然寫回原生 select，其餘程式（currentRangeKey、自動化腳本）
+ *  完全不用改。
+ * ========================================================== */
+function initSelect(rootId) {
+  const root = document.getElementById(rootId);
+  if (!root) return;
+  const sel = root.querySelector('select');
+  const btn = root.querySelector('.sel-btn');
+  const pop = root.querySelector('.sel-pop');
+  const label = root.querySelector('.sel-btn > span');
+
+  function render() {
+    pop.innerHTML = '';
+    [...sel.options].forEach(o => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'sel-opt';
+      b.setAttribute('role', 'option');
+      b.dataset.value = o.value;
+      b.textContent = o.textContent;
+      b.addEventListener('click', () => {
+        sel.value = o.value;
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        close();
+        btn.focus();
+      });
+      pop.appendChild(b);
+    });
+    sync();
+  }
+  function sync() {
+    const o = sel.options[sel.selectedIndex];
+    label.textContent = o ? o.textContent : '';
+    [...pop.children].forEach(b => {
+      const on = b.dataset.value === sel.value;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+  }
+  function open() {
+    pop.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    const cur = pop.querySelector('.sel-opt.on') || pop.firstElementChild;
+    if (cur) { cur.classList.add('active'); cur.scrollIntoView({ block: 'nearest' }); }
+  }
+  function close() {
+    if (pop.hidden) return;
+    pop.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    [...pop.children].forEach(b => b.classList.remove('active'));
+  }
+  function move(d) {
+    const items = [...pop.children];
+    if (!items.length) return;
+    let i = items.findIndex(b => b.classList.contains('active'));
+    if (i < 0) i = items.findIndex(b => b.classList.contains('on'));
+    i = (i + d + items.length) % items.length;
+    items.forEach(b => b.classList.remove('active'));
+    items[i].classList.add('active');
+    items[i].scrollIntoView({ block: 'nearest' });
+  }
+
+  btn.addEventListener('click', (e) => { e.stopPropagation(); pop.hidden ? open() : close(); });
+  btn.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (pop.hidden) open(); else move(e.key === 'ArrowDown' ? 1 : -1);
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      if (!pop.hidden) {
+        e.preventDefault();
+        const act = pop.querySelector('.sel-opt.active');
+        if (act) act.click();
+      }
+    } else if (e.key === 'Escape' && !pop.hidden) {
+      e.preventDefault(); e.stopPropagation(); close();
+    }
+  });
+  pop.addEventListener('click', (e) => e.stopPropagation());
+  document.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); }, true);
+  /* 外部（含自動化腳本）改動 select 時，按鈕文字要跟著換 */
+  sel.addEventListener('change', sync);
+
+  root._render = render;
+  render();
+}
+
+/* 語言切換後重建選項文字 */
+function refreshSelects() {
+  const root = document.getElementById('range-sel');
+  if (root && root._render) root._render();
+}
+
+function initCustomRange() {
+  const sel = document.getElementById('input-time-range');
+  const box = document.getElementById('range-custom');
+  const from = document.getElementById('range-from');
+  const to = document.getElementById('range-to');
+
+  initSelect('range-sel');
+
+  sel.addEventListener('change', () => {
+    closeHourPop();
+    const on = sel.value === 'custom';
+    box.style.display = on ? 'block' : 'none';
+    if (on) {
+      if (!from.value) from.value = '09';
+      if (!to.value) to.value = '18';
+      updateRangePreview();
+      from.focus();
+      from.select();
+    }
+  });
+
+  /* 手機沒有實體鍵盤，點欄位直接跳快選面板比叫出數字鍵盤好用 */
+  const noHover = !!(window.matchMedia && window.matchMedia('(hover: none)').matches);
+  if (noHover) { from.readOnly = true; to.readOnly = true; }
+
+  [from, to].forEach((el) => {
+    // 打字時只留數字，滿兩位就跳到下一格
+    el.addEventListener('input', () => {
+      el.value = el.value.replace(/\D/g, '').slice(0, 2);
+      if (el === from && el.value.length === 2) { to.focus(); to.select(); }
+      updateRangePreview();
+    });
+    // 離開欄位時補零、把 24 折成 00、超出範圍就夾回來
+    el.addEventListener('blur', () => { el.value = normHour(el.value); updateRangePreview(); });
+
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();          // 別讓 Esc 傳到全域的「關閉視窗」處理
+        closeHourPop();
+        el.blur();
+        return;
+      }
+      // 上下方向鍵也能調（鍵盤操作）
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        stepHour(el, e.key === 'ArrowUp' ? 1 : -1);
+      }
+    });
+
+    // 聚焦時可以用滑鼠滾輪微調；沒聚焦就不要攔，免得干擾頁面捲動
+    el.addEventListener('wheel', (e) => {
+      if (document.activeElement !== el) return;
+      e.preventDefault();
+      stepHour(el, e.deltaY < 0 ? 1 : -1);
+    }, { passive: false });
+
+    // 點欄位 → 開 00–23 快選
+    el.addEventListener('click', (e) => { e.stopPropagation(); openHourPop(el); });
+  });
+
+  /* 上下箭頭：點一下加減一小時，按住會連續跳 */
+  document.querySelectorAll('.hh-step').forEach((btn) => {
+    const el = btn.dataset.t === 'from' ? from : to;
+    const d = Number(btn.dataset.d);
+    let hold = null, repeat = null;
+    const fire = () => stepHour(el, d);
+    btn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      closeHourPop();
+      fire();
+      hold = setTimeout(() => { repeat = setInterval(fire, 90); }, 420);
+    });
+    const stop = () => { clearTimeout(hold); clearInterval(repeat); };
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach((t) => btn.addEventListener(t, stop));
+  });
+
+  // 點面板以外的地方就收起來
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest || !e.target.closest('.range-custom')) closeHourPop();
+  });
+}
+
+/* 加減一小時，會繞回來：23 → 00、00 → 23 */
+function stepHour(el, d) {
+  const fallback = el.id === 'range-from' ? 9 : 18;
+  const cur = normHour(el.value) === '' ? fallback : Number(normHour(el.value));
+  el.value = String((cur + d + 24) % 24).padStart(2, '0');
+  updateRangePreview();
+  syncHourPop(el);
+}
+
+/* ---- 00–23 快選面板 ---- */
+let hourPopTarget = null;
+
+function openHourPop(el) {
+  const pop = document.getElementById('hh-pop');
+  if (!pop) return;
+  if (hourPopTarget === el && !pop.hidden) { closeHourPop(); return; }   // 再點一次收起來
+  hourPopTarget = el;
+  pop.innerHTML = '';
+  for (let h = 0; h < 24; h++) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = String(h).padStart(2, '0');
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      el.value = String(h).padStart(2, '0');
+      updateRangePreview();
+      closeHourPop();
+      // 選完「開始」順手把面板換到「結束」，少一次點擊
+      if (el.id === 'range-from') openHourPop(document.getElementById('range-to'));
+    });
+    pop.appendChild(b);
+  }
+  // 貼著那一列的下緣，這樣就算欄位換行也不會蓋到輸入框
+  const row = document.querySelector('.rc-row');
+  if (row) pop.style.top = (row.offsetTop + row.offsetHeight + 8) + 'px';
+
+  // 標出現在正在改哪一個欄位
+  document.querySelectorAll('.hh-wrap').forEach((w) => w.classList.remove('editing'));
+  if (el.parentElement) el.parentElement.classList.add('editing');
+
+  pop.hidden = false;
+  syncHourPop(el);
+}
+
+function closeHourPop() {
+  const pop = document.getElementById('hh-pop');
+  if (pop) pop.hidden = true;
+  document.querySelectorAll('.hh-wrap').forEach((w) => w.classList.remove('editing'));
+  hourPopTarget = null;
+}
+
+/* 把面板上的「目前值」標記對到欄位 */
+function syncHourPop(el) {
+  const pop = document.getElementById('hh-pop');
+  if (!pop || pop.hidden || hourPopTarget !== el) return;
+  const now = normHour(el.value);
+  [...pop.children].forEach((b) => b.classList.toggle('now', b.textContent === now));
+}
+
+/* '9' → '09'、'24' → '00'、'25' → '23'、空的 → '' */
+function normHour(v) {
+  const digits = String(v || '').replace(/\D/g, '');
+  if (!digits) return '';
+  let n = Number(digits);
+  if (n === 24) n = 0;              // 凌晨 12 點＝00:00
+  else if (n > 24) n = 23;          // 打錯的就夾回合理範圍
+  return String(n).padStart(2, '0');
+}
+
+/* 目前選到的時段字串（給建立會議與預覽共用） */
+function currentRangeKey() {
+  const sel = document.getElementById('input-time-range');
+  if (sel.value !== 'custom') return sel.value;
+  const a = normHour(document.getElementById('range-from').value);
+  const b = normHour(document.getElementById('range-to').value);
+  if (a === '' || b === '') return null;
+  return Number(a) + '-' + Number(b);
+}
+
+function updateRangePreview() {
+  const el = document.getElementById('range-preview');
+  if (!el) return;
+  const dict = I18N[currentLang] || I18N['zh-TW'];
+  const key = currentRangeKey();
+  if (!key) {
+    el.className = 'rc-preview bad';
+    el.textContent = dict.err_range || '請填入兩位數的整點，例如 09 與 18。';
+    return;
+  }
+  const list = getTimeSlots(key);
+  const a = normHour(String(key).split('-')[0]);
+  const b = normHour(String(key).split('-')[1]);
+  el.className = 'rc-preview';
+  el.textContent = (dict.preview_slots || '{a}:00 → {b}:00，共 {n} 個時段')
+    .replace('{a}', a).replace('{b}', b).replace('{n}', list.length);
 }
 
 function switchView(view) {
@@ -1152,6 +2072,10 @@ function switchView(view) {
   document.getElementById('view-create').style.display = (view === 'create') ? 'block' : 'none';
   document.getElementById('view-respond').style.display = (view === 'respond') ? 'block' : 'none';
   document.getElementById('view-admin').style.display = (view === 'admin') ? 'block' : 'none';
+
+  // 填寫頁要放兩張網格，大螢幕時把容器放寬；其他頁維持好讀的寬度
+  const wrap = document.querySelector('.container');
+  if (wrap) wrap.classList.toggle('wide', view === 'respond');
 
   if (view === 'admin') {
     renderMyCreatedPolls();
@@ -1189,12 +2113,28 @@ async function handleCreatePoll(e) {
   e.preventDefault();
   const title = document.getElementById('input-title').value.trim();
   const organizer = document.getElementById('input-organizer').value.trim();
-  const timeRange = document.getElementById('input-time-range').value;
+  const timeRange = currentRangeKey();
+  if (!timeRange) {
+    const d0 = I18N[currentLang] || I18N['zh-TW'];
+    alert(d0.err_range || '請填入兩位數的整點，例如 09 與 18。');
+    document.getElementById('range-from').focus();
+    return;
+  }
   const timezone = document.getElementById('input-timezone').value || localTz();
-  const startDate = document.getElementById('input-start-date').value;
-  const endDate = document.getElementById('input-end-date').value;
-
-  if (startDate > endDate) { alert('結束日期不得早於開始日期'); return; }
+  const dict0 = I18N[currentLang] || I18N['zh-TW'];
+  const dates = [...selectedDates].sort();
+  if (!dates.length) {
+    alert(dict0.err_no_dates || '請先在月曆上選至少一天候選日期。');
+    document.getElementById('cal').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (dates.length > MAX_DATES) {
+    alert((dict0.err_too_many || '候選日期最多 {n} 天。').replace('{n}', MAX_DATES));
+    return;
+  }
+  // 同時存首末兩天，讓清理排程與後台清單這些既有邏輯照舊能讀
+  const startDate = dates[0];
+  const endDate = dates[dates.length - 1];
 
   const code = Array.from({length: 32}, () => Math.floor(Math.random()*16).toString(16)).join('');
   const adminKey = generateAdminKey();
@@ -1206,8 +2146,9 @@ async function handleCreatePoll(e) {
     organizer: organizer,
     timeRange: timeRange,
     timezone: timezone,          // 這場會議的基準時區，時段一律以它為準
-    startDate: startDate,
-    endDate: endDate,
+    dates: dates,             // ★ 真正的候選日期清單（一天一筆，六日／不方便的日子不會被硬算進來）
+    startDate: startDate,     // = dates 的第一天，保留給既有邏輯用
+    endDate: endDate,         // = dates 的最後一天
     createdTimestamp: new Date().getTime(),
     responses: {}
   };
@@ -1240,7 +2181,9 @@ function openCreatedModal(code, adminKey, timezone) {
   document.getElementById('created-modal').classList.add('show');
 }
 function closeCreatedModal() {
-  document.getElementById('created-modal').classList.remove('show');
+  const modal = document.getElementById('created-modal');
+  if (!modal.classList.contains('show')) return;   // 視窗本來就沒開 → 什麼都不要做
+  modal.classList.remove('show');
   switchView('respond');
 }
 
@@ -1401,17 +2344,23 @@ async function savePollToCloud(code, pollData, sha = null) {
   return false;
 }
 
+/* 把 "起-訖" 展開成整點清單。
+ * 規則只有一條：從起點往前走，每小時一格，走到「結束」那一刻就停。
+ *   09-18 → 09…17（9 格）      0-24 → 00…23（24 格，因為 24 就是 00）
+ *   09-00 → 09…23（到午夜）    22-02 → 22, 23, 00, 01（跨午夜）
+ *   起 = 訖 → 整整 24 小時
+ * 舊資料存的 '0-24' / '9-18' / '8-22' / '13-21' 用同一條規則也對。 */
 function getTimeSlots(rangeKey) {
+  const m = /^(\d{1,2})\s*-\s*(\d{1,2})$/.exec(String(rangeKey || '9-18'));
   let start = 9, end = 18;
-  if (rangeKey === '0-24') { start = 0; end = 24; }
-  if (rangeKey === '8-22') { start = 8; end = 22; }
-  if (rangeKey === '13-21') { start = 13; end = 21; }
+  if (m) { start = Number(m[1]) % 24; end = Number(m[2]) % 24; }
 
   const list = [];
-  for (let i = start; i < end; i++) {
-    const hh = i < 10 ? '0' + i : i;
-    list.push(`${hh}:00`);
-  }
+  let h = start;
+  do {
+    list.push(String(h).padStart(2, '0') + ':00');
+    h = (h + 1) % 24;
+  } while (h !== end && list.length < 24);
   return list;
 }
 
@@ -1456,21 +2405,97 @@ function colHeaderText(dateStr) {
   return dateStr.slice(5);
 }
 
+/* ============================================================
+ *  以「週」切分欄位 ＋ 日期底下標註星期
+ *  同一週的日子連在一起（就算中間跳過幾天也不分開，看星期就知道），
+ *  跨到下一週才插一條分隔軌道。週的起點跟月曆一致：週日。
+ * ========================================================== */
+const DAY_MS = 86400000;
+
+/* 這一天所屬那一週的第一天（週日），用來判斷兩欄是不是同一週 */
+function weekStartOf(ymd) {
+  const t = Date.parse(ymd + 'T00:00:00Z');
+  if (!isFinite(t)) return ymd;
+  const d = new Date(t);
+  d.setUTCDate(d.getUTCDate() - d.getUTCDay());
+  return d.toISOString().slice(0, 10);
+}
+
+/* 每一欄前面要不要插分隔：跨週才插，並記下中間跳過幾天 */
+function colBreaks(cols) {
+  const out = new Array(cols.length).fill(null);
+  for (let i = 1; i < cols.length; i++) {
+    const prev = cols[i - 1], cur = cols[i];
+    if (weekStartOf(prev) === weekStartOf(cur)) continue;
+    const skipped = Math.max(0,
+      Math.round((Date.parse(cur + 'T00:00:00Z') - Date.parse(prev + 'T00:00:00Z')) / DAY_MS) - 1);
+    out[i] = { skipped: skipped };
+  }
+  return out;
+}
+
+function gridTemplateFor(cols, breaks) {
+  let t = '56px';
+  cols.forEach((d, i) => {
+    if (breaks[i]) t += ' var(--col-sep-w)';
+    t += ' minmax(44px, 1fr)';
+  });
+  return t;
+}
+
+/* 插一格分隔；head=true 的那一格要跟日期列一起固定在最上面 */
+function appendSep(container, info, head) {
+  const s = document.createElement('div');
+  s.className = 'grid-sep' + (head ? ' head' : '');
+  if (head) {
+    const dict = I18N[currentLang] || I18N['zh-TW'];
+    let tip = dict.week_break || '這裡開始是下一週';
+    if (info && info.skipped > 0) {
+      tip += '｜' + (dict.gap_days || '中間跳過 {n} 天').replace('{n}', info.skipped);
+    }
+    s.title = tip;
+  }
+  container.appendChild(s);
+  return s;
+}
+
+/* 日期表頭：上面 MM-DD、下面星期；六日用假日色 */
+function fillColHeader(el, dateStr) {
+  const t = Date.parse(dateStr + 'T00:00:00Z');
+  const wd = isFinite(t) ? new Date(t).getUTCDay() : -1;
+  el.className = 'grid-header' + (wd === 0 || wd === 6 ? ' we' : '');
+  el.title = dateStr;
+  el.innerHTML = '';
+
+  const d1 = document.createElement('span');
+  d1.className = 'gh-date';
+  d1.textContent = colHeaderText(dateStr);
+  el.appendChild(d1);
+
+  if (isFinite(t)) {
+    const d2 = document.createElement('span');
+    d2.className = 'gh-wd';
+    d2.textContent = new Intl.DateTimeFormat(currentLang, { weekday: 'short', timeZone: 'UTC' }).format(t);
+    el.appendChild(d2);
+  }
+}
+
 function renderMyGrid() {
   const container = document.getElementById('my-grid');
   container.innerHTML = '';
 
   const vm = buildViewModel();
+  const breaks = colBreaks(vm.cols);
 
-  container.style.gridTemplateColumns = `56px repeat(${vm.cols.length}, minmax(50px, 1fr))`;
+  container.style.gridTemplateColumns = gridTemplateFor(vm.cols, breaks);
 
   const corner = document.createElement('div');
   corner.className = 'grid-corner';
   container.appendChild(corner);
-  vm.cols.forEach(d => {
+  vm.cols.forEach((d, ci) => {
+    if (breaks[ci]) appendSep(container, breaks[ci], true);
     const h = document.createElement('div');
-    h.className = 'grid-header';
-    h.textContent = colHeaderText(d);
+    fillColHeader(h, d);
     container.appendChild(h);
   });
 
@@ -1481,6 +2506,7 @@ function renderMyGrid() {
     container.appendChild(timeLbl);
 
     vm.cols.forEach((d, ci) => {
+      if (breaks[ci]) appendSep(container, breaks[ci], false);
       const hit = vm.map[`${d}|${t}`];
       const cell = document.createElement('div');
 
@@ -1644,16 +2670,17 @@ function renderHeatGrid() {
 
   const vm = buildViewModel();
   const showBase = (vm.baseTz !== displayTz);
+  const breaks = colBreaks(vm.cols);
 
-  container.style.gridTemplateColumns = `56px repeat(${vm.cols.length}, minmax(50px, 1fr))`;
+  container.style.gridTemplateColumns = gridTemplateFor(vm.cols, breaks);
 
   const corner2 = document.createElement('div');
   corner2.className = 'grid-corner';
   container.appendChild(corner2);
-  vm.cols.forEach(d => {
+  vm.cols.forEach((d, ci) => {
+    if (breaks[ci]) appendSep(container, breaks[ci], true);
     const h = document.createElement('div');
-    h.className = 'grid-header';
-    h.textContent = colHeaderText(d);
+    fillColHeader(h, d);
     container.appendChild(h);
   });
 
@@ -1663,7 +2690,8 @@ function renderHeatGrid() {
     timeLbl.textContent = t;
     container.appendChild(timeLbl);
 
-    vm.cols.forEach(d => {
+    vm.cols.forEach((d, ci) => {
+      if (breaks[ci]) appendSep(container, breaks[ci], false);
       const hit = vm.map[`${d}|${t}`];
       const cell = document.createElement('div');
 
@@ -1753,7 +2781,7 @@ async function saveResponse() {
   }
 
   if (currentPoll.responses[name] && currentPoll.responses[name].pin !== pin) {
-    alert('此姓名已有記錄，且密碼不匹配！請輸入正確的修改密碼。');
+    alert('此姓名已有記錄，且密碼不匹配！請輸入正確的修改用密碼。');
     return;
   }
 
@@ -1793,6 +2821,12 @@ function closeAdminUserModal() {
   document.getElementById('admin-user-modal').classList.remove('show');
 }
 
+/* 塞進 HTML 的字串一律先跳脫，會議名稱裡有 < 或 " 也不會弄壞版面 */
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g,
+    c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 function renderMyCreatedPolls() {
   const listBody = document.getElementById('my-created-polls-list');
   listBody.innerHTML = '';
@@ -1802,22 +2836,26 @@ function renderMyCreatedPolls() {
   const noRecordText = dict['no_record'] || '尚無建立記錄';
   
   if (myPolls.length === 0) {
-    listBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">${noRecordText}</td></tr>`;
+    listBody.innerHTML = `<tr class="is-empty"><td class="c-empty" colspan="5" style="text-align:center; color:var(--text-muted);">${noRecordText}</td></tr>`;
     return;
   }
 
   myPolls.forEach(p => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><strong>${p.title}</strong></td>
-      <td style="font-family:monospace; font-size:12px; color:var(--text-sub);">${p.code}</td>
-      <td style="font-family:monospace; font-size:12px; color:var(--maybe);">${p.adminKey || 'N/A'}</td>
-      <td>${p.endDate}</td>
-      <td>
-        <button class="btn btn-primary btn-sm" onclick="quickAdminLogin('${p.code}', '${p.adminKey}')">管理</button>
-        <button class="btn btn-danger btn-sm" style="margin-left:4px;" onclick="directDeletePoll('${p.code}', event)">✕</button>
+      <td class="c-title" data-label="${esc(dict.th_name || '會議名稱')}"><strong>${esc(p.title)}</strong></td>
+      <td class="c-code" data-label="${esc(dict.th_code || '代碼')}">${esc(p.code)}</td>
+      <td class="c-key" data-label="${esc(dict.th_key || '管理員金鑰')}">${esc(p.adminKey || 'N/A')}</td>
+      <td class="c-date" data-label="${esc(dict.th_end || '截止日期')}">${esc(p.endDate)}</td>
+      <td class="c-act">
+        <button class="btn btn-primary btn-sm js-manage">${esc(dict.btn_manage || '管理')}</button>
+        <button class="btn btn-danger btn-sm btn-x js-del" title="${esc(dict.btn_del_poll || '刪除此會議')}"
+                aria-label="${esc(dict.btn_del_poll || '刪除此會議')}">✕</button>
       </td>
     `;
+    /* 事件用 JS 綁，避免會議名稱／代碼裡的引號把 inline onclick 弄壞 */
+    tr.querySelector('.js-manage').onclick = () => quickAdminLogin(p.code, p.adminKey);
+    tr.querySelector('.js-del').onclick = (ev) => directDeletePoll(p.code, ev);
     listBody.appendChild(tr);
   });
 }
@@ -1838,7 +2876,7 @@ function renderAdminUserList() {
   const noResponseText = dict['no_response'] || '尚無人填寫';
 
   if (users.length === 0) {
-    userListBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">${noResponseText}</td></tr>`;
+    userListBody.innerHTML = `<tr class="is-empty"><td class="c-empty" colspan="4" style="text-align:center; color:var(--text-muted);">${noResponseText}</td></tr>`;
     return;
   }
 
@@ -1848,13 +2886,14 @@ function renderAdminUserList() {
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><strong>${uname}</strong></td>
-      <td><span style="font-family:monospace; color:var(--maybe); background:#0B0F19; padding:4px 8px; border-radius:4px;">${udata.pin}</span></td>
-      <td>${slotCount} 個時段</td>
-      <td>
-        <button class="btn btn-danger btn-sm" onclick="adminDeleteUser('${uname}')">刪除此 User</button>
+      <td class="c-title" data-label="${esc(dict.th_user || '參與者姓名')}"><strong>${esc(uname)}</strong></td>
+      <td class="c-key" data-label="${esc(dict.th_pin || 'PIN')}"><span class="pin-tag">${esc(udata.pin)}</span></td>
+      <td class="c-date" data-label="${esc(dict.th_slots || '已選擇格數')}">${slotCount}</td>
+      <td class="c-act">
+        <button class="btn btn-danger btn-sm js-del-user">${esc(dict.btn_del_user || '刪除此 User')}</button>
       </td>
     `;
+    tr.querySelector('.js-del-user').onclick = () => adminDeleteUser(uname);
     userListBody.appendChild(tr);
   });
 }
