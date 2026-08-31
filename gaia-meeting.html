@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gaia - MeetingSync · Gaia會議時段預約系統</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0B0F19;
+  --surface: #151D2A;
+  --surface-hover: #1E293B;
+  --border: #26334D;
+  --primary: #6366F1;
+  --primary-hover: #4F46E5;
+  --primary-light: rgba(99, 102, 241, 0.2);
+  --text-main: #F8FAFC;
+  --text-sub: #94A3B8;
+  --text-muted: #64748B;
+  --danger: #EF4444;
+  --yes: #10B981;
+  --maybe: #F59E0B;
+  --no: #1E293B;
+  --heat-0: #1E293B;
+  --heat-1: #064E3B;
+  --heat-2: #047857;
+  --heat-3: #10B981;
+  --heat-4: #34D399;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  background-color: var(--bg);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header & Lang Selector */
+.navbar {
+  height: 64px;
+  background: rgba(21, 29, 42, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--text-main);
+  text-decoration: none;
+}
+.brand-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--primary), #818CF8);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 800;
+}
+.nav-right { display: flex; align-items: center; gap: 12px; }
+.lang-select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+/* 顯示時區選單（每個人各自設定，不影響別人） */
+.tz-select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  min-width: 215px;
+  max-width: 280px;
+}
+.tz-select:focus, .lang-select:focus { border-color: var(--primary); }
+.nav-tz-wrap { display: flex; align-items: center; gap: 6px; }
+.nav-tz-wrap .globe { font-size: 15px; }
+
+/* Container */
+.container {
+  max-width: 1240px; width: 100%;
+  margin: 0 auto; padding: 2rem 1.5rem;
+  flex: 1;
+}
+
+/* Alert Banner */
+.notice-banner {
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #818CF8;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tab Control */
+.tab-bar {
+  display: flex; gap: 10px;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+}
+.tab-btn {
+  padding: 10px 20px;
+  font-size: 14px; font-weight: 600;
+  border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-sub);
+  cursor: pointer; transition: all 0.2s;
+}
+.tab-btn.active {
+  background: var(--primary); color: #fff;
+  border-color: var(--primary);
+}
+
+/* Cards & Controls */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+.card-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.card-subtitle { font-size: 14px; color: var(--text-sub); margin-bottom: 1.8rem; }
+
+.form-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem; margin-bottom: 1.5rem;
+}
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: span 2; }
+label { font-size: 13px; font-weight: 600; color: var(--text-sub); }
+
+input[type="text"], input[type="password"], input[type="date"], select {
+  background: #0B0F19;
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px;
+  color: var(--text-main); font-family: inherit; font-size: 14px;
+  outline: none; transition: all 0.2s;
+  color-scheme: dark;
+  width: 100%;
+}
+input:focus, select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 10px 20px; border-radius: 8px;
+  font-weight: 600; font-size: 14px; cursor: pointer;
+  border: none; transition: all 0.2s; white-space: nowrap;
+}
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: var(--surface-hover); color: var(--text-main); border: 1px solid var(--border); }
+.btn-secondary:hover { background: var(--border); }
+.btn-danger { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
+.btn-danger:hover { background: var(--danger); color: #fff; }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+
+/* Workspace Duo Panel */
+.workspace {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 1.5rem; align-items: stretch;
+}
+.panel-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px; padding: 1.5rem;
+  display: flex; flex-direction: column;
+}
+.panel-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1rem; border-bottom: 1px solid var(--border);
+  padding-bottom: 0.8rem;
+}
+
+/* User Identity Row */
+.user-info-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+.user-info-row .field { flex: 1; min-width: 0; }
+
+.mode-selector { display: flex; gap: 8px; }
+.mode-btn {
+  padding: 6px 12px; font-size: 12px; font-weight: 600;
+  border-radius: 6px; border: 1px solid var(--border);
+  background: var(--bg); color: var(--text-sub); cursor: pointer;
+}
+.mode-btn.active[data-m="2"] { background: var(--yes); color: #fff; border-color: var(--yes); }
+.mode-btn.active[data-m="1"] { background: var(--maybe); color: #fff; border-color: var(--maybe); }
+.mode-btn.active[data-m="0"] { background: var(--no); color: #fff; }
+
+/* Grid Table Alignment Fix
+ * min-width:0 很重要：flex/grid 子元素預設 min-width:auto，
+ * 網格比容器寬時會把整個版面撐開（手機上就是「切版」的元凶）。 */
+.grid-wrapper {
+  overflow: auto; padding-bottom: 8px; flex: 1;
+  min-width: 0; overscroll-behavior: contain;
+}
+.grid-table {
+  display: grid; gap: 3px;
+  user-select: none; -webkit-user-select: none;
+  width: max-content; min-width: 100%;
+}
+.grid-header {
+  font-size: 11px; font-weight: 600; text-align: center; color: var(--text-sub); padding: 4px 0;
+  position: sticky; top: 0; z-index: 2; background: var(--surface);
+}
+.grid-time {
+  font-size: 11px; color: var(--text-muted); display: flex; align-items: center; justify-content: flex-end;
+  padding-right: 6px;
+  position: sticky; left: 0; z-index: 3; background: var(--surface);
+}
+/* 左上角那一格要同時壓住左邊與上面 */
+.grid-corner { position: sticky; left: 0; top: 0; z-index: 4; background: var(--surface); }
+.cell {
+  height: 26px; background: var(--no); border-radius: 3px;
+  cursor: pointer; transition: background 0.05s;
+  min-width: 48px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+  -webkit-tap-highlight-color: transparent;
+}
+/* 可填寫的格子吃掉觸控手勢 → 手指拖曳＝畫格子，不會變成捲動 */
+.grid-table.pick .cell { touch-action: none; }
+/* 熱區圖不用拖曳，保留垂直捲動，點一下仍可查看 */
+.grid-table.heat .cell { touch-action: pan-y; cursor: default; }
+.grid-table.heat .cell.picked { outline: 2px solid var(--primary); outline-offset: -2px; }
+
+/* 換算時區後沒有對應時段的空格（例如跨日的邊緣） */
+.cell.empty {
+  background: transparent;
+  border: 1px dashed var(--border);
+  cursor: default;
+}
+
+.cell.st-2 { background: var(--yes) !important; }
+.cell.st-1 { background: var(--maybe) !important; }
+.cell.st-0 { background: var(--no) !important; }
+
+/* Heatmap States */
+.cell.h-1 { background: var(--heat-1); color: #A7F3D0; }
+.cell.h-2 { background: var(--heat-2); color: #FFFFFF; }
+.cell.h-3 { background: var(--heat-3); color: #FFFFFF; }
+.cell.h-4 { background: var(--heat-4); color: #064E3B; }
+
+/* Tooltip Panel */
+.info-tooltip {
+  margin-top: 1rem; font-size: 12px; color: var(--text-sub);
+  padding: 12px; background: #0B0F19;
+  border-radius: 8px; border: 1px solid var(--border);
+}
+.info-tooltip .grp { margin-top: 4px; }
+.info-tooltip .lab-yes { color: var(--yes); font-weight: 600; }
+.info-tooltip .lab-maybe { color: var(--maybe); font-weight: 600; }
+
+/* Admin Table */
+.admin-table {
+  width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 14px;
+}
+.admin-table th, .admin-table td {
+  padding: 12px; text-align: left; border-bottom: 1px solid var(--border);
+}
+.admin-table th { color: var(--text-sub); font-weight: 600; font-size: 12px; }
+
+/* Modal Custom Box */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+  z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: auto; }
+.modal-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 2rem; max-width: 560px; width: 90%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.modal-sub { font-size: 13px; color: var(--text-sub); margin-bottom: 1.5rem; }
+.code-box-row {
+  display: flex; gap: 8px; margin-bottom: 1rem; align-items: center;
+}
+.code-display {
+  background: #0B0F19; border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 12px; font-family: monospace;
+  font-size: 13px; color: var(--maybe); flex: 1; overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap; user-select: all;
+}
+.modal-close-icon {
+  position: absolute; top: 1.2rem; right: 1.2rem;
+  background: transparent; border: none; color: var(--text-sub);
+  font-size: 18px; cursor: pointer; padding: 4px 8px; border-radius: 4px;
+}
+.modal-close-icon:hover { color: #fff; background: var(--border); }
+
+/* 時區提示條 */
+.tz-bar {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--maybe);
+  margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.tz-bar.same {
+  background: rgba(99, 102, 241, 0.08);
+  border-color: rgba(99, 102, 241, 0.25);
+  color: var(--text-sub);
+}
+.tz-bar b { color: var(--text-main); font-weight: 700; }
+
+@media (max-width: 900px) {
+  .navbar { height: auto; padding: 10px 1rem; flex-wrap: wrap; gap: 8px; }
+  .nav-right { flex-wrap: wrap; }
+  .tz-select { max-width: 100%; }
+  .workspace { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.full { grid-column: span 1; }
+  .user-info-row { flex-direction: column; gap: 0.8rem; }
+}
+
+/* 操作提示：預設藏起來，手機版才顯示（要寫在媒體查詢前面，
+   否則同樣權重下後面的規則會蓋掉媒體查詢裡的 display:block） */
+.grid-hint {
+  display: none; font-size: 12px; color: var(--text-muted);
+  margin-top: 8px; line-height: 1.6;
+}
+
+/* ============================================================
+ *  手機版（≤ 700px）
+ *  重點：1. 不再被網格撐破版面  2. 手指拖曳可以選時段
+ *        3. 觸控目標放大到可以按得到  4. iOS 不要自動放大
+ * ========================================================== */
+@media (max-width: 700px) {
+  html { -webkit-text-size-adjust: 100%; }
+  body { overflow-x: hidden; }
+  .container { padding: 1rem 0.9rem 2rem; }
+
+  /* 導覽列：品牌縮小，兩個下拉並排成一列，不要吃掉三行高度 */
+  .navbar { padding: 8px 0.9rem; gap: 8px; }
+  .brand { font-size: 15px; gap: 8px; }
+  .brand-icon { width: 26px; height: 26px; font-size: 13px; }
+  .nav-right { flex: 1 1 100%; gap: 8px; flex-wrap: nowrap; }
+  .nav-tz-wrap { flex: 1 1 auto; min-width: 0; }
+  .tz-select { flex: 1 1 auto; min-width: 0; width: 100%; font-size: 12px; padding: 8px 6px; }
+  /* 基底樣式對所有 select 設了 width:100%，這裡要收回來，
+     不然語言選單會把整列吃掉、時區選單被擠成 0 寬 */
+  .lang-select { flex: 0 0 auto; width: auto; max-width: 42%; font-size: 12px; padding: 8px 6px; }
+
+  /* 分頁：三個一列剛好塞得下，字不要被截斷 */
+  .tab-bar { gap: 6px; padding-bottom: 0.8rem; margin-bottom: 1.1rem; }
+  .tab-btn {
+    flex: 1 1 0; min-width: 0; padding: 11px 4px;
+    font-size: 13px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
+  }
+
+  .notice-banner { font-size: 12px; padding: 9px 12px; margin-bottom: 1.1rem; }
+  .card, .panel-box { padding: 1.1rem; border-radius: 14px; }
+  .card-title { font-size: 19px; }
+  .card-subtitle { font-size: 13px; margin-bottom: 1.2rem; }
+
+  /* iOS 在 font-size < 16px 的輸入框上會自動放大整頁，很惱人 */
+  input[type="text"], input[type="password"], input[type="date"], select { font-size: 16px; padding: 11px 12px; }
+  .btn { min-height: 44px; padding: 11px 16px; }
+  .btn-sm { min-height: 36px; }
+
+  /* 版面不被網格撐開的關鍵 */
+  .workspace { gap: 1.1rem; }
+  .panel-box { min-width: 0; }
+  .panel-head { flex-wrap: wrap; gap: 6px; }
+
+  /* 時段網格 */
+  .grid-wrapper {
+    max-height: 56vh;
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 0 6px 6px; background: #0B0F19;
+  }
+  .grid-header { padding: 8px 0 6px; font-size: 12px; background: #0B0F19; }
+  .grid-time { font-size: 12px; padding-right: 8px; background: #0B0F19; }
+  .grid-corner { background: #0B0F19; }
+  .cell { height: 38px; min-width: 46px; border-radius: 4px; font-size: 12px; }
+
+  /* 狀態選擇：獨立一行、按鈕加大 */
+  .mode-row { flex-direction: column; align-items: stretch !important; gap: 8px; }
+  .mode-selector { gap: 8px; }
+  .mode-btn { flex: 1; padding: 10px 8px; font-size: 13px; min-height: 42px; }
+
+  /* 操作提示 */
+  .grid-hint { display: block; }
+
+  .info-tooltip { font-size: 13px; }
+  .modal-card { padding: 1.3rem; width: 94%; border-radius: 14px; }
+  .modal-title { font-size: 18px; }
+  .code-box-row { flex-wrap: wrap; }
+  .code-display { flex: 1 1 100%; font-size: 12px; }
+  .code-box-row .btn { flex: 1 1 auto; }
+  .admin-table th, .admin-table td { padding: 9px 8px; font-size: 13px; }
+}
+
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="meeting.html" class="brand">
+    <div class="brand-icon">G</div> Gaia - MeetingSync
+  </a>
+  <div class="nav-right">
+    <div class="nav-tz-wrap" title="切換成你自己的時區，格子會自動換算">
+      <span class="globe">🌐</span>
+      <select class="tz-select" id="displayTzSelect" onchange="changeDisplayTz(this.value)"></select>
+    </div>
+    <select class="lang-select" id="langSelect" onchange="changeLang(this.value)">
+      <option value="zh-TW">繁體中文</option>
+      <option value="en">English</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+      <option value="es">Español</option>
+      <option value="th">ไทย</option>
+    </select>
+  </div>
+</nav>
+
+<main class="container">
+
+  <!-- Notice Banner -->
+  <div class="notice-banner" data-i18n="notice_retention">
+    ⏱️ 提示：為維持系統輕量安全，會議資料建立後將保留 60 天，逾期資料將自動進行銷毀清空。
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-btn-create" onclick="switchView('create')" data-i18n="tab_create">建立新會議</button>
+    <button class="tab-btn" id="tab-btn-respond" onclick="switchView('respond')" data-i18n="tab_respond">填寫 / 查看時段</button>
+    <button class="tab-btn" id="tab-btn-admin" onclick="switchView('admin')" data-i18n="tab_admin">管理員後台</button>
+  </div>
+
+  <!-- View 1: 建立會議 -->
+  <div id="view-create" class="card">
+    <h1 class="card-title" data-i18n="create_title">建立新的會議預約調查</h1>
+    <p class="card-subtitle" data-i18n="create_sub">填寫會議資訊並設定開放時間，系統將自動產生 32 碼識別碼與連結。</p>
+
+    <form onsubmit="handleCreatePoll(event)">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label data-i18n="lbl_title">會議名稱 / 主題</label>
+          <input type="text" id="input-title" placeholder="例如：跨部門 Q3 專案進度討論" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="lbl_organizer">主辦單位 / 主辦人</label>
+          <input type="text" id="input-organizer" placeholder="例如：黃小鴨" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="lbl_timezone">會議基準時區</label>
+          <select id="input-timezone"></select>
+        </div>
+        <div class="form-group">
+          <label data-i18n="lbl_range">每日開放時段範圍（依基準時區）</label>
+          <select id="input-time-range">
+            <option value="0-24">全時段 24 Hours (00:00 - 24:00)</option>
+            <option value="9-18" selected>09:00 - 18:00 (標準工時)</option>
+            <option value="8-22">08:00 - 22:00 (全天彈性)</option>
+            <option value="13-21">13:00 - 21:00 (下午至晚上)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label data-i18n="lbl_start">開始日期</label>
+          <input type="date" id="input-start-date" required>
+        </div>
+        <div class="form-group">
+          <label data-i18n="lbl_end">結束日期（最長保存 60 天）</label>
+          <input type="date" id="input-end-date" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;" data-i18n="btn_submit_create">建立並取得預約連結</button>
+    </form>
+  </div>
+
+  <!-- View 2: 填寫 / 查看時段 -->
+  <div id="view-respond" style="display:none;">
+    <div class="card" id="code-input-box" style="margin-bottom: 1.5rem;">
+      <div style="display:flex; gap:10px; max-width:880px; flex-wrap:wrap;">
+        <input type="text" id="input-code" style="flex:1; min-width:240px;" placeholder="請貼上 32 碼會議代碼">
+        <button class="btn btn-primary" onclick="loadPollFromInput()" data-i18n="btn_load">載入會議</button>
+        <button class="btn btn-secondary" onclick="copyCode()" data-i18n="btn_copy">複製代碼</button>
+        <button class="btn btn-secondary" onclick="copyOnlyUrl()" data-i18n="btn_copy_url">複製 URL 網址</button>
+      </div>
+    </div>
+
+    <!-- 時區提示：這場會議的基準時區 vs 你目前的顯示時區 -->
+    <div class="tz-bar" id="tz-notice" style="display:none;"></div>
+
+    <!-- 雙面板工作區 -->
+    <div id="poll-workspace" class="workspace" style="display:none;">
+      
+      <!-- 左面板：個人填寫 -->
+      <div class="panel-box">
+        <div class="panel-head">
+          <div>
+            <h2 id="disp-title" style="font-size:18px;">--</h2>
+            <p id="disp-organizer" style="font-size:12px; color:var(--text-muted)"><span data-i18n="disp_organizer_prefix">主辦人：</span><span id="disp-organizer-val">--</span></p>
+          </div>
+        </div>
+
+        <div class="user-info-row">
+          <div class="field">
+            <label data-i18n="lbl_your_name">您的姓名：</label>
+            <input type="text" id="user-name" placeholder="輸入姓名" oninput="onNameInput()">
+          </div>
+          <div class="field">
+            <label data-i18n="lbl_your_pin">密碼 (修改憑證)：</label>
+            <input type="password" id="user-pin" placeholder="設定 4 碼密碼" oninput="loadUserHistory()">
+          </div>
+        </div>
+
+        <div class="mode-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <label data-i18n="lbl_state">選擇填寫狀態：</label>
+          <div class="mode-selector">
+            <button class="mode-btn active" data-m="2" onclick="setMode(2)" data-i18n="mode_yes">可以</button>
+            <button class="mode-btn" data-m="1" onclick="setMode(1)" data-i18n="mode_maybe">勉強</button>
+            <button class="mode-btn" data-m="0" onclick="setMode(0)" data-i18n="mode_clear">清除</button>
+          </div>
+        </div>
+
+        <div class="grid-wrapper">
+          <div class="grid-table pick" id="my-grid"></div>
+        </div>
+        <p class="grid-hint" data-i18n="hint_pick">👆 手指按住格子拖曳，可以一次選一整段；在左側時間軸上滑動可以捲動。</p>
+
+        <button class="btn btn-primary save-btn" style="width:100%; margin-top:1rem;" onclick="saveResponse()" data-i18n="btn_save">儲存我的時段</button>
+      </div>
+
+      <!-- 右面板：全體交集 -->
+      <div class="panel-box">
+        <div class="panel-head">
+          <h3 data-i18n="heat_title">全體重疊時段 (Heatmap)</h3>
+          <span id="disp-count" style="font-size:12px; color:var(--text-sub);">0 人已填寫</span>
+        </div>
+
+        <div class="grid-wrapper">
+          <div class="grid-table heat" id="heat-grid"></div>
+        </div>
+
+        <div class="info-tooltip" id="tooltip-box" data-i18n="tip_hover">
+          💡 請將滑鼠懸停在右側網格上，可查看該時段所有人出席狀況。
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- View 3: 管理員後台 -->
+  <div id="view-admin" style="display:none;">
+    
+    <!-- 管理員驗證登入卡片 -->
+    <div class="card" id="admin-auth-card" style="margin-bottom:1.5rem; max-width:600px;">
+      <h2 class="card-title" data-i18n="admin_auth_title">管理員驗證登入</h2>
+      <p class="card-subtitle" data-i18n="admin_auth_sub">請輸入 32 碼會議代碼與該會議的 8 碼管理員金鑰。</p>
+      
+      <div class="form-group" style="margin-bottom:1rem;">
+        <label>32 碼會議代碼 (Code)</label>
+        <input type="text" id="admin-input-code" placeholder="請輸入 32 碼會議代碼">
+      </div>
+      <div class="form-group" style="margin-bottom:1.5rem;">
+        <label>8 碼管理員金鑰 (Admin Key)</label>
+        <input type="password" id="admin-input-key" placeholder="包含大小寫字母與數字">
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="verifyAdminAuth()" data-i18n="btn_admin_login">登入後台</button>
+    </div>
+
+    <!-- 本機建立過的會議清單 -->
+    <div class="card" style="margin-bottom:1.5rem;">
+      <h2 class="card-title" data-i18n="my_polls_title">本機建立過的會議歷史</h2>
+      <p class="card-subtitle" data-i18n="my_polls_sub">以下為您在此裝置上發起過的會議記錄與管理員金鑰。</p>
+      
+      <div style="overflow-x:auto;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th data-i18n="th_name">會議名稱</th>
+              <th data-i18n="th_code">代碼 (32碼)</th>
+              <th data-i18n="th_key">管理員金鑰 (8碼)</th>
+              <th data-i18n="th_end">截止日期</th>
+              <th data-i18n="th_action">操作</th>
+            </tr>
+          </thead>
+          <tbody id="my-created-polls-list">
+            <tr><td colspan="5" style="text-align:center; color:var(--text-muted);" data-i18n="no_record">尚無建立記錄</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<!-- Modal 1: 建立成功資訊與一鍵複製 -->
+<div class="modal-overlay" id="created-modal">
+  <div class="modal-card">
+    <button class="modal-close-icon" onclick="closeCreatedModal()">✕</button>
+    <h2 class="modal-title" data-i18n="modal_created_title">🎉 會議建立成功！</h2>
+    <p class="modal-sub" data-i18n="modal_created_sub">請妥善保存以下資訊，並可點擊右側按鈕進行快速複製：</p>
+
+    <div class="form-group" style="margin-bottom: 1rem;">
+      <label>32 碼會議代碼 (發送給參與者)：</label>
+      <div class="code-box-row">
+        <div class="code-display" id="modal-display-code">--</div>
+        <button class="btn btn-secondary btn-sm" onclick="copyTextFromElem('modal-display-code', '代碼')" data-i18n="btn_copy_code">複製代碼</button>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1rem;">
+      <label>8 碼管理員金鑰 (僅供您登入後台使用)：</label>
+      <div class="code-box-row">
+        <div class="code-display" id="modal-display-key" style="color:var(--maybe);">--</div>
+        <button class="btn btn-secondary btn-sm" onclick="copyTextFromElem('modal-display-key', '管理員金鑰')" data-i18n="btn_copy_key">複製金鑰</button>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label>專屬預約連結 (URL)：</label>
+      <div class="code-box-row">
+        <div class="code-display" id="modal-display-url" style="color:#818CF8;">--</div>
+        <button class="btn btn-secondary btn-sm" onclick="copyTextFromElem('modal-display-url', '預約網址')" data-i18n="btn_copy_url">複製連結</button>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label data-i18n="lbl_timezone">會議基準時區</label>
+      <div class="code-display" id="modal-display-tz" style="color:var(--text-sub);">--</div>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn btn-primary" style="flex:1;" onclick="copyFullMeetingInfo()" data-i18n="btn_copy_all_info">一鍵複製完整資訊</button>
+      <button class="btn btn-secondary" onclick="closeCreatedModal()" data-i18n="btn_close">關閉視窗</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 2: 管理員專屬浮動視窗 (管理成員與 PIN 碼) -->
+<div class="modal-overlay" id="admin-user-modal">
+  <div class="modal-card" style="max-width: 680px;" onclick="event.stopPropagation();">
+    <button class="modal-close-icon" onclick="closeAdminUserModal()">✕</button>
+    
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1rem; padding-right:2rem;">
+      <div>
+        <h2 class="modal-title" id="admin-poll-title">會議名稱</h2>
+        <p class="modal-sub" style="margin-bottom:0;" data-i18n="admin_user_sub">參與者名單、修改密碼 (PIN) 查詢與管理</p>
+      </div>
+      <button class="btn btn-danger btn-sm" onclick="deleteCurrentPoll()" data-i18n="btn_del_poll">刪除此會議</button>
+    </div>
+
+    <div style="overflow-x:auto;">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th data-i18n="th_user">參與者姓名</th>
+            <th data-i18n="th_pin">修改密碼 (PIN)</th>
+            <th data-i18n="th_slots">已選擇格數</th>
+            <th data-i18n="th_action">管理操作</th>
+          </tr>
+        </thead>
+        <tbody id="admin-user-list">
+          <tr><td colspan="4" style="text-align:center; color:var(--text-muted);" data-i18n="no_response">尚無人填寫</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ⚙️ 【Cloudflare Worker 網址】
+const WORKER_URL = 'https://meeting-proxy.bb25379.workers.dev'; 
+
+const I18N = {
+  "zh-TW": {
+    notice_retention: "⏱️ 提示：為維持系統輕量安全，會議資料建立後將保留 60 天，逾期資料將自動進行銷毀清空。",
+    tab_create: "建立新會議", tab_respond: "填寫 / 查看時段", tab_admin: "管理員後台",
+    create_title: "建立新的會議預約調查", create_sub: "填寫會議資訊並設定開放時間，系統將自動產生 32 碼識別碼與連結。",
+    lbl_title: "會議名稱 / 主題", lbl_organizer: "主辦單位 / 主辦人", lbl_range: "每日開放時段範圍（依基準時區）", lbl_start: "開始日期", lbl_end: "結束日期（最長保存 60 天）",
+    btn_submit_create: "建立並取得預約連結", btn_load: "載入會議", btn_copy: "複製代碼", btn_copy_url: "複製 URL 網址", btn_copy_info: "一鍵複製會議資訊",
+    lbl_your_name: "您的姓名：", lbl_your_pin: "密碼 (修改憑證)：", lbl_state: "選擇填寫狀態：",
+    mode_yes: "可以", mode_maybe: "勉強", mode_clear: "清除", btn_save: "儲存我的時段",
+    heat_title: "全體重疊時段 (Heatmap)", tip_hover: "💡 請將滑鼠懸停在右側網格上，可查看該時段所有人出席狀況。",
+    hint_pick: "👆 手指按住格子拖曳，可以一次選一整段；在左側時間軸上滑動可以捲動。", tip_touch: "💡 點一下（或滑鼠移到）格子，可查看該時段所有人的出席狀況。",
+    admin_auth_title: "管理員驗證登入", admin_auth_sub: "請輸入 32 碼會議代碼與該會議的 8 碼管理員金鑰。", btn_admin_login: "登入後台",
+    my_polls_title: "本機建立過的會議歷史", my_polls_sub: "以下為您在此裝置上發起過的會議記錄與管理員金鑰。",
+    th_name: "會議名稱", th_code: "代碼 (32碼)", th_key: "管理員金鑰 (8碼)", th_end: "截止日期", th_action: "操作",
+    admin_user_sub: "參與者名單、修改密碼 (PIN) 查詢與管理", btn_del_poll: "刪除此會議",
+    th_user: "參與者姓名", th_pin: "修改密碼 (PIN)", th_slots: "已選擇格數",
+    modal_created_title: "🎉 會議建立成功！", modal_created_sub: "請妥善保存以下資訊，並可點擊右側按鈕進行快速複製：",
+    btn_copy_code: "複製代碼", btn_copy_key: "複製金鑰", btn_copy_all_info: "一鍵複製完整資訊", btn_close: "關閉視窗",
+    disp_organizer_prefix: "主辦人：", responded_suffix: "人已填寫", none_str: "無",
+    no_record: "尚無建立記錄", no_response: "尚無人填寫",
+    lbl_timezone: "會議基準時區", tz_group_common: "常用時區", tz_group_all: "所有時區", tz_base: "會議基準時區", tz_yours: "目前以你的時區顯示", tz_same: "目前顯示時區", tz_diff: "時差", btn_use_base_tz: "改用基準時區顯示", nav_tz_title: "顯示時區",
+    tz_legacy: "這場會議建立時沒有指定時區，時間以建立者當地時間顯示，未做換算。"
+  },
+  "en": {
+    notice_retention: "⏱️ Note: Meeting records are retained for 60 days max before being automatically cleaned up.",
+    tab_create: "New Meeting", tab_respond: "Respond / View", tab_admin: "Admin Console",
+    create_title: "Create Meeting Poll", create_sub: "Fill in meeting info to generate a unique 32-character code.",
+    lbl_title: "Meeting Title", lbl_organizer: "Organizer", lbl_range: "Daily Time Range (in meeting time zone)", lbl_start: "Start Date", lbl_end: "End Date (Max 60 days)",
+    btn_submit_create: "Create & Get Link", btn_load: "Load Poll", btn_copy: "Copy Code", btn_copy_url: "Copy URL", btn_copy_info: "Copy Meeting Info",
+    lbl_your_name: "Your Name:", lbl_your_pin: "Password (PIN):", lbl_state: "Selection Mode:",
+    mode_yes: "Available", mode_maybe: "If Needed", mode_clear: "Clear", btn_save: "Save My Availability",
+    heat_title: "Group Availability (Heatmap)", tip_hover: "💡 Hover over slots to view detailed attendee status.",
+    hint_pick: "👆 Press and drag across the grid to select a whole block. Slide on the time axis to scroll.", tip_touch: "💡 Tap (or hover over) a slot to see everyone's availability.",
+    admin_auth_title: "Admin Login", admin_auth_sub: "Enter 32-char code & 8-char admin key.", btn_admin_login: "Login to Admin Console",
+    my_polls_title: "Created Meetings History", my_polls_sub: "Meetings generated on this device with admin keys.",
+    th_name: "Title", th_code: "Code (32 chars)", th_key: "Admin Key (8 chars)", th_end: "End Date", th_action: "Action",
+    admin_user_sub: "Attendee list, password (PIN) lookup & management", btn_del_poll: "Delete Poll",
+    th_user: "Attendee Name", th_pin: "Password (PIN)", th_slots: "Selected Slots",
+    modal_created_title: "🎉 Meeting Created Successfully!", modal_created_sub: "Please save the credentials below and click to copy:",
+    btn_copy_code: "Copy Code", btn_copy_key: "Copy Key", btn_copy_all_info: "Copy Full Info", btn_close: "Close Window",
+    disp_organizer_prefix: "Organizer: ", responded_suffix: " responded", none_str: "None",
+    no_record: "No records found", no_response: "No responses yet",
+    lbl_timezone: "Meeting Time Zone", tz_group_common: "Common time zones", tz_group_all: "All time zones", tz_base: "Meeting time zone", tz_yours: "Shown in your time zone", tz_same: "Displayed time zone", tz_diff: "difference", btn_use_base_tz: "Show in meeting time zone", nav_tz_title: "Display time zone",
+    tz_legacy: "This meeting was created without a time zone, so times are shown as entered (no conversion)."
+  },
+  "ja": {
+    notice_retention: "⏱️ 注意: データは最大60日間保持され、その後自動削除されます。",
+    tab_create: "新規作成", tab_respond: "回答 / 閲覧", tab_admin: "管理者",
+    create_title: "日程調整を作成", create_sub: "会議情報を入力して32桁のコードを生成します。",
+    lbl_title: "会議名", lbl_organizer: "主催者", lbl_range: "時間帯（基準タイムゾーン基準）", lbl_start: "開始日", lbl_end: "終了日 (最長60日)",
+    btn_submit_create: "作成してリンクを取得", btn_load: "読み込み", btn_copy: "コードをコピー", btn_copy_url: "URLをコピー", btn_copy_info: "詳細情報をコピー",
+    lbl_your_name: "お名前:", lbl_your_pin: "パスワード:", lbl_state: "選択モード:",
+    mode_yes: "可能", mode_maybe: "調整可能", mode_clear: "クリア", btn_save: "回答を保存",
+    heat_title: "全体候補時間 (Heatmap)", tip_hover: "💡 マスにホバーして参加者の状況を確認できます。",
+    hint_pick: "👆 マスを長押ししてドラッグすると、まとめて選択できます。左の時間軸をなぞるとスクロールします。", tip_touch: "💡 マスをタップ（またはホバー）すると参加者の状況が見られます。",
+    admin_auth_title: "管理者ログイン", admin_auth_sub: "32桁のコードと8桁の管理者キーを入力してください。", btn_admin_login: "ログイン",
+    my_polls_title: "作成履歴", my_polls_sub: "この端末で作成された調整ツール履歴。",
+    th_name: "会議名", th_code: "コード", th_key: "管理者キー", th_end: "終了日", th_action: "操作",
+    admin_user_sub: "参加者一覧とパスワード管理", btn_del_poll: "削除",
+    th_user: "参加者", th_pin: "パスワード", th_slots: "選択コマ数",
+    modal_created_title: "🎉 作成が完了しました！", modal_created_sub: "以下の情報を保存・コピーしてください：",
+    btn_copy_code: "コードをコピー", btn_copy_key: "キーをコピー", btn_copy_all_info: "すべての情報をコピー", btn_close: "閉じる",
+    disp_organizer_prefix: "主催者：", responded_suffix: "人が回答済み", none_str: "なし",
+    no_record: "履歴はありません", no_response: "回答者はまだいません",
+    lbl_timezone: "会議の基準タイムゾーン", tz_group_common: "よく使うタイムゾーン", tz_group_all: "すべてのタイムゾーン", tz_base: "会議の基準タイムゾーン", tz_yours: "あなたのタイムゾーンで表示中", tz_same: "表示タイムゾーン", tz_diff: "時差", btn_use_base_tz: "基準タイムゾーンで表示", nav_tz_title: "表示タイムゾーン",
+    tz_legacy: "この会議はタイムゾーン未指定で作成されたため、入力時刻をそのまま表示しています（換算なし）。"
+  },
+  "ko": {
+    notice_retention: "⏱️ 안내: 회의 데이터는 최대 60일간 보관된 후 자동 삭제됩니다.",
+    tab_create: "새 회의", tab_respond: "응답 / 보기", tab_admin: "관리자",
+    create_title: "회의 일정 조사 생성", create_sub: "정보를 입력하여 32자리 코드를 생성합니다.",
+    lbl_title: "회의 제목", lbl_organizer: "주최자", lbl_range: "시간 범위 (기준 시간대)", lbl_start: "시작일", lbl_end: "종료일 (최대 60일)",
+    btn_submit_create: "생성 및 링크 복사", btn_load: "불러오기", btn_copy: "코드 복사", btn_copy_url: "URL 복사", btn_copy_info: "회의 정보 복사",
+    lbl_your_name: "이름:", lbl_your_pin: "비밀번호:", lbl_state: "상태 선택:",
+    mode_yes: "가능", mode_maybe: "글쎄요", mode_clear: "지우기", btn_save: "내 시간 저장",
+    heat_title: "전체 가능 시간 (Heatmap)", tip_hover: "💡 마우스를 올려 참석자 현황을 확인하세요.",
+    hint_pick: "👆 칸을 누른 채 끌면 여러 시간대를 한 번에 선택할 수 있어요. 왼쪽 시간축을 문지르면 스크롤됩니다.", tip_touch: "💡 칸을 탭하거나 마우스를 올리면 참석자 현황을 볼 수 있어요.",
+    admin_auth_title: "관리자 로그인", admin_auth_sub: "32자리 코드와 8자리 관리자 키를 입력하세요.", btn_admin_login: "로그인",
+    my_polls_title: "생성된 회의 기록", my_polls_sub: "이 기기에서 생성된 회의 목록입니다.",
+    th_name: "제목", th_code: "코드", th_key: "관리자 키", th_end: "종료일", th_action: "작업",
+    admin_user_sub: "참석자 목록 및 비밀번호 관리", btn_del_poll: "회의 삭제",
+    th_user: "참석자 이름", th_pin: "비밀번호", th_slots: "선택한 시간",
+    modal_created_title: "🎉 회의 생성 완료!", modal_created_sub: "아래 정보를 저장하거나 클릭하여 복사하세요:",
+    btn_copy_code: "코드 복사", btn_copy_key: "키 복사", btn_copy_all_info: "전체 정보 복사", btn_close: "닫기",
+    disp_organizer_prefix: "주최자: ", responded_suffix: "명 응답 완료", none_str: "없음",
+    no_record: "기록이 없습니다", no_response: "응답자가 없습니다",
+    lbl_timezone: "회의 기준 시간대", tz_group_common: "자주 쓰는 시간대", tz_group_all: "모든 시간대", tz_base: "회의 기준 시간대", tz_yours: "내 시간대로 표시 중", tz_same: "표시 시간대", tz_diff: "시차", btn_use_base_tz: "기준 시간대로 보기", nav_tz_title: "표시 시간대",
+    tz_legacy: "이 회의는 시간대 없이 생성되어 입력된 시간 그대로 표시됩니다(변환 없음)."
+  },
+  "es": {
+    notice_retention: "⏱️ Nota: Los datos de la reunión se conservan un máximo de 60 días.",
+    tab_create: "Nueva Reunión", tab_respond: "Responder / Ver", tab_admin: "Consola Admin",
+    create_title: "Crear Encuesta de Reunión", create_sub: "Rellena la información para generar un código de 32 caracteres.",
+    lbl_title: "Título", lbl_organizer: "Organizador", lbl_range: "Rango Horario (en la zona de la reunión)", lbl_start: "Fecha Inicio", lbl_end: "Fecha Fin (Máx 60 días)",
+    btn_submit_create: "Crear y Obtener Enlace", btn_load: "Cargar", btn_copy: "Copiar Código", btn_copy_url: "Copiar URL", btn_copy_info: "Copiar Info Reunión",
+    lbl_your_name: "Tu Nombre:", lbl_your_pin: "Contraseña:", lbl_state: "Estado:",
+    mode_yes: "Disponible", mode_maybe: "Tal vez", mode_clear: "Borrar", btn_save: "Guardar Disponibilidad",
+    heat_title: "Disponibilidad del Grupo", tip_hover: "💡 Pasa el ratón sobre una casilla para ver los asistentes.",
+    hint_pick: "👆 Mantén pulsado y arrastra para seleccionar un bloque entero. Desliza sobre el eje horario para desplazarte.", tip_touch: "💡 Toca (o pasa el ratón por) una casilla para ver la disponibilidad de todos.",
+    admin_auth_title: "Acceso Administrador", admin_auth_sub: "Introduce código de 32 chars y clave admin de 8 chars.", btn_admin_login: "Iniciar Sesión",
+    my_polls_title: "Historial de Reuniones", my_polls_sub: "Reuniones creadas en este dispositivo.",
+    th_name: "Título", th_code: "Código", th_key: "Clave Admin", th_end: "Fecha Fin", th_action: "Acción",
+    admin_user_sub: "Lista de asistentes y gestión de contraseñas", btn_del_poll: "Eliminar",
+    th_user: "Asistente", th_pin: "Contraseña", th_slots: "Casillas",
+    modal_created_title: "🎉 ¡Reunión Creada con Éxito!", modal_created_sub: "Guarda la información a continuación:",
+    btn_copy_code: "Copiar Código", btn_copy_key: "Copiar Clave", btn_copy_all_info: "Copiar Info Completa", btn_close: "Cerrar Ventana",
+    disp_organizer_prefix: "Organizador: ", responded_suffix: " han respondido", none_str: "Ninguno",
+    no_record: "Sin registros", no_response: "Sin respuestas aún",
+    lbl_timezone: "Zona horaria de la reunión", tz_group_common: "Zonas horarias comunes", tz_group_all: "Todas las zonas horarias", tz_base: "Zona horaria de la reunión", tz_yours: "Mostrado en tu zona horaria", tz_same: "Zona horaria mostrada", tz_diff: "diferencia", btn_use_base_tz: "Ver en la zona de la reunión", nav_tz_title: "Zona horaria de visualización",
+    tz_legacy: "Esta reunión se creó sin zona horaria, por lo que las horas se muestran tal cual (sin conversión)."
+  },
+  "th": {
+    notice_retention: "⏱️ หมายเหตุ: ข้อมูลการประชุมจะถูกเก็บไว้นานสูงสุด 60 วัน",
+    tab_create: "สร้างการประชุม", tab_respond: "ตอบกลับ / ดู", tab_admin: "ผู้ดูแลระบบ",
+    create_title: "สร้างการนัดหมายประชุม", create_sub: "กรอกข้อมูลเพื่อสร้างรหัส 32 หลัก",
+    lbl_title: "หัวข้อประชุม", lbl_organizer: "ผู้จัด", lbl_range: "ช่วงเวลา (ตามโซนเวลาหลัก)", lbl_start: "วันที่เริ่มต้น", lbl_end: "วันที่สิ้นสุด (สูงสุด 60 วัน)",
+    btn_submit_create: "สร้างและคัดลอกลิงก์", btn_load: "โหลด", btn_copy: "คัดลอกรหัส", btn_copy_url: "คัดลอก URL", btn_copy_info: "คัดลอกข้อมูลประชุม",
+    lbl_your_name: "ชื่อของคุณ:", lbl_your_pin: "รหัสผ่าน:", lbl_state: "สถานะ:",
+    mode_yes: "สะดวก", mode_maybe: "อาจจะ", mode_clear: "ล้าง", btn_save: "บันทึกเวลา",
+    heat_title: "เวลาที่ทุกคนว่าง (Heatmap)", tip_hover: "💡 วางเมาส์เหนือช่องเพื่อดูผู้เข้าร่วม",
+    hint_pick: "👆 กดค้างแล้วลากเพื่อเลือกหลายช่วงเวลาพร้อมกัน เลื่อนบนแกนเวลาด้านซ้ายเพื่อเลื่อนหน้าจอ", tip_touch: "💡 แตะ (หรือวางเมาส์) ที่ช่องเพื่อดูสถานะของผู้เข้าร่วม",
+    admin_auth_title: "เข้าสู่ระบบผู้ดูแล", admin_auth_sub: "กรอกรหัส 32 หลัก และ รหัสผ่าน Admin 8 หลัก", btn_admin_login: "เข้าสู่ระบบ",
+    my_polls_title: "ประวัติการสร้างประชุม", my_polls_sub: "รายการประชุมที่สร้างในอุปกรณ์นี้",
+    th_name: "หัวข้อ", th_code: "รหัส 32 หลัก", th_key: "รหัส Admin", th_end: "วันที่สิ้นสุด", th_action: "จัดการ",
+    admin_user_sub: "รายชื่อผู้เข้าร่วมและการจัดการรหัสผ่าน", btn_del_poll: "ลบการประชุม",
+    th_user: "ชื่อผู้เข้าร่วม", th_pin: "รหัสผ่าน", th_slots: "จำนวนช่องที่เลือก",
+    modal_created_title: "🎉 สร้างการประชุมสำเร็จ!", modal_created_sub: "โปรดบันทึกข้อมูลและคลิกคัดลอก:",
+    btn_copy_code: "คัดลอกรหัส", btn_copy_key: "คัดลอก Admin Key", btn_copy_all_info: "คัดลอกข้อมูลทั้งหมด", btn_close: "ปิดหน้าต่าง",
+    disp_organizer_prefix: "ผู้จัด: ", responded_suffix: " คนตอบกลับแล้ว", none_str: "ไม่มี",
+    no_record: "ไม่มีประวัติ", no_response: "ยังไม่มีผู้ตอบ",
+    lbl_timezone: "โซนเวลาหลักของการประชุม", tz_group_common: "โซนเวลาที่ใช้บ่อย", tz_group_all: "โซนเวลาทั้งหมด", tz_base: "โซนเวลาหลักของการประชุม", tz_yours: "แสดงตามโซนเวลาของคุณ", tz_same: "โซนเวลาที่แสดง", tz_diff: "ต่างกัน", btn_use_base_tz: "แสดงตามโซนเวลาหลัก", nav_tz_title: "โซนเวลาที่แสดง",
+    tz_legacy: "การประชุมนี้สร้างโดยไม่ได้ระบุโซนเวลา จึงแสดงเวลาตามที่บันทึกไว้ (ไม่มีการแปลง)"
+  }
+};
+
+/* ============================================================
+ *  時區處理
+ *
+ *  設計原則：
+ *    · 每場會議有一個「基準時區」（建立者選的），存在 poll.timezone
+ *    · 資料永遠用基準時區的日期＋時間當 key（slotId），
+ *      所以換顯示時區不會動到任何已存的資料，舊會議也不會壞掉
+ *    · 每個人可以自己選「顯示時區」，畫面即時換算（含跨日）
+ * ========================================================== */
+
+/* 常用時區排在最前面，其餘走瀏覽器內建的完整清單 */
+const COMMON_TZ = [
+  'Asia/Taipei', 'Asia/Tokyo', 'Asia/Seoul', 'Asia/Shanghai', 'Asia/Hong_Kong',
+  'Asia/Singapore', 'Asia/Bangkok', 'Asia/Ho_Chi_Minh', 'Asia/Jakarta', 'Asia/Manila',
+  'Asia/Kuala_Lumpur', 'Asia/Kolkata', 'Asia/Dubai',
+  'Australia/Sydney', 'Australia/Perth', 'Pacific/Auckland',
+  'Europe/London', 'Europe/Paris', 'Europe/Berlin', 'Europe/Amsterdam',
+  'Europe/Madrid', 'Europe/Rome', 'Europe/Warsaw', 'Europe/Moscow',
+  'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles',
+  'America/Vancouver', 'America/Toronto', 'America/Mexico_City', 'America/Sao_Paulo',
+  'UTC'
+];
+
+function localTz() {
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; }
+  catch (e) { return 'UTC'; }
+}
+
+function allTimeZones() {
+  try {
+    if (typeof Intl.supportedValuesOf === 'function') return Intl.supportedValuesOf('timeZone');
+  } catch (e) {}
+  return COMMON_TZ.slice();
+}
+
+/* 某個時區在某個瞬間的 UTC 偏移量（毫秒）。夏令時間也算得出來 */
+const _offsetCache = new Map();
+function tzOffsetMs(tz, dateMs) {
+  const bucket = Math.floor(dateMs / 3600000);          // 同一小時內共用快取
+  const ck = tz + '|' + bucket;
+  if (_offsetCache.has(ck)) return _offsetCache.get(ck);
+  let off = 0;
+  try {
+    const dtf = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz, hour12: false,
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+    const p = {};
+    dtf.formatToParts(new Date(dateMs)).forEach(x => { p[x.type] = x.value; });
+    const asUTC = Date.UTC(+p.year, +p.month - 1, +p.day,
+      p.hour === '24' ? 0 : +p.hour, +p.minute, +p.second);
+    off = asUTC - Math.floor(dateMs / 1000) * 1000;
+  } catch (e) { off = 0; }
+  _offsetCache.set(ck, off);
+  return off;
+}
+
+/* 「某時區的某年某月某日某時」→ 真正的 UTC 毫秒 */
+function zonedToUtcMs(dateStr, hh, mm, tz) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const guess = Date.UTC(y, m - 1, d, hh, mm || 0, 0);
+  let utc = guess - tzOffsetMs(tz, guess);
+  utc = guess - tzOffsetMs(tz, utc);   // 夏令時間交界處再校正一次
+  return utc;
+}
+
+/* UTC 毫秒 → 某時區的日期與時間字串 */
+function utcMsToZoned(ms, tz) {
+  const dtf = new Intl.DateTimeFormat('en-CA', {
+    timeZone: tz, hour12: false,
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', weekday: 'short'
+  });
+  const p = {};
+  dtf.formatToParts(new Date(ms)).forEach(x => { p[x.type] = x.value; });
+  const hour = p.hour === '24' ? '00' : p.hour;
+  return {
+    date: `${p.year}-${p.month}-${p.day}`,
+    time: `${hour}:${p.minute}`,
+    weekday: p.weekday
+  };
+}
+
+/* (UTC+08:00) 這種字串 */
+function offsetLabel(tz, atMs) {
+  const off = tzOffsetMs(tz, atMs || Date.now());
+  const sign = off < 0 ? '-' : '+';
+  const abs = Math.abs(off) / 60000;
+  const hh = String(Math.floor(abs / 60)).padStart(2, '0');
+  const mm = String(Math.round(abs % 60)).padStart(2, '0');
+  return `(UTC${sign}${hh}:${mm})`;
+}
+function tzLabel(tz) { return `${offsetLabel(tz)} ${tz.replace(/_/g, ' ')}`; }
+
+/* 兩個時區現在差幾小時，給提示條用 */
+function tzDiffText(baseTz, viewTz, atMs) {
+  const diff = (tzOffsetMs(viewTz, atMs || Date.now()) - tzOffsetMs(baseTz, atMs || Date.now())) / 3600000;
+  if (diff === 0) return '';
+  const s = (diff > 0 ? '+' : '−') + (Math.abs(diff) % 1 === 0
+    ? Math.abs(diff) : Math.abs(diff).toFixed(1));
+  return s;
+}
+
+let displayTz = localStorage.getItem('display_tz') || localTz();
+
+/* 把兩個時區選單填好 */
+function buildTzOptions(selectEl, selected) {
+  const now = Date.now();
+  const zones = allTimeZones();
+  const rest = zones.filter(z => COMMON_TZ.indexOf(z) < 0)
+    .sort((a, b) => (tzOffsetMs(a, now) - tzOffsetMs(b, now)) || a.localeCompare(b));
+
+  const mk = (list, labelText) => {
+    const g = document.createElement('optgroup');
+    g.label = labelText;
+    list.forEach(z => {
+      const o = document.createElement('option');
+      o.value = z;
+      o.textContent = tzLabel(z);
+      g.appendChild(o);
+    });
+    return g;
+  };
+
+  selectEl.innerHTML = '';
+  const dict = I18N[currentLang] || I18N['zh-TW'];
+  selectEl.appendChild(mk(COMMON_TZ.slice().sort((a, b) => tzOffsetMs(a, now) - tzOffsetMs(b, now)),
+    dict.tz_group_common || '常用時區'));
+  if (rest.length) selectEl.appendChild(mk(rest, dict.tz_group_all || '所有時區'));
+
+  if (selected && !zones.includes(selected)) {   // 例如舊瀏覽器沒有的時區
+    const o = document.createElement('option');
+    o.value = selected; o.textContent = tzLabel(selected);
+    selectEl.insertBefore(o, selectEl.firstChild);
+  }
+  selectEl.value = selected;
+}
+
+function initTimezones() {
+  const my = localTz();
+  buildTzOptions(document.getElementById('input-timezone'), my);   // 建立會議：預設自己的時區
+  buildTzOptions(document.getElementById('displayTzSelect'), displayTz);
+}
+
+function changeDisplayTz(tz) {
+  displayTz = tz;
+  localStorage.setItem('display_tz', tz);
+  if (currentPoll) {
+    renderMyGrid();
+    renderHeatGrid();
+    renderTzNotice();
+  }
+}
+
+/* 這場會議的基準時區。舊資料沒有存 → 當成跟顯示時區相同（行為與加功能前一樣） */
+function pollBaseTz() {
+  return (currentPoll && currentPoll.timezone) || displayTz;
+}
+
+function renderTzNotice() {
+  const box = document.getElementById('tz-notice');
+  if (!currentPoll) { box.style.display = 'none'; return; }
+  const dict = I18N[currentLang] || I18N['zh-TW'];
+  const base = pollBaseTz();
+  box.style.display = 'flex';
+
+  // 加時區功能之前建立的舊會議：沒有基準時區可以換算，照原樣顯示並講清楚
+  if (!currentPoll.timezone) {
+    box.className = 'tz-bar';
+    box.innerHTML = `🌐 ${dict.tz_legacy || '這場會議建立時沒有指定時區，時間以建立者當地時間顯示，未做換算。'}`;
+    return;
+  }
+
+  if (base === displayTz) {
+    box.className = 'tz-bar same';
+    box.innerHTML = `🌐 ${dict.tz_same || '目前顯示時區'}：<b>${tzLabel(base)}</b>`;
+    return;
+  }
+  const diff = tzDiffText(base, displayTz);
+  box.className = 'tz-bar';
+  box.innerHTML =
+    `🌐 ${dict.tz_base || '會議基準時區'}：<b>${tzLabel(base)}</b>　→　` +
+    `${dict.tz_yours || '目前以你的時區顯示'}：<b>${tzLabel(displayTz)}</b>` +
+    (diff ? `（${dict.tz_diff || '時差'} ${diff} h）` : '') +
+    ` <button class="btn btn-secondary btn-sm" onclick="useBaseTz()">${dict.btn_use_base_tz || '改用基準時區顯示'}</button>`;
+}
+
+function useBaseTz() {
+  const base = pollBaseTz();
+  document.getElementById('displayTzSelect').value = base;
+  changeDisplayTz(base);
+}
+
+/* ============================================================
+ *  依顯示時區算出畫面要怎麼排
+ *  回傳：欄（顯示時區的日期）、列（顯示時區的時間）、
+ *        以及每個 (欄,列) 對應到哪一個原始 slotId
+ * ========================================================== */
+function buildViewModel() {
+  const baseTz = pollBaseTz();
+  const dates = getDateArray(currentPoll.startDate, currentPoll.endDate);
+  const times = getTimeSlots(currentPoll.timeRange);
+
+  const cols = [], rows = [], map = {};
+  const colSeen = {}, rowSeen = {};
+
+  dates.forEach(d => {
+    times.forEach(t => {
+      const slotId = `${d}_${t}`;                       // 原始 key，永遠是基準時區
+      const hh = parseInt(t.slice(0, 2), 10);
+      const utc = zonedToUtcMs(d, hh, 0, baseTz);
+      const z = (baseTz === displayTz)
+        ? { date: d, time: t }                          // 同時區就不用換算，維持原樣
+        : utcMsToZoned(utc, displayTz);
+
+      if (!colSeen[z.date]) { colSeen[z.date] = 1; cols.push(z.date); }
+      if (!rowSeen[z.time]) { rowSeen[z.time] = 1; rows.push(z.time); }
+      map[`${z.date}|${z.time}`] = { slotId, baseDate: d, baseTime: t };
+    });
+  });
+
+  /* 日期欄照時間先後排；
+   * 時間列則保留「從基準時區第一個時段開始」的順序——
+   * 例如台北 09–17 到了紐約是 21:00→05:00，這樣才會連成一段，
+   * 而不是被 00:00 切成前後兩塊。 */
+  cols.sort();
+  return { cols, rows, map, baseTz };
+}
+
+let currentLang = "zh-TW";
+function changeLang(lang) {
+  currentLang = lang;
+  const dict = I18N[lang] || I18N["zh-TW"];
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const key = el.getAttribute("data-i18n");
+    if (dict[key]) el.textContent = dict[key];
+  });
+
+  // 時區選單裡的分組標題也要跟著換語言
+  buildTzOptions(document.getElementById('input-timezone'), document.getElementById('input-timezone').value || localTz());
+  buildTzOptions(document.getElementById('displayTzSelect'), displayTz);
+
+  if (currentPoll) {
+    document.getElementById('disp-organizer').innerHTML = `<span data-i18n="disp_organizer_prefix">${dict['disp_organizer_prefix'] || '主辦人：'}</span><span id="disp-organizer-val">${currentPoll.organizer}</span>`;
+    renderTzNotice();
+    renderHeatGrid();
+  }
+}
+
+let currentPoll = null;
+let currentSha = null;
+let myDraft = {};
+let currentMode = 2;
+let isMouseDown = false;
+
+window.addEventListener('DOMContentLoaded', () => {
+  cleanupExpiredPolls();
+  initDates();
+  initTimezones();
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  if (code) {
+    document.getElementById('input-code').value = code;
+    switchView('respond');
+    loadPoll(code);
+  }
+
+  document.addEventListener('mouseup', () => isMouseDown = false);
+
+  /* 沒有滑鼠的裝置（手機、平板）→ 熱區圖的說明文字換成「點一下」的版本 */
+  if (window.matchMedia && window.matchMedia('(hover: none)').matches) {
+    const tb = document.getElementById('tooltip-box');
+    if (tb) {
+      tb.setAttribute('data-i18n', 'tip_touch');
+      const dict = I18N[currentLang] || I18N['zh-TW'];
+      if (dict.tip_touch) tb.textContent = dict.tip_touch;
+    }
+  }
+  document.addEventListener('dragstart', (e) => e.preventDefault());
+
+  // 按下 Esc 關閉所有 Modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAdminUserModal();
+      closeCreatedModal();
+    }
+  });
+
+  // 點擊彈窗外背景遮罩自動關閉 Modal
+  const adminModal = document.getElementById('admin-user-modal');
+  if (adminModal) {
+    adminModal.addEventListener('click', (e) => {
+      if (e.target === adminModal) closeAdminUserModal();
+    });
+  }
+});
+
+function initDates() {
+  const today = new Date();
+  const nextWeek = new Date();
+  nextWeek.setDate(today.getDate() + 6);
+  document.getElementById('input-start-date').value = today.toISOString().split('T')[0];
+  document.getElementById('input-end-date').value = nextWeek.toISOString().split('T')[0];
+}
+
+function switchView(view) {
+  document.getElementById('tab-btn-create').classList.toggle('active', view === 'create');
+  document.getElementById('tab-btn-respond').classList.toggle('active', view === 'respond');
+  document.getElementById('tab-btn-admin').classList.toggle('active', view === 'admin');
+
+  document.getElementById('view-create').style.display = (view === 'create') ? 'block' : 'none';
+  document.getElementById('view-respond').style.display = (view === 'respond') ? 'block' : 'none';
+  document.getElementById('view-admin').style.display = (view === 'admin') ? 'block' : 'none';
+
+  if (view === 'admin') {
+    renderMyCreatedPolls();
+  }
+}
+
+function cleanupExpiredPolls() {
+  const now = new Date().getTime();
+  const sixtyDaysMs = 60 * 24 * 60 * 60 * 1000;
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('poll_32_')) {
+      try {
+        const poll = JSON.parse(localStorage.getItem(key));
+        if (poll) {
+          const createdAt = poll.createdTimestamp || 0;
+          if (now - createdAt > sixtyDaysMs) {
+            localStorage.removeItem(key);
+          }
+        }
+      } catch (e) {}
+    }
+  }
+}
+
+function generateAdminKey() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let key = '';
+  for (let i = 0; i < 8; i++) key += chars.charAt(Math.floor(Math.random() * chars.length));
+  return key;
+}
+
+async function handleCreatePoll(e) {
+  e.preventDefault();
+  const title = document.getElementById('input-title').value.trim();
+  const organizer = document.getElementById('input-organizer').value.trim();
+  const timeRange = document.getElementById('input-time-range').value;
+  const timezone = document.getElementById('input-timezone').value || localTz();
+  const startDate = document.getElementById('input-start-date').value;
+  const endDate = document.getElementById('input-end-date').value;
+
+  if (startDate > endDate) { alert('結束日期不得早於開始日期'); return; }
+
+  const code = Array.from({length: 32}, () => Math.floor(Math.random()*16).toString(16)).join('');
+  const adminKey = generateAdminKey();
+
+  const pollData = {
+    code: code,
+    adminKey: adminKey,
+    title: title,
+    organizer: organizer,
+    timeRange: timeRange,
+    timezone: timezone,          // 這場會議的基準時區，時段一律以它為準
+    startDate: startDate,
+    endDate: endDate,
+    createdTimestamp: new Date().getTime(),
+    responses: {}
+  };
+
+  if (!WORKER_URL.includes('XXXX')) {
+    await savePollToCloud(code, pollData);
+  }
+
+  localStorage.setItem('poll_32_' + code, JSON.stringify(pollData));
+
+  let myPolls = JSON.parse(localStorage.getItem('my_created_polls') || '[]');
+  myPolls.unshift({ code, adminKey, title, organizer, endDate });
+  localStorage.setItem('my_created_polls', JSON.stringify(myPolls));
+
+  openCreatedModal(code, adminKey, timezone);
+
+  const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  window.history.pushState({ path: newUrl }, '', newUrl);
+
+  document.getElementById('input-code').value = code;
+  loadPoll(code);
+}
+
+function openCreatedModal(code, adminKey, timezone) {
+  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  document.getElementById('modal-display-tz').textContent = tzLabel(timezone || localTz());
+  document.getElementById('modal-display-code').textContent = code;
+  document.getElementById('modal-display-key').textContent = adminKey;
+  document.getElementById('modal-display-url').textContent = fullUrl;
+  document.getElementById('created-modal').classList.add('show');
+}
+function closeCreatedModal() {
+  document.getElementById('created-modal').classList.remove('show');
+  switchView('respond');
+}
+
+function copyTextFromElem(elemId, labelName) {
+  const text = document.getElementById(elemId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert(`已成功複製 ${labelName}：\n${text}`);
+  });
+}
+
+function copyOnlyUrl() {
+  let code = document.getElementById('input-code').value.trim();
+  if (!code && currentPoll) code = currentPoll.code;
+  if (!code || code.length !== 32) {
+    alert("請先輸入或載入有效的 32 碼會議代碼");
+    return;
+  }
+  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  navigator.clipboard.writeText(fullUrl).then(() => {
+    alert(`已成功複製專屬預約連結：\n${fullUrl}`);
+  });
+}
+
+function copyFullMeetingInfo() {
+  let title = "會議預約調查";
+  let organizer = "";
+  let code = document.getElementById('input-code').value.trim();
+  let adminKey = "";
+
+  if (currentPoll) {
+    title = currentPoll.title;
+    organizer = currentPoll.organizer;
+    code = currentPoll.code;
+    adminKey = currentPoll.adminKey || "";
+  } else {
+    code = document.getElementById('modal-display-code').textContent;
+    adminKey = document.getElementById('modal-display-key').textContent;
+  }
+
+  if (!code || code.length !== 32) {
+    alert("請先輸入或載入有效的 32 碼會議代碼");
+    return;
+  }
+
+  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+
+  const tzText = currentPoll && currentPoll.timezone ? `\n🌐 基準時區：${tzLabel(currentPoll.timezone)}` : '';
+
+  let infoText = `📌 會議主題：${title}\n👤 主辦人：${organizer}${tzText}\n🔑 會議代碼 (32碼)：${code}\n🔗 預約連結：${fullUrl}`;
+  if (adminKey && adminKey !== "--") {
+    infoText += `\n🔐 管理員金鑰 (8碼)：${adminKey}`;
+  }
+  infoText += `\n\n請點擊連結或輸入代碼進入點選有空的時段！`;
+
+  navigator.clipboard.writeText(infoText).then(() => {
+    alert(`已成功複製會議完整資訊：\n\n${infoText}`);
+  });
+}
+
+function copyCode() {
+  const code = document.getElementById('input-code').value.trim();
+  if (!code) { alert('尚無代碼可複製'); return; }
+  navigator.clipboard.writeText(code).then(() => alert('已成功複製 32 碼會議代碼！'));
+}
+
+function loadPollFromInput() {
+  const code = document.getElementById('input-code').value.trim();
+  if (code.length !== 32) {
+    clearWorkspace();
+    alert('請輸入有效的 32 碼會議代碼');
+    return;
+  }
+  
+  const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  window.history.pushState({ path: newUrl }, '', newUrl);
+  loadPoll(code);
+}
+
+function clearWorkspace() {
+  currentPoll = null;
+  currentSha = null;
+  myDraft = {};
+  document.getElementById('poll-workspace').style.display = 'none';
+  document.getElementById('my-grid').innerHTML = '';
+  document.getElementById('heat-grid').innerHTML = '';
+}
+
+async function loadPoll(code) {
+  let pollData = null;
+  let sha = null;
+  let cloudError = null;
+
+  if (!WORKER_URL.includes('XXXX')) {
+    try {
+      const res = await fetch(`${WORKER_URL}?code=${code}`);
+      if (res.ok) {
+        const json = await res.json();
+        pollData = json.data;
+        sha = json.sha;
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        cloudError = errJson.error || `HTTP Status ${res.status}`;
+      }
+    } catch (e) {
+      cloudError = e.message || "Network Error";
+    }
+  }
+
+  if (!pollData) {
+    const raw = localStorage.getItem('poll_32_' + code);
+    if (raw) pollData = JSON.parse(raw);
+  }
+
+  if (!pollData) {
+    clearWorkspace();
+    if (cloudError) {
+      alert(`找不到會議！\n雲端 API 回報錯誤：${cloudError}\n(請確認 GitHub 儲存庫內是否有 polls/.gitkeep 檔案，或代碼是否正確)`);
+    } else {
+      alert('找不到此 32 碼代碼對應的會議（可能已被刪除、已過期，或尚未建立）');
+    }
+    return;
+  }
+
+  currentPoll = pollData;
+  currentSha = sha;
+
+  const dict = I18N[currentLang] || I18N["zh-TW"];
+  const prefix = dict['disp_organizer_prefix'] || '主辦人：';
+
+  document.getElementById('disp-title').textContent = currentPoll.title;
+  document.getElementById('disp-organizer').innerHTML = `<span data-i18n="disp_organizer_prefix">${prefix}</span><span id="disp-organizer-val">${currentPoll.organizer}</span>`;
+  document.getElementById('poll-workspace').style.display = 'grid';
+
+  renderTzNotice();
+  renderMyGrid();
+  renderHeatGrid();
+}
+
+async function savePollToCloud(code, pollData, sha = null) {
+  if (WORKER_URL.includes('XXXX')) return false;
+  try {
+    const res = await fetch(`${WORKER_URL}?code=${code}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: pollData, sha: sha })
+    });
+    if (res.ok) {
+      const json = await res.json();
+      currentSha = json.content ? json.content.sha : null;
+      return true;
+    } else {
+      const errJson = await res.json().catch(() => ({}));
+      alert(`儲存至雲端失敗！\n錯誤原因：${errJson.error || res.statusText}\n(請檢查 GitHub 是否已有 polls/ 資料夾及 Token 權限)`);
+    }
+  } catch (e) {
+    console.error("雲端儲存失敗:", e);
+  }
+  return false;
+}
+
+function getTimeSlots(rangeKey) {
+  let start = 9, end = 18;
+  if (rangeKey === '0-24') { start = 0; end = 24; }
+  if (rangeKey === '8-22') { start = 8; end = 22; }
+  if (rangeKey === '13-21') { start = 13; end = 21; }
+
+  const list = [];
+  for (let i = start; i < end; i++) {
+    const hh = i < 10 ? '0' + i : i;
+    list.push(`${hh}:00`);
+  }
+  return list;
+}
+
+function getDateArray(start, end) {
+  const arr = [];
+  let dt = new Date(start);
+  const ed = new Date(end);
+  while (dt <= ed) {
+    arr.push(new Date(dt).toISOString().split('T')[0]);
+    dt.setDate(dt.getDate() + 1);
+  }
+  return arr;
+}
+
+function setMode(m) {
+  currentMode = m;
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.dataset.m) === m);
+  });
+}
+
+/* 🌟 檢查姓名與密碼是否已填寫 */
+function validateUserIdentity() {
+  const name = document.getElementById('user-name').value.trim();
+  const pin = document.getElementById('user-pin').value.trim();
+
+  if (!name) {
+    alert('請先輸入您的姓名，才能開始選擇時段格！');
+    document.getElementById('user-name').focus();
+    return false;
+  }
+  if (!pin) {
+    alert('請先設定 4 碼密碼（修改憑證），才能開始選擇時段格！');
+    document.getElementById('user-pin').focus();
+    return false;
+  }
+  return true;
+}
+
+/* 日期欄位標題：顯示時區的月/日 */
+function colHeaderText(dateStr) {
+  return dateStr.slice(5);
+}
+
+function renderMyGrid() {
+  const container = document.getElementById('my-grid');
+  container.innerHTML = '';
+
+  const vm = buildViewModel();
+
+  container.style.gridTemplateColumns = `56px repeat(${vm.cols.length}, minmax(50px, 1fr))`;
+
+  const corner = document.createElement('div');
+  corner.className = 'grid-corner';
+  container.appendChild(corner);
+  vm.cols.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'grid-header';
+    h.textContent = colHeaderText(d);
+    container.appendChild(h);
+  });
+
+  vm.rows.forEach((t, ri) => {
+    const timeLbl = document.createElement('div');
+    timeLbl.className = 'grid-time';
+    timeLbl.textContent = t;
+    container.appendChild(timeLbl);
+
+    vm.cols.forEach((d, ci) => {
+      const hit = vm.map[`${d}|${t}`];
+      const cell = document.createElement('div');
+
+      // 換算之後這一格沒有對應的候選時段（跨日邊緣）→ 放一個不能點的空格
+      if (!hit) {
+        cell.className = 'cell empty';
+        container.appendChild(cell);
+        return;
+      }
+
+      const slotId = hit.slotId;
+      cell.className = 'cell';
+      cell.title = `${d} ${t}`;
+      cell.dataset.slot = slotId;          // 拖曳時靠這個認格子
+      cell.dataset.r = ri;                 // 列（時間）
+      cell.dataset.c = ci;                 // 欄（日期）
+
+      const st = myDraft[slotId] || 0;
+      if (st > 0) cell.classList.add(`st-${st}`);
+
+      container.appendChild(cell);
+    });
+  });
+
+  bindPainting(container);
+}
+
+/* ============================================================
+ *  拖曳選取（滑鼠與手指共用一套 Pointer Events）
+ *
+ *  · 按下的那一格決定方向：已經是目前狀態 → 這一筆是「擦掉」，
+ *    否則就是「塗上」。拖過去的格子一律跟著第一格走，不會一路反覆切換。
+ *  · 手指拖曳時 touchmove 的 target 永遠是最初那一格，
+ *    所以要用 elementFromPoint 換算現在指到哪一格。
+ *  · 拖到網格上下緣會自動捲動，長時段不用先捲再選。
+ * ========================================================== */
+function bindPainting(container) {
+  if (container._paintBound) return;   // 同一個容器只綁一次，避免重繪時疊加監聽
+  container._paintBound = true;
+
+  const wrapper = container.parentElement;
+  let painting = false;
+  let paintVal = 0;         // 這一次拖曳是要「塗上」哪個狀態（0 = 擦掉）
+  let anchor = null;        // 起點格子的 (列, 欄)
+  let last = null;          // 最後一次指到的格子，手指離開網格時沿用
+  let base = null;          // 拖曳開始時的狀態快照，用來還原被拖出範圍的格子
+  let grid = null;          // 二維查表：grid[列][欄] = 格子元素
+  let autoTimer = null;
+
+  function buildIndex() {
+    grid = {};
+    container.querySelectorAll('.cell[data-slot]').forEach((c) => {
+      const r = +c.dataset.r, k = +c.dataset.c;
+      (grid[r] = grid[r] || {})[k] = c;
+    });
+  }
+
+  /* 手指可能滑出網格或滑出畫面，先把座標夾回「看得見的網格範圍」再做命中測試 */
+  function cellAt(x, y) {
+    const r = wrapper.getBoundingClientRect();
+    const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
+    const cx = Math.min(Math.max(x, Math.max(r.left, 0) + 2), Math.min(r.right, vw) - 2);
+    const cy = Math.min(Math.max(y, Math.max(r.top, 0) + 2), Math.min(r.bottom, vh) - 2);
+    const el = document.elementFromPoint(cx, cy);
+    const c = el && el.closest ? el.closest('.cell[data-slot]') : null;
+    return (c && container.contains(c)) ? c : null;
+  }
+
+  function setCell(cell, val) {
+    const slotId = cell.dataset.slot;
+    if (val) { myDraft[slotId] = val; cell.className = 'cell st-' + val; }
+    else { delete myDraft[slotId]; cell.className = 'cell'; }
+  }
+
+  /* 把「起點 → 目前位置」這個矩形塗成 paintVal，矩形外的還原成拖曳前的樣子。
+   * 這樣往回拖就會縮小選取範圍，跟一般表格的框選一致，也不怕手指移太快跳過格子。 */
+  function applyRect(to) {
+    const r1 = Math.min(anchor.r, to.r), r2 = Math.max(anchor.r, to.r);
+    const c1 = Math.min(anchor.c, to.c), c2 = Math.max(anchor.c, to.c);
+    Object.keys(grid).forEach((rk) => {
+      Object.keys(grid[rk]).forEach((ck) => {
+        const cell = grid[rk][ck];
+        const inside = rk >= r1 && rk <= r2 && ck >= c1 && ck <= c2;
+        const want = inside ? paintVal : (base[cell.dataset.slot] || 0);
+        if ((myDraft[cell.dataset.slot] || 0) !== want) setCell(cell, want);
+      });
+    });
+  }
+
+  /* 拖到網格上下緣時自動捲動，長時段不用先捲再選 */
+  function edgeScroll(y) {
+    clearInterval(autoTimer);
+    if (!wrapper || !painting) return;
+    const r = wrapper.getBoundingClientRect();
+    const EDGE = 44;
+    const dir = y < r.top + EDGE ? -1 : (y > r.bottom - EDGE ? 1 : 0);
+    if (!dir) return;
+    autoTimer = setInterval(() => {
+      if (!painting) { clearInterval(autoTimer); return; }
+      const before = wrapper.scrollTop;
+      wrapper.scrollTop += dir * 10;
+      if (wrapper.scrollTop === before) { clearInterval(autoTimer); return; }
+      const c = cellAt(lastXY.x, lastXY.y);
+      if (c) { last = { r: +c.dataset.r, c: +c.dataset.c }; applyRect(last); }
+    }, 16);
+  }
+
+  let lastXY = { x: 0, y: 0 };
+
+  container.addEventListener('pointerdown', (e) => {
+    const cell = e.target.closest ? e.target.closest('.cell[data-slot]') : null;
+    if (!cell) return;                       // 按在時間軸或日期列上 → 讓它正常捲動
+    if (!validateUserIdentity()) return;
+    e.preventDefault();
+
+    buildIndex();
+    base = Object.assign({}, myDraft);
+    anchor = { r: +cell.dataset.r, c: +cell.dataset.c };
+    last = anchor;
+    const cur = myDraft[cell.dataset.slot] || 0;
+    // 目前模式是「清除」，或這一格已經是這個狀態 → 這一整筆拖曳都是擦掉
+    paintVal = (currentMode === 0 || cur === currentMode) ? 0 : currentMode;
+    painting = true;
+    lastXY = { x: e.clientX, y: e.clientY };
+    try { container.setPointerCapture(e.pointerId); } catch (err) {}
+    applyRect(anchor);
+  });
+
+  container.addEventListener('pointermove', (e) => {
+    if (!painting) return;
+    e.preventDefault();
+    lastXY = { x: e.clientX, y: e.clientY };
+    const cell = cellAt(e.clientX, e.clientY);
+    if (cell) last = { r: +cell.dataset.r, c: +cell.dataset.c };
+    applyRect(last);
+    edgeScroll(e.clientY);
+  });
+
+  const stop = () => { painting = false; clearInterval(autoTimer); };
+  container.addEventListener('pointerup', stop);
+  container.addEventListener('pointercancel', stop);
+  container.addEventListener('lostpointercapture', stop);
+  window.addEventListener('blur', stop);
+}
+
+function renderHeatGrid() {
+  const container = document.getElementById('heat-grid');
+  container.innerHTML = '';
+
+  const responses = currentPoll.responses || {};
+  const total = Object.keys(responses).length;
+
+  const dict = I18N[currentLang] || I18N["zh-TW"];
+  const suffix = dict['responded_suffix'] || '人已填寫';
+  const modeYesText = dict['mode_yes'] || '可以';
+  const modeMaybeText = dict['mode_maybe'] || '勉強';
+  const noneText = dict['none_str'] || '無';
+
+  document.getElementById('disp-count').textContent = `${total} ${suffix}`;
+
+  const vm = buildViewModel();
+  const showBase = (vm.baseTz !== displayTz);
+
+  container.style.gridTemplateColumns = `56px repeat(${vm.cols.length}, minmax(50px, 1fr))`;
+
+  const corner2 = document.createElement('div');
+  corner2.className = 'grid-corner';
+  container.appendChild(corner2);
+  vm.cols.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'grid-header';
+    h.textContent = colHeaderText(d);
+    container.appendChild(h);
+  });
+
+  vm.rows.forEach(t => {
+    const timeLbl = document.createElement('div');
+    timeLbl.className = 'grid-time';
+    timeLbl.textContent = t;
+    container.appendChild(timeLbl);
+
+    vm.cols.forEach(d => {
+      const hit = vm.map[`${d}|${t}`];
+      const cell = document.createElement('div');
+
+      if (!hit) {
+        cell.className = 'cell empty';
+        container.appendChild(cell);
+        return;
+      }
+
+      const slotId = hit.slotId;
+      cell.className = 'cell';
+
+      let yesList = [], maybeList = [], noList = [];
+      Object.entries(responses).forEach(([uname, data]) => {
+        const val = data.slots[slotId];
+        if (val === 2) yesList.push(uname);
+        else if (val === 1) maybeList.push(uname);
+        else noList.push(uname);
+      });
+
+      const yesCount = yesList.length;
+
+      if (yesCount > 0) {
+        const isAll = (total > 0 && yesCount === total);
+        cell.textContent = isAll ? `${yesCount}★` : `${yesCount}`;
+      }
+
+      if (total > 0 && yesCount > 0) {
+        const ratio = yesCount / total;
+        if (ratio === 1) cell.classList.add('h-4');
+        else if (ratio >= 0.6) cell.classList.add('h-3');
+        else if (ratio >= 0.3) cell.classList.add('h-2');
+        else cell.classList.add('h-1');
+      }
+
+      /* 滑鼠移過去、或用手指點一下，都會在下方顯示這一格的詳情 */
+      const showInfo = () => {
+        const tooltip = document.getElementById('tooltip-box');
+        // 換了時區時，同時標出這一格在會議基準時區是幾點，避免對不上
+        const baseNote = showBase
+          ? `<span style="color:var(--text-muted)">（${dict.tz_base || '會議基準時區'} ${hit.baseDate} ${hit.baseTime}）</span>`
+          : '';
+        tooltip.innerHTML = `<strong>${d} ${t}</strong> ${baseNote} (${yesList.length}/${total})：` +
+          `<div class="grp"><span class="lab-yes">${modeYesText}：</span> ${yesList.join(', ') || noneText}</div>` +
+          `<div class="grp"><span class="lab-maybe">${modeMaybeText}：</span> ${maybeList.join(', ') || noneText}</div>`;
+        const prev = container.querySelector('.cell.picked');
+        if (prev) prev.classList.remove('picked');
+        cell.classList.add('picked');
+      };
+      cell.addEventListener('mouseenter', showInfo);
+      cell.addEventListener('click', showInfo);
+
+      container.appendChild(cell);
+    });
+  });
+}
+
+function onNameInput() {
+  const name = document.getElementById('user-name').value.trim();
+  const pin = document.getElementById('user-pin').value.trim();
+
+  if (currentPoll && currentPoll.responses[name]) {
+    const userRecord = currentPoll.responses[name];
+    if (userRecord.pin === pin) {
+      myDraft = { ...userRecord.slots };
+      renderMyGrid();
+      return;
+    }
+  }
+  
+  myDraft = {};
+  renderMyGrid();
+}
+
+function loadUserHistory() {
+  onNameInput();
+}
+
+async function saveResponse() {
+  const name = document.getElementById('user-name').value.trim();
+  const pin = document.getElementById('user-pin').value.trim();
+
+  if (!name || !pin) { 
+    alert('請填寫姓名與密碼（用於日後再次修改的驗證）'); 
+    validateUserIdentity();
+    return; 
+  }
+
+  if (currentPoll.responses[name] && currentPoll.responses[name].pin !== pin) {
+    alert('此姓名已有記錄，且密碼不匹配！請輸入正確的修改密碼。');
+    return;
+  }
+
+  currentPoll.responses[name] = { pin, slots: myDraft };
+
+  await savePollToCloud(currentPoll.code, currentPoll, currentSha);
+
+  localStorage.setItem('poll_32_' + currentPoll.code, JSON.stringify(currentPoll));
+  alert('成功儲存您的時段！');
+
+  renderHeatGrid();
+}
+
+async function verifyAdminAuth() {
+  const code = document.getElementById('admin-input-code').value.trim();
+  const key = document.getElementById('admin-input-key').value.trim();
+
+  await loadPoll(code);
+
+  if (!currentPoll) return;
+
+  if (currentPoll.adminKey !== key) {
+    alert('管理員金鑰錯誤！存取被拒絕。');
+    return;
+  }
+
+  openAdminUserModal();
+}
+
+function openAdminUserModal() {
+  document.getElementById('admin-poll-title').textContent = currentPoll.title;
+  renderAdminUserList();
+  document.getElementById('admin-user-modal').classList.add('show');
+}
+
+function closeAdminUserModal() {
+  document.getElementById('admin-user-modal').classList.remove('show');
+}
+
+function renderMyCreatedPolls() {
+  const listBody = document.getElementById('my-created-polls-list');
+  listBody.innerHTML = '';
+
+  const myPolls = JSON.parse(localStorage.getItem('my_created_polls') || '[]');
+  const dict = I18N[currentLang] || I18N["zh-TW"];
+  const noRecordText = dict['no_record'] || '尚無建立記錄';
+  
+  if (myPolls.length === 0) {
+    listBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">${noRecordText}</td></tr>`;
+    return;
+  }
+
+  myPolls.forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${p.title}</strong></td>
+      <td style="font-family:monospace; font-size:12px; color:var(--text-sub);">${p.code}</td>
+      <td style="font-family:monospace; font-size:12px; color:var(--maybe);">${p.adminKey || 'N/A'}</td>
+      <td>${p.endDate}</td>
+      <td>
+        <button class="btn btn-primary btn-sm" onclick="quickAdminLogin('${p.code}', '${p.adminKey}')">管理</button>
+        <button class="btn btn-danger btn-sm" style="margin-left:4px;" onclick="directDeletePoll('${p.code}', event)">✕</button>
+      </td>
+    `;
+    listBody.appendChild(tr);
+  });
+}
+
+function quickAdminLogin(code, key) {
+  document.getElementById('admin-input-code').value = code;
+  document.getElementById('admin-input-key').value = key;
+  verifyAdminAuth();
+}
+
+function renderAdminUserList() {
+  const userListBody = document.getElementById('admin-user-list');
+  userListBody.innerHTML = '';
+
+  const responses = currentPoll.responses || {};
+  const users = Object.keys(responses);
+  const dict = I18N[currentLang] || I18N["zh-TW"];
+  const noResponseText = dict['no_response'] || '尚無人填寫';
+
+  if (users.length === 0) {
+    userListBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">${noResponseText}</td></tr>`;
+    return;
+  }
+
+  users.forEach(uname => {
+    const udata = responses[uname];
+    const slotCount = Object.keys(udata.slots || {}).length;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${uname}</strong></td>
+      <td><span style="font-family:monospace; color:var(--maybe); background:#0B0F19; padding:4px 8px; border-radius:4px;">${udata.pin}</span></td>
+      <td>${slotCount} 個時段</td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="adminDeleteUser('${uname}')">刪除此 User</button>
+      </td>
+    `;
+    userListBody.appendChild(tr);
+  });
+}
+
+async function adminDeleteUser(uname) {
+  if (!confirm(`確定要刪除參與者「${uname}」的回覆資料嗎？`)) return;
+
+  delete currentPoll.responses[uname];
+  await savePollToCloud(currentPoll.code, currentPoll, currentSha);
+  localStorage.setItem('poll_32_' + currentPoll.code, JSON.stringify(currentPoll));
+
+  renderAdminUserList();
+  renderHeatGrid();
+  alert(`已成功刪除 ${uname} 的資料`);
+}
+
+async function directDeletePoll(code, e) {
+  if (e) e.stopPropagation();
+  if (!confirm(`確定要永久刪除代碼「${code}」的會議嗎？此動作無法復原。`)) return;
+
+  localStorage.removeItem('poll_32_' + code);
+
+  let myPolls = JSON.parse(localStorage.getItem('my_created_polls') || '[]');
+  myPolls = myPolls.filter(p => p.code !== code);
+  localStorage.setItem('my_created_polls', JSON.stringify(myPolls));
+
+  if (currentPoll && currentPoll.code === code) {
+    closeAdminUserModal();
+    clearWorkspace();
+  }
+
+  renderMyCreatedPolls();
+  alert('會議已成功刪除！');
+}
+
+async function deleteCurrentPoll() {
+  if (!currentPoll) return;
+  await directDeletePoll(currentPoll.code);
+}
+</script>
+</body>
+</html>
