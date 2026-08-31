@@ -70,30 +70,15 @@ body {
   color: #fff; font-weight: 800;
 }
 .nav-right { display: flex; align-items: center; gap: 12px; }
-.lang-select {
+/* 導覽列的兩個下拉（顯示時區、語言）用同一款自製選單，只是尺寸較小 */
+.nav-sel .sel-btn {
   background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 6px 12px;
+  padding: 6px 10px 6px 12px;
   border-radius: 6px;
   font-size: 13px;
-  outline: none;
-  cursor: pointer;
 }
-/* 顯示時區選單（每個人各自設定，不影響別人） */
-.tz-select {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 13px;
-  outline: none;
-  cursor: pointer;
-  min-width: 215px;
-  max-width: 280px;
-}
-.tz-select:focus, .lang-select:focus { border-color: var(--primary); }
+.tz-sel { min-width: 215px; max-width: 280px; }
+.lang-sel { min-width: 8.5rem; }
 .nav-tz-wrap { display: flex; align-items: center; gap: 6px; }
 .nav-tz-wrap .globe { font-size: 15px; }
 
@@ -512,7 +497,7 @@ input:focus, select:focus {
 @media (max-width: 900px) {
   .navbar { height: auto; padding: 10px 1rem; flex-wrap: wrap; gap: 8px; }
   .nav-right { flex-wrap: wrap; }
-  .tz-select { max-width: 100%; }
+  .tz-sel { max-width: 100%; }
   .workspace { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .form-group.full { grid-column: span 1; }
@@ -546,6 +531,30 @@ input:focus, select:focus {
   max-height: 320px; overflow: auto; overscroll-behavior: contain;
 }
 .sel-pop[hidden] { display: none; }
+/* 導覽列的選單靠右展開，才不會被視窗邊緣切掉 */
+.sel-pop.right { left: auto; right: 0; }
+/* 時區這種長字串：選單可以比按鈕寬一點 */
+.sel-pop.wide { width: max-content; min-width: 100%; max-width: min(88vw, 26rem); }
+
+/* 分組標題（常用時區／所有時區） */
+.sel-group {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  color: var(--text-muted); text-transform: uppercase;
+  padding: 10px 12px 6px;
+}
+.sel-group[hidden] { display: none; }
+
+/* 選項很多時（例如時區）給一個搜尋框 */
+.sel-search { position: sticky; top: 0; z-index: 1; background: var(--surface); padding: 2px 2px 6px; }
+.sel-search input {
+  width: 100%; font-size: 14px; padding: 9px 12px;
+  border-radius: 8px; border: 1px solid var(--border); background: #0B0F19;
+  color: var(--text-main); outline: none;
+}
+.sel-search input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.sel-empty { padding: 12px; font-size: 13px; color: var(--text-muted); text-align: center; }
+.sel-empty[hidden] { display: none; }
+.sel-opt[hidden] { display: none; }
 .sel-opt {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   width: 100%; text-align: left; cursor: pointer;
@@ -692,10 +701,13 @@ input.hh:focus { box-shadow: none; }
   .brand-icon { width: 26px; height: 26px; font-size: 13px; }
   .nav-right { flex: 1 1 100%; gap: 8px; flex-wrap: nowrap; }
   .nav-tz-wrap { flex: 1 1 auto; min-width: 0; }
-  .tz-select { flex: 1 1 auto; min-width: 0; width: 100%; font-size: 12px; padding: 8px 6px; }
-  /* 基底樣式對所有 select 設了 width:100%，這裡要收回來，
-     不然語言選單會把整列吃掉、時區選單被擠成 0 寬 */
-  .lang-select { flex: 0 0 auto; width: auto; max-width: 42%; font-size: 12px; padding: 8px 6px; }
+  /* 時區吃掉剩下的寬度、語言固定在右邊，兩個一列剛好 */
+  .tz-sel { flex: 1 1 auto; min-width: 0; max-width: none; }
+  .lang-sel { flex: 0 0 auto; min-width: 0; max-width: 42%; }
+  .nav-sel .sel-btn { font-size: 12px; padding: 9px 8px; }
+  .nav-sel .sel-btn > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* 手機上選單就貼齊視窗左右，不要只擠在按鈕那一小塊 */
+  .nav-sel .sel-pop { max-width: 92vw; }
 
   /* 分頁：三個一列剛好塞得下，字不要被截斷 */
   .tab-bar { gap: 6px; padding-bottom: 0.8rem; margin-bottom: 1.1rem; }
@@ -796,21 +808,33 @@ input.hh:focus { box-shadow: none; }
 
 <nav class="navbar">
   <a href="meeting.html" class="brand">
-    <div class="brand-icon">M</div> Gaia - MeetingSync
+    <div class="brand-icon">G</div> Gaia - MeetingSync
   </a>
   <div class="nav-right">
     <div class="nav-tz-wrap" title="切換成你自己的時區，格子會自動換算">
       <span class="globe">🌐</span>
-      <select class="tz-select" id="displayTzSelect" onchange="changeDisplayTz(this.value)"></select>
+      <div class="sel nav-sel tz-sel" id="tz-sel">
+        <select class="sel-native" id="displayTzSelect" onchange="changeDisplayTz(this.value)" tabindex="-1" aria-hidden="true"></select>
+        <button type="button" class="sel-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span>--</span><span class="sel-caret" aria-hidden="true">▾</span>
+        </button>
+        <div class="sel-pop right wide" role="listbox" hidden></div>
+      </div>
     </div>
-    <select class="lang-select" id="langSelect" onchange="changeLang(this.value)">
-      <option value="zh-TW">繁體中文</option>
-      <option value="en">English</option>
-      <option value="ja">日本語</option>
-      <option value="ko">한국어</option>
-      <option value="es">Español</option>
-      <option value="th">ไทย</option>
-    </select>
+    <div class="sel nav-sel lang-sel" id="lang-sel">
+      <select class="sel-native" id="langSelect" onchange="changeLang(this.value)" tabindex="-1" aria-hidden="true">
+        <option value="zh-TW">繁體中文</option>
+        <option value="en">English</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+        <option value="es">Español</option>
+        <option value="th">ไทย</option>
+      </select>
+      <button type="button" class="sel-btn" aria-haspopup="listbox" aria-expanded="false">
+        <span>繁體中文</span><span class="sel-caret" aria-hidden="true">▾</span>
+      </button>
+      <div class="sel-pop right" role="listbox" hidden></div>
+    </div>
   </div>
 </nav>
 
@@ -852,7 +876,13 @@ input.hh:focus { box-shadow: none; }
                     </div>
             <div class="form-group">
                       <label data-i18n="lbl_timezone">會議基準時區</label>
-                      <select id="input-timezone"></select>
+                      <div class="sel" id="tzbase-sel">
+                        <select id="input-timezone" class="sel-native" tabindex="-1" aria-hidden="true"></select>
+                        <button type="button" class="sel-btn" aria-haspopup="listbox" aria-expanded="false">
+                          <span>--</span><span class="sel-caret" aria-hidden="true">▾</span>
+                        </button>
+                        <div class="sel-pop wide" role="listbox" hidden></div>
+                      </div>
                     </div>
           </div>
           <div class="form-group">
@@ -1196,7 +1226,7 @@ const I18N = {
     create_title: "建立新的會議預約調查", create_sub: "填寫會議資訊並設定開放時間，系統將自動產生 32 碼識別碼與連結。",
     lbl_title: "會議名稱 / 主題", lbl_organizer: "主辦單位 / 主辦人", lbl_range: "每日開放時段範圍（依基準時區）", lbl_start: "開始日期", lbl_end: "結束日期",
     opt_custom: "自訂時段…", opt_24h: "全時段 24 Hours (00:00 - 24:00)", opt_work: "09:00 - 18:00 (標準工時)", opt_flex: "08:00 - 22:00 (全天彈性)", opt_eve: "13:00 - 21:00 (下午至晚上)", lbl_from: "開始", lbl_to: "結束", hint_custom: "填兩位數的整點（00–23）。填 24 會自動變成 00；結束填 00 表示到午夜。跨午夜也可以，例如 22 → 02。", preview_slots: "{a}:00 → {b}:00，共 {n} 個時段", err_range: "請填入兩位數的整點，例如 09 與 18。",
-    lbl_dates: "候選日期", hint_dates: "點選或拖曳可一次選好幾天；點上方的星期可以整欄加選／取消（例如一次拿掉所有週六）。", btn_weekdays: "本月平日", btn_clear_dates: "清除", sel_count: "已選 {n} 天", gap_days: "中間跳過 {n} 天", week_break: "這裡開始是下一週", adm_edit_title: "調整候選日期與時段", adm_edit_hint: "已經有人填寫的日期與時段會鎖住，不能刪除；要新增則沒有限制。", adm_dates: "候選日期", adm_range: "每日開放時段", adm_locked_n: "🔒 {n} 天已有人填寫", lock_tip: "已有人填寫，不能移除", btn_remove: "移除", btn_reset: "還原", btn_save_changes: "儲存變更", err_locked_dates: "這些日期已經有人填寫，不能移除：{list}", err_locked_hours: "這些時段已經有人填寫，新的範圍必須包含：{list}", adm_used_hours: "已有人填寫的時段：{list}（不能被排除）", adm_no_used: "目前還沒有人填寫，日期與時段都可以自由調整。", ok_saved: "已更新候選日期與時段。", ok_saved_local: "已在本機更新，但雲端儲存失敗，其他人還看不到。", err_no_dates: "請先在月曆上選至少一天候選日期。", err_too_many: "候選日期最多 {n} 天。",
+    lbl_dates: "候選日期", hint_dates: "點選或拖曳可一次選好幾天；點上方的星期可以整欄加選／取消（例如一次拿掉所有週六）。", btn_weekdays: "本月平日", btn_clear_dates: "清除", sel_count: "已選 {n} 天", gap_days: "中間跳過 {n} 天", week_break: "這裡開始是下一週", adm_edit_title: "調整候選日期與時段", adm_edit_hint: "已經有人填寫的日期與時段會鎖住，不能刪除；要新增則沒有限制。", adm_dates: "候選日期", adm_range: "每日開放時段", adm_locked_n: "🔒 {n} 天已有人填寫", lock_tip: "已有人填寫，不能移除", btn_remove: "移除", btn_reset: "還原", btn_save_changes: "儲存變更", err_locked_dates: "這些日期已經有人填寫，不能移除：{list}", err_locked_hours: "這些時段已經有人填寫，新的範圍必須包含：{list}", adm_used_hours: "已有人填寫的時段：{list}（不能被排除）", adm_no_used: "目前還沒有人填寫，日期與時段都可以自由調整。", ok_saved: "已更新候選日期與時段。", ok_saved_local: "已在本機更新，但雲端儲存失敗，其他人還看不到。", sel_search: "搜尋…", sel_no_match: "找不到符合的項目", err_no_dates: "請先在月曆上選至少一天候選日期。", err_too_many: "候選日期最多 {n} 天。",
     btn_submit_create: "建立並取得預約連結", btn_load: "載入會議", btn_copy: "複製代碼", btn_copy_url: "複製 URL 網址", btn_copy_info: "一鍵複製會議資訊",
     lbl_your_name: "您的姓名：", lbl_your_pin: "密碼 (修改憑證)：", lbl_state: "選擇填寫狀態：",
     mode_yes: "可以", mode_maybe: "勉強", mode_clear: "清除", btn_save: "儲存我的時段",
@@ -1220,7 +1250,7 @@ const I18N = {
     create_title: "Create Meeting Poll", create_sub: "Fill in meeting info to generate a unique 32-character code.",
     lbl_title: "Meeting Title", lbl_organizer: "Organizer", lbl_range: "Daily Time Range (in meeting time zone)", lbl_start: "Start Date", lbl_end: "End Date",
     opt_custom: "Custom hours…", opt_24h: "All day (00:00 - 24:00)", opt_work: "09:00 - 18:00 (office hours)", opt_flex: "08:00 - 22:00 (extended)", opt_eve: "13:00 - 21:00 (afternoon - evening)", lbl_from: "From", lbl_to: "To", hint_custom: "Enter two-digit hours (00–23). 24 becomes 00; an end of 00 means midnight. Crossing midnight works too, e.g. 22 → 02.", preview_slots: "{a}:00 → {b}:00 · {n} slots", err_range: "Please enter two-digit hours, e.g. 09 and 18.",
-    lbl_dates: "Candidate dates", hint_dates: "Tap or drag to pick several days at once. Tap a weekday header to add or remove that whole column (e.g. drop every Saturday).", btn_weekdays: "Weekdays this month", btn_clear_dates: "Clear", sel_count: "{n} day(s) selected", gap_days: "{n} day(s) skipped here", week_break: "Next week starts here", adm_edit_title: "Adjust dates & hours", adm_edit_hint: "Dates and hours that already have responses are locked and cannot be removed. Adding is unrestricted.", adm_dates: "Candidate dates", adm_range: "Daily hours", adm_locked_n: "🔒 {n} with responses", lock_tip: "Has responses — cannot be removed", btn_remove: "Remove", btn_reset: "Reset", btn_save_changes: "Save changes", err_locked_dates: "These dates already have responses and cannot be removed: {list}", err_locked_hours: "These hours already have responses — the new range must include them: {list}", adm_used_hours: "Hours with responses: {list} (cannot be excluded)", adm_no_used: "No responses yet — dates and hours can be changed freely.", ok_saved: "Dates and hours updated.", ok_saved_local: "Updated locally, but the cloud save failed — others cannot see it yet.", err_no_dates: "Please pick at least one candidate date on the calendar.", err_too_many: "At most {n} candidate dates.",
+    lbl_dates: "Candidate dates", hint_dates: "Tap or drag to pick several days at once. Tap a weekday header to add or remove that whole column (e.g. drop every Saturday).", btn_weekdays: "Weekdays this month", btn_clear_dates: "Clear", sel_count: "{n} day(s) selected", gap_days: "{n} day(s) skipped here", week_break: "Next week starts here", adm_edit_title: "Adjust dates & hours", adm_edit_hint: "Dates and hours that already have responses are locked and cannot be removed. Adding is unrestricted.", adm_dates: "Candidate dates", adm_range: "Daily hours", adm_locked_n: "🔒 {n} with responses", lock_tip: "Has responses — cannot be removed", btn_remove: "Remove", btn_reset: "Reset", btn_save_changes: "Save changes", err_locked_dates: "These dates already have responses and cannot be removed: {list}", err_locked_hours: "These hours already have responses — the new range must include them: {list}", adm_used_hours: "Hours with responses: {list} (cannot be excluded)", adm_no_used: "No responses yet — dates and hours can be changed freely.", ok_saved: "Dates and hours updated.", ok_saved_local: "Updated locally, but the cloud save failed — others cannot see it yet.", sel_search: "Search…", sel_no_match: "No matches", err_no_dates: "Please pick at least one candidate date on the calendar.", err_too_many: "At most {n} candidate dates.",
     btn_submit_create: "Create & Get Link", btn_load: "Load Poll", btn_copy: "Copy Code", btn_copy_url: "Copy URL", btn_copy_info: "Copy Meeting Info",
     lbl_your_name: "Your Name:", lbl_your_pin: "Password (PIN):", lbl_state: "Selection Mode:",
     mode_yes: "Available", mode_maybe: "If Needed", mode_clear: "Clear", btn_save: "Save My Availability",
@@ -1244,7 +1274,7 @@ const I18N = {
     create_title: "日程調整を作成", create_sub: "会議情報を入力して32桁のコードを生成します。",
     lbl_title: "会議名", lbl_organizer: "主催者", lbl_range: "時間帯（基準タイムゾーン基準）", lbl_start: "開始日", lbl_end: "終了日",
     opt_custom: "時間帯をカスタム…", opt_24h: "終日 (00:00 - 24:00)", opt_work: "09:00 - 18:00（標準勤務）", opt_flex: "08:00 - 22:00（拡大）", opt_eve: "13:00 - 21:00（午後〜夜）", lbl_from: "開始", lbl_to: "終了", hint_custom: "2 桁の時（00–23）を入力してください。24 は 00 になります。終了に 00 を入れると深夜 0 時までです。22 → 02 のように日をまたいでも構いません。", preview_slots: "{a}:00 → {b}:00・{n} コマ", err_range: "2 桁の時を入力してください（例：09 と 18）。",
-    lbl_dates: "候補日", hint_dates: "タップまたはドラッグで複数日をまとめて選べます。上の曜日をタップすると、その曜日をまとめて追加／解除できます（土曜だけ外すなど）。", btn_weekdays: "今月の平日", btn_clear_dates: "クリア", sel_count: "{n} 日を選択中", gap_days: "ここで {n} 日スキップ", week_break: "ここから翌週です", adm_edit_title: "候補日と時間帯の調整", adm_edit_hint: "すでに回答がある日付と時間帯はロックされ、削除できません。追加は自由です。", adm_dates: "候補日", adm_range: "1日の時間帯", adm_locked_n: "🔒 回答あり {n} 日", lock_tip: "回答があるため削除できません", btn_remove: "削除", btn_reset: "元に戻す", btn_save_changes: "変更を保存", err_locked_dates: "この日付には回答があるため削除できません：{list}", err_locked_hours: "この時間帯には回答があります。新しい範囲に含めてください：{list}", adm_used_hours: "回答がある時間帯：{list}（除外できません）", adm_no_used: "まだ回答がありません。日付・時間帯は自由に変更できます。", ok_saved: "候補日と時間帯を更新しました。", ok_saved_local: "端末には保存しましたが、クラウド保存に失敗しました。", err_no_dates: "カレンダーで候補日を 1 日以上選んでください。", err_too_many: "候補日は最大 {n} 日までです。",
+    lbl_dates: "候補日", hint_dates: "タップまたはドラッグで複数日をまとめて選べます。上の曜日をタップすると、その曜日をまとめて追加／解除できます（土曜だけ外すなど）。", btn_weekdays: "今月の平日", btn_clear_dates: "クリア", sel_count: "{n} 日を選択中", gap_days: "ここで {n} 日スキップ", week_break: "ここから翌週です", adm_edit_title: "候補日と時間帯の調整", adm_edit_hint: "すでに回答がある日付と時間帯はロックされ、削除できません。追加は自由です。", adm_dates: "候補日", adm_range: "1日の時間帯", adm_locked_n: "🔒 回答あり {n} 日", lock_tip: "回答があるため削除できません", btn_remove: "削除", btn_reset: "元に戻す", btn_save_changes: "変更を保存", err_locked_dates: "この日付には回答があるため削除できません：{list}", err_locked_hours: "この時間帯には回答があります。新しい範囲に含めてください：{list}", adm_used_hours: "回答がある時間帯：{list}（除外できません）", adm_no_used: "まだ回答がありません。日付・時間帯は自由に変更できます。", ok_saved: "候補日と時間帯を更新しました。", ok_saved_local: "端末には保存しましたが、クラウド保存に失敗しました。", sel_search: "検索…", sel_no_match: "一致する項目がありません", err_no_dates: "カレンダーで候補日を 1 日以上選んでください。", err_too_many: "候補日は最大 {n} 日までです。",
     btn_submit_create: "作成してリンクを取得", btn_load: "読み込み", btn_copy: "コードをコピー", btn_copy_url: "URLをコピー", btn_copy_info: "詳細情報をコピー",
     lbl_your_name: "お名前:", lbl_your_pin: "パスワード:", lbl_state: "選択モード:",
     mode_yes: "可能", mode_maybe: "調整可能", mode_clear: "クリア", btn_save: "回答を保存",
@@ -1268,7 +1298,7 @@ const I18N = {
     create_title: "회의 일정 조사 생성", create_sub: "정보를 입력하여 32자리 코드를 생성합니다.",
     lbl_title: "회의 제목", lbl_organizer: "주최자", lbl_range: "시간 범위 (기준 시간대)", lbl_start: "시작일", lbl_end: "종료일",
     opt_custom: "시간대 직접 입력…", opt_24h: "종일 (00:00 - 24:00)", opt_work: "09:00 - 18:00 (근무시간)", opt_flex: "08:00 - 22:00 (확장)", opt_eve: "13:00 - 21:00 (오후~저녁)", lbl_from: "시작", lbl_to: "종료", hint_custom: "두 자리 정시(00–23)를 입력하세요. 24는 00으로 바뀝니다. 종료에 00을 넣으면 자정까지입니다. 22 → 02처럼 자정을 넘겨도 됩니다.", preview_slots: "{a}:00 → {b}:00 · {n}개 구간", err_range: "두 자리 정시를 입력하세요. 예: 09, 18",
-    lbl_dates: "후보 날짜", hint_dates: "탭하거나 끌어서 여러 날을 한 번에 선택할 수 있어요. 위쪽 요일을 탭하면 그 요일 전체를 추가／해제합니다(예: 토요일 전부 제외).", btn_weekdays: "이번 달 평일", btn_clear_dates: "지우기", sel_count: "{n}일 선택", gap_days: "여기서 {n}일 건너뜀", week_break: "여기부터 다음 주", adm_edit_title: "날짜·시간대 조정", adm_edit_hint: "이미 응답이 있는 날짜와 시간대는 잠겨 삭제할 수 없습니다. 추가는 제한이 없습니다.", adm_dates: "후보 날짜", adm_range: "일일 시간대", adm_locked_n: "🔒 응답 있음 {n}일", lock_tip: "응답이 있어 삭제할 수 없습니다", btn_remove: "삭제", btn_reset: "되돌리기", btn_save_changes: "변경 저장", err_locked_dates: "이 날짜에는 응답이 있어 삭제할 수 없습니다: {list}", err_locked_hours: "이 시간대에는 응답이 있습니다. 새 범위에 포함해야 합니다: {list}", adm_used_hours: "응답이 있는 시간대: {list} (제외 불가)", adm_no_used: "아직 응답이 없습니다. 날짜와 시간대를 자유롭게 바꿀 수 있습니다.", ok_saved: "날짜와 시간대를 업데이트했습니다.", ok_saved_local: "기기에는 저장했지만 클라우드 저장에 실패했습니다.", err_no_dates: "달력에서 후보 날짜를 최소 하루는 선택해 주세요.", err_too_many: "후보 날짜는 최대 {n}일까지입니다.",
+    lbl_dates: "후보 날짜", hint_dates: "탭하거나 끌어서 여러 날을 한 번에 선택할 수 있어요. 위쪽 요일을 탭하면 그 요일 전체를 추가／해제합니다(예: 토요일 전부 제외).", btn_weekdays: "이번 달 평일", btn_clear_dates: "지우기", sel_count: "{n}일 선택", gap_days: "여기서 {n}일 건너뜀", week_break: "여기부터 다음 주", adm_edit_title: "날짜·시간대 조정", adm_edit_hint: "이미 응답이 있는 날짜와 시간대는 잠겨 삭제할 수 없습니다. 추가는 제한이 없습니다.", adm_dates: "후보 날짜", adm_range: "일일 시간대", adm_locked_n: "🔒 응답 있음 {n}일", lock_tip: "응답이 있어 삭제할 수 없습니다", btn_remove: "삭제", btn_reset: "되돌리기", btn_save_changes: "변경 저장", err_locked_dates: "이 날짜에는 응답이 있어 삭제할 수 없습니다: {list}", err_locked_hours: "이 시간대에는 응답이 있습니다. 새 범위에 포함해야 합니다: {list}", adm_used_hours: "응답이 있는 시간대: {list} (제외 불가)", adm_no_used: "아직 응답이 없습니다. 날짜와 시간대를 자유롭게 바꿀 수 있습니다.", ok_saved: "날짜와 시간대를 업데이트했습니다.", ok_saved_local: "기기에는 저장했지만 클라우드 저장에 실패했습니다.", sel_search: "검색…", sel_no_match: "일치하는 항목이 없습니다", err_no_dates: "달력에서 후보 날짜를 최소 하루는 선택해 주세요.", err_too_many: "후보 날짜는 최대 {n}일까지입니다.",
     btn_submit_create: "생성 및 링크 복사", btn_load: "불러오기", btn_copy: "코드 복사", btn_copy_url: "URL 복사", btn_copy_info: "회의 정보 복사",
     lbl_your_name: "이름:", lbl_your_pin: "비밀번호:", lbl_state: "상태 선택:",
     mode_yes: "가능", mode_maybe: "글쎄요", mode_clear: "지우기", btn_save: "내 시간 저장",
@@ -1292,7 +1322,7 @@ const I18N = {
     create_title: "Crear Encuesta de Reunión", create_sub: "Rellena la información para generar un código de 32 caracteres.",
     lbl_title: "Título", lbl_organizer: "Organizador", lbl_range: "Rango Horario (en la zona de la reunión)", lbl_start: "Fecha Inicio", lbl_end: "Fecha Fin",
     opt_custom: "Horario personalizado…", opt_24h: "Todo el día (00:00 - 24:00)", opt_work: "09:00 - 18:00 (horario laboral)", opt_flex: "08:00 - 22:00 (ampliado)", opt_eve: "13:00 - 21:00 (tarde y noche)", lbl_from: "Desde", lbl_to: "Hasta", hint_custom: "Introduce horas de dos dígitos (00–23). El 24 se convierte en 00; un final de 00 significa medianoche. También puedes cruzar la medianoche, p. ej. 22 → 02.", preview_slots: "{a}:00 → {b}:00 · {n} franjas", err_range: "Introduce horas de dos dígitos, p. ej. 09 y 18.",
-    lbl_dates: "Fechas candidatas", hint_dates: "Toca o arrastra para elegir varios días a la vez. Toca un día de la semana arriba para añadir o quitar toda la columna (por ejemplo, quitar todos los sábados).", btn_weekdays: "Días hábiles del mes", btn_clear_dates: "Borrar", sel_count: "{n} día(s) seleccionados", gap_days: "{n} día(s) omitidos aquí", week_break: "Aquí empieza otra semana", adm_edit_title: "Ajustar fechas y horas", adm_edit_hint: "Las fechas y horas que ya tienen respuestas quedan bloqueadas y no se pueden quitar. Añadir no tiene límite.", adm_dates: "Fechas candidatas", adm_range: "Horas por día", adm_locked_n: "🔒 {n} con respuestas", lock_tip: "Tiene respuestas: no se puede quitar", btn_remove: "Quitar", btn_reset: "Restablecer", btn_save_changes: "Guardar cambios", err_locked_dates: "Estas fechas ya tienen respuestas y no se pueden quitar: {list}", err_locked_hours: "Estas horas ya tienen respuestas; el nuevo rango debe incluirlas: {list}", adm_used_hours: "Horas con respuestas: {list} (no se pueden excluir)", adm_no_used: "Aún no hay respuestas: puedes cambiar fechas y horas libremente.", ok_saved: "Fechas y horas actualizadas.", ok_saved_local: "Guardado en este dispositivo, pero falló el guardado en la nube.", err_no_dates: "Elige al menos una fecha candidata en el calendario.", err_too_many: "Máximo {n} fechas candidatas.",
+    lbl_dates: "Fechas candidatas", hint_dates: "Toca o arrastra para elegir varios días a la vez. Toca un día de la semana arriba para añadir o quitar toda la columna (por ejemplo, quitar todos los sábados).", btn_weekdays: "Días hábiles del mes", btn_clear_dates: "Borrar", sel_count: "{n} día(s) seleccionados", gap_days: "{n} día(s) omitidos aquí", week_break: "Aquí empieza otra semana", adm_edit_title: "Ajustar fechas y horas", adm_edit_hint: "Las fechas y horas que ya tienen respuestas quedan bloqueadas y no se pueden quitar. Añadir no tiene límite.", adm_dates: "Fechas candidatas", adm_range: "Horas por día", adm_locked_n: "🔒 {n} con respuestas", lock_tip: "Tiene respuestas: no se puede quitar", btn_remove: "Quitar", btn_reset: "Restablecer", btn_save_changes: "Guardar cambios", err_locked_dates: "Estas fechas ya tienen respuestas y no se pueden quitar: {list}", err_locked_hours: "Estas horas ya tienen respuestas; el nuevo rango debe incluirlas: {list}", adm_used_hours: "Horas con respuestas: {list} (no se pueden excluir)", adm_no_used: "Aún no hay respuestas: puedes cambiar fechas y horas libremente.", ok_saved: "Fechas y horas actualizadas.", ok_saved_local: "Guardado en este dispositivo, pero falló el guardado en la nube.", sel_search: "Buscar…", sel_no_match: "Sin resultados", err_no_dates: "Elige al menos una fecha candidata en el calendario.", err_too_many: "Máximo {n} fechas candidatas.",
     btn_submit_create: "Crear y Obtener Enlace", btn_load: "Cargar", btn_copy: "Copiar Código", btn_copy_url: "Copiar URL", btn_copy_info: "Copiar Info Reunión",
     lbl_your_name: "Tu Nombre:", lbl_your_pin: "Contraseña:", lbl_state: "Estado:",
     mode_yes: "Disponible", mode_maybe: "Tal vez", mode_clear: "Borrar", btn_save: "Guardar Disponibilidad",
@@ -1316,7 +1346,7 @@ const I18N = {
     create_title: "สร้างการนัดหมายประชุม", create_sub: "กรอกข้อมูลเพื่อสร้างรหัส 32 หลัก",
     lbl_title: "หัวข้อประชุม", lbl_organizer: "ผู้จัด", lbl_range: "ช่วงเวลา (ตามโซนเวลาหลัก)", lbl_start: "วันที่เริ่มต้น", lbl_end: "วันที่สิ้นสุด",
     opt_custom: "กำหนดช่วงเวลาเอง…", opt_24h: "ทั้งวัน (00:00 - 24:00)", opt_work: "09:00 - 18:00 (เวลาทำงาน)", opt_flex: "08:00 - 22:00 (ขยายเวลา)", opt_eve: "13:00 - 21:00 (บ่าย-ค่ำ)", lbl_from: "เริ่ม", lbl_to: "สิ้นสุด", hint_custom: "กรอกชั่วโมงสองหลัก (00–23) หากกรอก 24 จะเปลี่ยนเป็น 00 และถ้าสิ้นสุดเป็น 00 หมายถึงเที่ยงคืน ข้ามเที่ยงคืนได้ เช่น 22 → 02", preview_slots: "{a}:00 → {b}:00 · {n} ช่วง", err_range: "กรุณากรอกชั่วโมงสองหลัก เช่น 09 และ 18",
-    lbl_dates: "วันที่ต้องการ", hint_dates: "แตะหรือลากเพื่อเลือกหลายวันพร้อมกัน แตะชื่อวันด้านบนเพื่อเพิ่ม/ยกเลิกทั้งคอลัมน์ (เช่น ตัดวันเสาร์ออกทั้งหมด)", btn_weekdays: "วันทำงานเดือนนี้", btn_clear_dates: "ล้าง", sel_count: "เลือกแล้ว {n} วัน", gap_days: "ข้ามไป {n} วัน", week_break: "เริ่มสัปดาห์ถัดไปที่นี่", adm_edit_title: "ปรับวันและช่วงเวลา", adm_edit_hint: "วันและช่วงเวลาที่มีคนตอบแล้วจะถูกล็อก ลบไม่ได้ แต่เพิ่มได้ไม่จำกัด", adm_dates: "วันที่ตัวเลือก", adm_range: "ช่วงเวลาต่อวัน", adm_locked_n: "🔒 มีคนตอบ {n} วัน", lock_tip: "มีคนตอบแล้ว ลบไม่ได้", btn_remove: "ลบ", btn_reset: "คืนค่า", btn_save_changes: "บันทึกการแก้ไข", err_locked_dates: "วันเหล่านี้มีคนตอบแล้ว ลบไม่ได้: {list}", err_locked_hours: "ช่วงเวลาเหล่านี้มีคนตอบแล้ว ช่วงใหม่ต้องครอบคลุม: {list}", adm_used_hours: "ช่วงเวลาที่มีคนตอบ: {list} (ตัดออกไม่ได้)", adm_no_used: "ยังไม่มีใครตอบ ปรับวันและเวลาได้อิสระ", ok_saved: "อัปเดตวันและช่วงเวลาแล้ว", ok_saved_local: "บันทึกในเครื่องแล้ว แต่บันทึกขึ้นคลาวด์ไม่สำเร็จ", err_no_dates: "กรุณาเลือกวันที่ต้องการอย่างน้อย 1 วันในปฏิทิน", err_too_many: "เลือกได้มากที่สุด {n} วัน",
+    lbl_dates: "วันที่ต้องการ", hint_dates: "แตะหรือลากเพื่อเลือกหลายวันพร้อมกัน แตะชื่อวันด้านบนเพื่อเพิ่ม/ยกเลิกทั้งคอลัมน์ (เช่น ตัดวันเสาร์ออกทั้งหมด)", btn_weekdays: "วันทำงานเดือนนี้", btn_clear_dates: "ล้าง", sel_count: "เลือกแล้ว {n} วัน", gap_days: "ข้ามไป {n} วัน", week_break: "เริ่มสัปดาห์ถัดไปที่นี่", adm_edit_title: "ปรับวันและช่วงเวลา", adm_edit_hint: "วันและช่วงเวลาที่มีคนตอบแล้วจะถูกล็อก ลบไม่ได้ แต่เพิ่มได้ไม่จำกัด", adm_dates: "วันที่ตัวเลือก", adm_range: "ช่วงเวลาต่อวัน", adm_locked_n: "🔒 มีคนตอบ {n} วัน", lock_tip: "มีคนตอบแล้ว ลบไม่ได้", btn_remove: "ลบ", btn_reset: "คืนค่า", btn_save_changes: "บันทึกการแก้ไข", err_locked_dates: "วันเหล่านี้มีคนตอบแล้ว ลบไม่ได้: {list}", err_locked_hours: "ช่วงเวลาเหล่านี้มีคนตอบแล้ว ช่วงใหม่ต้องครอบคลุม: {list}", adm_used_hours: "ช่วงเวลาที่มีคนตอบ: {list} (ตัดออกไม่ได้)", adm_no_used: "ยังไม่มีใครตอบ ปรับวันและเวลาได้อิสระ", ok_saved: "อัปเดตวันและช่วงเวลาแล้ว", ok_saved_local: "บันทึกในเครื่องแล้ว แต่บันทึกขึ้นคลาวด์ไม่สำเร็จ", sel_search: "ค้นหา…", sel_no_match: "ไม่พบรายการ", err_no_dates: "กรุณาเลือกวันที่ต้องการอย่างน้อย 1 วันในปฏิทิน", err_too_many: "เลือกได้มากที่สุด {n} วัน",
     btn_submit_create: "สร้างและคัดลอกลิงก์", btn_load: "โหลด", btn_copy: "คัดลอกรหัส", btn_copy_url: "คัดลอก URL", btn_copy_info: "คัดลอกข้อมูลประชุม",
     lbl_your_name: "ชื่อของคุณ:", lbl_your_pin: "รหัสผ่าน:", lbl_state: "สถานะ:",
     mode_yes: "สะดวก", mode_maybe: "อาจจะ", mode_clear: "ล้าง", btn_save: "บันทึกเวลา",
@@ -1479,6 +1509,11 @@ function initTimezones() {
   const my = localTz();
   buildTzOptions(document.getElementById('input-timezone'), my);   // 建立會議：預設自己的時區
   buildTzOptions(document.getElementById('displayTzSelect'), displayTz);
+
+  /* 全站統一用同一款自製下拉：時區清單很長，所以帶搜尋框 */
+  initSelect('tzbase-sel', { searchMin: 12 });
+  initSelect('tz-sel', { searchMin: 12 });
+  initSelect('lang-sel', { searchMin: 99 });   // 語言只有 6 個，不需要搜尋
 }
 
 function changeDisplayTz(tz) {
@@ -1526,8 +1561,8 @@ function renderTzNotice() {
 
 function useBaseTz() {
   const base = pollBaseTz();
-  document.getElementById('displayTzSelect').value = base;
-  changeDisplayTz(base);
+  /* 用 change 事件走原本的流程，自製下拉的按鈕文字才會跟著換 */
+  setNativeSelect('displayTzSelect', base);
 }
 
 /* ============================================================
@@ -1584,13 +1619,13 @@ function changeLang(lang) {
   // 月曆的星期、月份名稱與日期標籤也要跟著換語言
   if (calMonth) renderCalendar();
   updateRangePreview();
-  refreshSelects();          // 自製下拉的選項文字
   if (typeof renderMyCreatedPolls === 'function' &&
       document.getElementById('view-admin').style.display !== 'none') renderMyCreatedPolls();
 
   // 時區選單裡的分組標題也要跟著換語言
   buildTzOptions(document.getElementById('input-timezone'), document.getElementById('input-timezone').value || localTz());
   buildTzOptions(document.getElementById('displayTzSelect'), displayTz);
+  refreshSelects();          // 自製下拉的選項文字（要在時區選項重建之後）
 
   if (currentPoll) {
     document.getElementById('disp-organizer').innerHTML = `<span data-i18n="disp_organizer_prefix">${dict['disp_organizer_prefix'] || '主辦人：'}</span><span id="disp-organizer-val">${currentPoll.organizer}</span>`;
@@ -1972,56 +2007,160 @@ function bindCalPainting(box, ctx) {
  *  值仍然寫回原生 select，其餘程式（currentRangeKey、自動化腳本）
  *  完全不用改。
  * ========================================================== */
-function initSelect(rootId) {
+const SELECTS = [];          // 全站所有自製下拉，語言切換時要一起重繪
+
+function initSelect(rootId, opts) {
+  opts = opts || {};
   const root = document.getElementById(rootId);
-  if (!root) return;
+  if (!root || root._selInit) return;
+  root._selInit = true;
+
   const sel = root.querySelector('select');
   const btn = root.querySelector('.sel-btn');
   const pop = root.querySelector('.sel-pop');
   const label = root.querySelector('.sel-btn > span');
+  const SEARCH_MIN = opts.searchMin || 12;      // 選項多到這個數量才給搜尋框
+  let filter = '';
+  let searchInput = null;
+
+  const optionButtons = () => [...pop.querySelectorAll('.sel-opt')];
+  const visibleOptions = () => optionButtons().filter(b => !b.hidden);
+
+  function makeSearch() {
+    const wrap = document.createElement('div');
+    wrap.className = 'sel-search';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.autocomplete = 'off';
+    inp.spellcheck = false;
+    const dict = I18N[currentLang] || I18N['zh-TW'];
+    inp.placeholder = dict.sel_search || '搜尋…';
+    inp.addEventListener('input', () => { filter = inp.value.trim().toLowerCase(); applyFilter(); });
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); move(e.key === 'ArrowDown' ? 1 : -1); }
+      else if (e.key === 'Enter') {
+        e.preventDefault();
+        const act = pop.querySelector('.sel-opt.active') || visibleOptions()[0];
+        if (act) act.click();
+      } else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); btn.focus(); }
+    });
+    inp.addEventListener('click', (e) => e.stopPropagation());
+    wrap.appendChild(inp);
+    searchInput = inp;
+    return wrap;
+  }
+
+  function addOption(o) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'sel-opt';
+    b.setAttribute('role', 'option');
+    b.dataset.value = o.value;
+    b.textContent = o.textContent;
+    b.addEventListener('click', () => {
+      sel.value = o.value;
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+      close();
+      btn.focus();
+    });
+    pop.appendChild(b);
+  }
 
   function render() {
     pop.innerHTML = '';
-    [...sel.options].forEach(o => {
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'sel-opt';
-      b.setAttribute('role', 'option');
-      b.dataset.value = o.value;
-      b.textContent = o.textContent;
-      b.addEventListener('click', () => {
-        sel.value = o.value;
-        sel.dispatchEvent(new Event('change', { bubbles: true }));
-        close();
-        btn.focus();
-      });
-      pop.appendChild(b);
+    searchInput = null;
+    filter = '';
+
+    if (sel.options.length >= SEARCH_MIN) pop.appendChild(makeSearch());
+
+    /* 支援 optgroup（時區選單分成「常用時區」與「所有時區」） */
+    [...sel.children].forEach(node => {
+      if (node.tagName === 'OPTGROUP') {
+        const g = document.createElement('div');
+        g.className = 'sel-group';
+        g.textContent = node.label;
+        pop.appendChild(g);
+        [...node.children].forEach(addOption);
+      } else if (node.tagName === 'OPTION') {
+        addOption(node);
+      }
     });
     sync();
   }
+
+  /* 搜尋：對不上的選項藏起來，整組都沒東西時連組標題一起藏 */
+  function applyFilter() {
+    let visible = 0;
+    let group = null, groupHit = 0;
+    const flushGroup = () => { if (group) group.hidden = groupHit === 0; };
+
+    [...pop.children].forEach(el => {
+      if (el.classList.contains('sel-search')) return;
+      if (el.classList.contains('sel-group')) { flushGroup(); group = el; groupHit = 0; return; }
+      const hit = !filter || el.textContent.toLowerCase().includes(filter);
+      el.hidden = !hit;
+      if (hit) { visible++; groupHit++; }
+    });
+    flushGroup();
+
+    let empty = pop.querySelector('.sel-empty');
+    if (!visible) {
+      if (!empty) {
+        empty = document.createElement('div');
+        empty.className = 'sel-empty';
+        pop.appendChild(empty);
+      }
+      const dict = I18N[currentLang] || I18N['zh-TW'];
+      empty.textContent = dict.sel_no_match || '找不到符合的項目';
+      empty.hidden = false;
+    } else if (empty) {
+      empty.hidden = true;
+    }
+    optionButtons().forEach(b => b.classList.remove('active'));
+  }
+
   function sync() {
     const o = sel.options[sel.selectedIndex];
     label.textContent = o ? o.textContent : '';
-    [...pop.children].forEach(b => {
+    optionButtons().forEach(b => {
       const on = b.dataset.value === sel.value;
       b.classList.toggle('on', on);
       b.setAttribute('aria-selected', on ? 'true' : 'false');
     });
   }
+
+  /* 展開後若貼到視窗邊緣（導覽列的選單在手機上很容易），整片往內推 */
+  function fitInViewport() {
+    pop.style.transform = '';
+    const r = pop.getBoundingClientRect();
+    const vw = document.documentElement.clientWidth;
+    let dx = 0;
+    if (r.left < 8) dx = 8 - r.left;
+    else if (r.right > vw - 8) dx = (vw - 8) - r.right;
+    if (dx) pop.style.transform = 'translateX(' + Math.round(dx) + 'px)';
+  }
+
   function open() {
+    /* 一次只開一個 */
+    SELECTS.forEach(s => { if (s.root !== root) s.close(); });
     pop.hidden = false;
     btn.setAttribute('aria-expanded', 'true');
-    const cur = pop.querySelector('.sel-opt.on') || pop.firstElementChild;
+    fitInViewport();
+    if (searchInput) { searchInput.value = ''; filter = ''; applyFilter(); }
+    const cur = pop.querySelector('.sel-opt.on') || visibleOptions()[0];
     if (cur) { cur.classList.add('active'); cur.scrollIntoView({ block: 'nearest' }); }
+    fitInViewport();
   }
+
   function close() {
     if (pop.hidden) return;
     pop.hidden = true;
     btn.setAttribute('aria-expanded', 'false');
-    [...pop.children].forEach(b => b.classList.remove('active'));
+    optionButtons().forEach(b => b.classList.remove('active'));
   }
+
   function move(d) {
-    const items = [...pop.children];
+    const items = visibleOptions();
     if (!items.length) return;
     let i = items.findIndex(b => b.classList.contains('active'));
     if (i < 0) i = items.findIndex(b => b.classList.contains('on'));
@@ -2053,13 +2192,13 @@ function initSelect(rootId) {
   sel.addEventListener('change', sync);
 
   root._render = render;
+  SELECTS.push({ root: root, render: render, close: close, sync: sync });
   render();
 }
 
-/* 語言切換後重建選項文字 */
+/* 語言切換後重建所有自製下拉的選項文字 */
 function refreshSelects() {
-  const root = document.getElementById('range-sel');
-  if (root && root._render) root._render();
+  SELECTS.forEach(s => s.render());
 }
 
 function initCustomRange() {
