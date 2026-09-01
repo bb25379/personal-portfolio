@@ -2617,7 +2617,7 @@ async function loadPoll(code) {
   if (!pollData) {
     clearWorkspace();
     if (cloudError) {
-      alert(`找不到會議！\n雲端 API 回報錯誤：${cloudError}\n(請確認 GitHub 儲存庫內是否有 polls/.gitkeep 檔案，或代碼是否正確)`);
+      alert(`找不到會議！\n雲端 API 回報錯誤：${cloudError}\n(錯誤代碼：E0001)`);
     } else {
       alert('找不到此 32 碼代碼對應的會議（可能已被刪除、已過期，或尚未建立）');
     }
