@@ -821,7 +821,7 @@ input.hh:focus { box-shadow: none; }
 <body>
 
 <nav class="navbar">
-  <a href="meeting.html" class="brand">
+  <a href="/" class="brand">
     <div class="brand-icon" id="brand-icon">M</div> <span id="brand-name">MeetingSync Pro</span>
     <script>
       document.getElementById('brand-icon').textContent = BRAND.icon;
@@ -2607,9 +2607,6 @@ function loadPollFromInput() {
   // const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
 
   // 修正後：
-  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
-  //const newUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
-  //window.history.pushState({ path: newUrl }, '', newUrl);
   const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
   const newUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
   window.history.pushState({ path: newUrl }, '', newUrl);
