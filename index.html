@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+<meta name="description" content="Ducky Huang｜Cloud Engineer & PM">
+<link rel="canonical" href="https://www.duckyit.com/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://duckyit.com/">
+<meta property="og:title" content="Ducky Huang｜個人作品集">
+<meta property="og:description" content="AWS 技術文章、網頁工具">
+<meta property="og:image" content="https://duckyit.com/ducky-pic.png">
+<meta property="og:image:width" content=600">
+<meta property="og:image:height" content="600">
+<meta name="twitter:card" content="summary_large_image">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Ducky Huang</title>
@@ -550,7 +560,7 @@ nav{display:flex;flex-direction:column;gap:2px;}
       <div class="card">
         <div class="card-thumb">
           <img
-            src="picmark-cover.webp"
+            src="picmark-cover.jpg"
             loading="lazy" 
             decoding="async"
             alt="PicMark"
@@ -849,6 +859,9 @@ var I18N = {
     meeting_title:"会议时段预约系统",
     meeting_desc:"找出多人都有空的开会时间。主办人开一场调查并拿到 32 码代码，参与者点格子选有空的时段，系统实时算出交集、列出谁还没填，并一键创建 Google 日历邀请。这里是公开演示版，数据只存在你的浏览器里。",
     meeting_meta:"Web Tool · 时段交集",
+    prompt_title:"Prompt 存储系统",
+    prompt_desc:"收藏与管理常用的 AI Prompt，简单注册登录后即可新增、编辑、一键复制，每条 Prompt 可添加 emoji 图标与用途说明，并设置 Private 或 Public 分享给其他人浏览。",
+    prompt_meta:"Web Tool · Prompt 共享"
     travel_title:"旅游分享", travel_count:"1 篇分享",
     badge_travel:"旅行足迹", trip1_title:"旅游分享 - 大阪&京都&奈良&神户 5日游",
     trip1_desc:"行程规划分享！第一次去京都和奈良，而且正好碰上了盂兰盆节呢～",
@@ -890,6 +903,9 @@ var I18N = {
     meeting_title:"Meeting Time Finder",
     meeting_desc:"Find a slot that actually works for everyone. The organiser opens a poll and gets a 32-character code; participants click cells to mark when they are free, and the tool works out the overlap, shows who has not replied yet, and builds a Google Calendar invite in one click. This is the public demo — everything you enter stays in your own browser.",
     meeting_meta:"Web Tool · Availability",
+    prompt_title:"Prompt Repository System",
+    prompt_desc:"Save and manage your frequently used AI prompts. Easily sign up and log in to add, edit, and copy with one click. Add emoji icons and descriptions to each prompt, and set them to Private or Public to share with others.",
+    prompt_meta:"Web Tool · Prompt Sharing",
     travel_title:"Travel Sharing", travel_count:"1 Post",
     badge_travel:"Footprints", trip1_title:"Travel Log – 5 Days in Osaka, Kyoto, Nara & Kobe",
     trip1_desc:"Itinerary & reflections! It was my very first time visiting Kyoto and Nara, and it happened to be right during the Obon festival season~",
@@ -931,6 +947,9 @@ var I18N = {
     meeting_title:"会議日程調整ツール",
     meeting_desc:"全員が空いている時間を見つけるツール。主催者が調査を作成すると 32 桁のコードが発行され、参加者はマスをクリックして空き時間を選ぶだけ。重なりを即座に集計し、未回答者を表示し、Google カレンダーの招待もワンクリックで作成できます。こちらは公開デモ版で、入力した内容はご自身のブラウザ内にのみ保存されます。",
     meeting_meta:"Web Tool · 空き時間",
+    prompt_title:"プロンプト保存システム",
+    prompt_desc:"よく使う AI プロンプトを保存・管理できます。簡単な会員登録・ログインで、追加、編集、ワンタップコピーが可能。各プロンプトには絵文字アイコンや用途の説明を設定でき、プライベート（Private）またはパブリック（Public）に設定して他のユーザーと共有することもできます。",
+    prompt_meta:"Web ツール · プロンプト共有",
     travel_title:"旅行記", travel_count:"1 記事",
     badge_travel:"旅行記", trip1_title:"旅行記 – 大阪・京都・奈良・神戸 5日間の旅",
     trip1_desc:"旅のスケジュールと思い出の記録！初めての京都と奈良で、ちょうどお盆休みの時期に行ってきました～",
@@ -972,6 +991,9 @@ var I18N = {
     meeting_title:"회의 시간 조정 도구",
     meeting_desc:"모두가 가능한 회의 시간을 찾아주는 도구입니다. 주최자가 설문을 만들면 32자리 코드가 발급되고, 참가자는 칸을 클릭해 가능한 시간을 표시합니다. 겹치는 시간을 실시간으로 계산하고, 아직 응답하지 않은 사람을 보여주며, Google 캘린더 초대도 한 번에 만들 수 있습니다. 여기는 공개 데모 버전으로, 입력한 내용은 본인 브라우저에만 저장됩니다.",
     meeting_meta:"Web Tool · 가능 시간",
+    prompt_title:"프롬프트 저장 시스템",
+    prompt_desc:"자주 사용하는 AI 프롬프트를 저장하고 관리하세요. 간단한 회원가입 및 로그인 후 추가, 수정, 원클릭 복사가 가능합니다. 각 프롬프트에 이모지 아이콘과 용도 설명을 추가할 수 있으며, 비공개(Private) 또는 공개(Public)로 설정하여 다른 사람과 공유할 수 있습니다.",
+    prompt_meta:"웹 툴 · 프롬프트 공유",
     travel_title:"여행 공유", travel_count:"글 1개",
     badge_travel:"여행 발자취", trip1_title:"여행 공유 – 오사카·교토·나라·고베 5일 여행",
     trip1_desc:"일정 및 후기 공유! 처음 가보는 교토와 나라였는데, 마침 오봉(盂蘭盆節) 명절 기간에 다녀왔네요~",
@@ -1013,6 +1035,9 @@ var I18N = {
     meeting_title:"Buscador de Horarios de Reunión",
     meeting_desc:"Encuentra un horario que funcione para todos. El organizador crea una encuesta y obtiene un código de 32 caracteres; los participantes hacen clic en las casillas para marcar su disponibilidad, y la herramienta calcula la coincidencia, muestra quién falta por responder y genera una invitación de Google Calendar con un clic. Esta es la demo pública: todo lo que introduzcas se queda en tu propio navegador.",
     meeting_meta:"Web Tool · Disponibilidad",
+    prompt_title:"Sistema de Almacenamiento de Prompts",
+    prompt_desc:"Guarda y gestiona tus prompts de IA más utilizados. Regístrate e inicia sesión fácilmente para añadir, editar y copiar con un solo clic. Añade iconos emoji y descripciones a cada prompt, y configúralos como Privados o Públicos para compartirlos con los demás.",
+    prompt_meta:"Herramienta Web · Compartir Prompts",
     travel_title:"Viajes", travel_count:"1 Publicación",
     badge_travel:"Huellas", trip1_title:"Diarios de Viaje – 5 Días en Osaka, Kioto, Nara y Kobe",
     trip1_desc:"¡Compartiendo el itinerario y la experiencia! Fue mi primera vez en Kioto y Nara, y coincidió justo con el festival de Obon~",
