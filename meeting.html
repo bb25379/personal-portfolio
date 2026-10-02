@@ -10,7 +10,7 @@
       gaia:    { name: 'Gaia - MeetingSync', icon: 'G', title: 'Gaia - MeetingSync · Gaia會議時段預約系統' },
       default: { name: 'MeetingSync Pro',    icon: 'M', title: 'MeetingSync Pro · 會議時段預約系統' }
     };
-    var GAIA_HOSTS = ['meeting.gaia-domain.com'];
+    var GAIA_HOSTS = ['meeting.duckyit.com'];
     // 測試用：在任何網域加上 ?brand=gaia 就能預覽 GAIA 版
     var forced = new URLSearchParams(location.search).get('brand');
     var key = forced || (GAIA_HOSTS.indexOf(location.hostname) >= 0 ? 'gaia' : 'default');
