@@ -2500,15 +2500,22 @@ async function handleCreatePoll(e) {
 
   openCreatedModal(code, adminKey, timezone);
 
-  const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
-  window.history.pushState({ path: newUrl }, '', newUrl);
+ // 修正前：
+ // const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
 
+ // 修正後：
+ const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
+ const newUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
+ window.history.pushState({ path: newUrl }, '', newUrl);
+  
   document.getElementById('input-code').value = code;
   loadPoll(code);
 }
 
 function openCreatedModal(code, adminKey, timezone) {
-  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  //const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
+  const fullUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
   document.getElementById('modal-display-tz').textContent = tzLabel(timezone || localTz());
   document.getElementById('modal-display-code').textContent = code;
   document.getElementById('modal-display-key').textContent = adminKey;
@@ -2536,7 +2543,9 @@ function copyOnlyUrl() {
     alert("請先輸入或載入有效的 32 碼會議代碼");
     return;
   }
-  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  //const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
+  const fullUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
   navigator.clipboard.writeText(fullUrl).then(() => {
     alert(`已成功複製專屬預約連結：\n${fullUrl}`);
   });
@@ -2563,8 +2572,10 @@ function copyFullMeetingInfo() {
     return;
   }
 
-  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
-
+  //const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
+  const fullUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
+  
   const tzText = currentPoll && currentPoll.timezone ? `\n🌐 基準時區：${tzLabel(currentPoll.timezone)}` : '';
 
   let infoText = `📌 會議主題：${title}\n👤 主辦人：${organizer}${tzText}\n🔑 會議代碼 (32碼)：${code}\n🔗 預約連結：${fullUrl}`;
@@ -2592,7 +2603,15 @@ function loadPollFromInput() {
     return;
   }
   
-  const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  // 修正前：
+  // const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+
+  // 修正後：
+  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
+  //const newUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
+  //window.history.pushState({ path: newUrl }, '', newUrl);
+  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
+  const newUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
   window.history.pushState({ path: newUrl }, '', newUrl);
   loadPoll(code);
 }
