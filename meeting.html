@@ -10,7 +10,7 @@
       gaia:    { name: 'Gaia - MeetingSync', icon: 'G', title: 'Gaia - MeetingSync · Gaia會議時段預約系統' },
       default: { name: 'MeetingSync Pro',    icon: 'M', title: 'MeetingSync Pro · 會議時段預約系統' }
     };
-    var GAIA_HOSTS = ['meeting.duckyit.com'];
+    var GAIA_HOSTS = ['meeting.gaia-domain.com'];
     // 測試用：在任何網域加上 ?brand=gaia 就能預覽 GAIA 版
     var forced = new URLSearchParams(location.search).get('brand');
     var key = forced || (GAIA_HOSTS.indexOf(location.hostname) >= 0 ? 'gaia' : 'default');
@@ -821,7 +821,7 @@ input.hh:focus { box-shadow: none; }
 <body>
 
 <nav class="navbar">
-  <a href="/" class="brand">
+  <a href="meeting.html" class="brand">
     <div class="brand-icon" id="brand-icon">M</div> <span id="brand-name">MeetingSync Pro</span>
     <script>
       document.getElementById('brand-icon').textContent = BRAND.icon;
@@ -2500,22 +2500,15 @@ async function handleCreatePoll(e) {
 
   openCreatedModal(code, adminKey, timezone);
 
- // 修正前：
- // const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+  window.history.pushState({ path: newUrl }, '', newUrl);
 
- // 修正後：
- const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
- const newUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
- window.history.pushState({ path: newUrl }, '', newUrl);
-  
   document.getElementById('input-code').value = code;
   loadPoll(code);
 }
 
 function openCreatedModal(code, adminKey, timezone) {
-  //const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
-  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
-  const fullUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
+  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
   document.getElementById('modal-display-tz').textContent = tzLabel(timezone || localTz());
   document.getElementById('modal-display-code').textContent = code;
   document.getElementById('modal-display-key').textContent = adminKey;
@@ -2543,9 +2536,7 @@ function copyOnlyUrl() {
     alert("請先輸入或載入有效的 32 碼會議代碼");
     return;
   }
-  //const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
-  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
-  const fullUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
+  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
   navigator.clipboard.writeText(fullUrl).then(() => {
     alert(`已成功複製專屬預約連結：\n${fullUrl}`);
   });
@@ -2572,10 +2563,8 @@ function copyFullMeetingInfo() {
     return;
   }
 
-  //const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
-  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
-  const fullUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
-  
+  const fullUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
+
   const tzText = currentPoll && currentPoll.timezone ? `\n🌐 基準時區：${tzLabel(currentPoll.timezone)}` : '';
 
   let infoText = `📌 會議主題：${title}\n👤 主辦人：${organizer}${tzText}\n🔑 會議代碼 (32碼)：${code}\n🔗 預約連結：${fullUrl}`;
@@ -2603,12 +2592,7 @@ function loadPollFromInput() {
     return;
   }
   
-  // 修正前：
-  // const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
-
-  // 修正後：
-  const basePath = window.location.hostname === 'meeting.duckyit.com' ? '/' : window.location.pathname;
-  const newUrl = window.location.protocol + "//" + window.location.host + basePath + '?code=' + code;
+  const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?code=' + code;
   window.history.pushState({ path: newUrl }, '', newUrl);
   loadPoll(code);
 }
